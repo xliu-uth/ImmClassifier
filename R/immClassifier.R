@@ -5,6 +5,7 @@ require(stringr)
 require(igraph)
 require(randomForest)
 
+
 #' @author AXL
 #' @title Predict immune cell identity in new dataset.
 #' @description immClassifier predicts cell/sample identity using single-cell or bulk RNA-Seq sequencing.
@@ -17,7 +18,13 @@ require(randomForest)
 #' @export
 #' @examples
 #' predict_immune_cell_types()
-predict_immune_cell_types <- function(ext.dat, prob.unknown = 0, num.cores = 1, ml.file = NULL, out.prefix="test",  mode="test"){
+predict_immune_cell_types <- function(input.path='test/bulk.logrma.rds', 
+                                      prob.unknown = 0, 
+                                      num.cores = 1, 
+                                      ml.file = NULL, 
+                                      out.prefix="testrun",  
+                                      mode="test"){
+  ext.dat <- readRDS(input.path)
   start_time <- Sys.time()
 # replace - as . in gene symbols to match genes in exp.dat to training dat
   colnames(ext.dat) <- gsub("-", ".",colnames(ext.dat))
@@ -37,14 +44,6 @@ predict_immune_cell_types <- function(ext.dat, prob.unknown = 0, num.cores = 1, 
   #saveRDS(cell.ident, paste0("output/",out.prefix,"_cell.ident.rds"))
 }
 
-#' @author AXL
-#' @title test-run.
-#' @description test-run for ImmClassifier package using a small subset of training data.
-#' @export
-#' @examples
-#' test_ImmClassifier()
-test_ImmClassifier <- function(){
 
-  ext.dat <- readRDS("test/bulk.logrma.rds")
-  predict_immune_cell_types(ext.dat)
-}
+
+
