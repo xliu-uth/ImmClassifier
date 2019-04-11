@@ -18,4 +18,4 @@ COPY R_cmdline/visualization.R/ /usr/local/bin/
 RUN chmod a+x /usr/local/bin/assign_cell_identity.R
 RUN chmod a+x /usr/local/bin/immClassifier.R
 RUN chmod a+x /usr/local/bin/mlr_train.R
-RUN chdod a+x /usr/local/bin/visualization.R
+RUN chmod a+x /usr/local/bin/visualization.R
