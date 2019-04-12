@@ -3,7 +3,7 @@
 #' @param train.dat dataframe cell x features in training samples
 #' @param test.dat dataframe cell x features in held-out samples in training dataset
 #' @param ext.dat dataframe cell x features in external dataset
-
+#' @export
 mlr_pred <- function(lrn.name, train.dat, test.dat, ext.dat){
 
   task <- makeClassifTask(id = lrn.name, data = train.dat, target = "target")
@@ -192,6 +192,7 @@ pred_bm_clusters <- function(ext.dat, num.cores = 1, mode,training.set='../data/
 #' @param pbmc.path path to pbmc training set
 #' @return res dataframe cell x class_probability
 #'
+#' #@export
 pred_dataset <- function(ext.dat, num.cores = 1, mode,
                          hca.path='../data/hca-bm-train-test-dat.rds',
                          bm.path='../data/jci-bm-train-test-dat.rds',

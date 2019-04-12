@@ -1,4 +1,4 @@
-source("/assign_cell_identity.R")
+#source("/assign_cell_identity.R")
 
 
 #' @author AXL

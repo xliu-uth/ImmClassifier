@@ -1,3 +1,4 @@
+#' @export
 get_entropy <- function(probs){
 
   sum <- 0
@@ -11,6 +12,7 @@ get_entropy <- function(probs){
 
 
 #' @description Define the immune tree which will used for inferring cell identity
+#' @export
 define_tree_structure <- function(){
 
   tree <- list()
@@ -68,7 +70,8 @@ define_tree_structure <- function(){
 
 
 #' @description initialize and update node probability of immune tree from bottom to up
-#' @param probs vector probability for leaf nodes in immune tree
+#' @param probs vector probability for leaf nodes in immune tree#
+#' @export
 infer_identity <- function(probs){
 
   tree <- define_tree_structure()
@@ -155,7 +158,7 @@ infer_identity <- function(probs){
 
 
 #' @description Infer cell identity using auto, enforce and general mode
-
+#' @export
 assign_cell_type <- function(pred.res, p=0){
   integrated.cluster.names <- readRDS('../inst/integrated.cluster.names.rds') #update this when we have proper package
   # normalize prediction probability
