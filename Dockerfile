@@ -21,6 +21,5 @@ COPY inst/integrated.cluster.names.rds inst/
 RUN Rscript -e 'devtools::install_deps(pkg = ".", dependencies=TRUE,threads = getOption("Ncpus",1))'
 RUN R CMD INSTALL .
 
-COPY immClassifier.R /usr/local/bin
-RUN chmod a+x /usr/local/bin/immClassifier.R
+COPY immClassifier.R /
 
