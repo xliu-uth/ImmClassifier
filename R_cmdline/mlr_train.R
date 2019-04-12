@@ -40,7 +40,7 @@ mlr_pred <- function(lrn.name, train.dat, test.dat, ext.dat){
 
 
 data_partition <- function(train.dat.path, ext.dat){
-
+  require(sva)
   print ("load train/test parition from training set")
   print (train.dat.path)
   train.test.mat <- readRDS(train.dat.path)
