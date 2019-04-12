@@ -16,7 +16,7 @@ COPY DESCRIPTION .
 COPY NAMESPACE .
 
 RUN mkdir -p R/
-COPY R_cmdline/* R/
+COPY R/* R/
 
 RUN mkdir -p inst/
 COPY inst/integrated.cluster.names.rds inst/
