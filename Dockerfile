@@ -13,7 +13,9 @@ COPY DESCRIPTION .
 COPY NAMESPACE .
 
 RUN mkdir -p R/
-COPY R_cmdline/* R/
+COPY R_cmdline/assign_cell_identity.R R/
+COPY R_cmdline/visualization.R R/
+COPY R_cmdline/mlr_train.R R/
 
 RUN mkdir -p inst/
 COPY inst/integrated.cluster.names.rds inst/
@@ -21,5 +23,5 @@ COPY inst/integrated.cluster.names.rds inst/
 RUN Rscript -e 'devtools::install_deps(pkg = ".", dependencies=TRUE,threads = getOption("Ncpus",1))'
 RUN R CMD INSTALL .
 
-COPY immClassifier.R /
-
+COPY immClassifier.R /usr/local/bin/
+RUN chmod a+x /usr/local/bin/immClassifier.R

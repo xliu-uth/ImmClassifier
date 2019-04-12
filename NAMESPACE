@@ -2,4 +2,3 @@
 export(mlr_pred)
 export(pred_dataset)
 export(plot_immune_tree)
-export(predict_immune_cell_types)
