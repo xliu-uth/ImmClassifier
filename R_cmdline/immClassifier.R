@@ -11,25 +11,36 @@ suppressPackageStartupMessages(require(synapser)) ##adding in the synapse requir
 
 ############################################
 ### Extract params from the command line ###
-option_list <- list(
-    make_option(c("-i", "--input"), default='../inst_immClassifierTestMatrix.tsv', help="Path to tab-delimited input matrix"),
-    make_option(c("-p", "--prob"), default=0, help="Probability the cell types are unknown"),
-    make_option(c("-o", "--output"), default="testout", help = "Prefix to add to output files"),
-    make_option(c('-c','--cores'), default=1, help="Number of cores"),
-    make_option(c('-m','--mlfile'),default=NULL, help="Path to ml file"),
-    make_option(c('-t','--testmode'),default=FALSE,action='store_true',help='Run in test mode')
-)
+getArgs<-function(){
+    option_list <- list(
+        make_option(c("-i", "--input"), default='../inst_immClassifierTestMatrix.tsv', help="Path to tab-delimited input matrix"),
+        make_option(c("-p", "--prob"), default=0, help="Probability the cell types are unknown"),
+        make_option(c("-o", "--output"), default="testout", help = "Prefix to add to output files"),
+        make_option(c('-c','--cores'), default=1, help="Number of cores"),
+        make_option(c('-m','--mlfile'),default=NULL, help="Path to ml file"),
+        make_option(c('-t','--testmode'),default=FALSE,action='store_true',help='Run in test mode')
+    )
 
-args=parse_args(OptionParser(option_list = option_list),args=commandArgs(trailingOnly=TRUE))
+    args=parse_args(OptionParser(option_list = option_list),args=commandArgs(trailingOnly=TRUE))
+
+    return(args)
+    }
+
+main<-function(){
+    args<-getArgs()
+    input.path <- args$input
+    prob.unknown <- args$prob
+    out.prefix <- args$output
+    num.cores <- args$cores
+    ml.file <- args$mlfile
+
+    mode=ifelse(args$testmode,'mode','prod')
 
 
-input.path <- args$input
-prob.unknown <- args$prob
-out.prefix <- args$output
-num.cores <- args$cores
-ml.file <- args$mlfile
 
-mode=ifelse(args$testmode,'mode','prod')
+    predict_immune_cell_types(input.path, prob.unknown, num.cores, ml.file, out.prefix,  mode)
+
+}
 ###########################################
 
 predict_immune_cell_types <- function(input.path='../inst/immClassifierTestMatrix.tsv',
@@ -68,9 +79,4 @@ predict_immune_cell_types <- function(input.path='../inst/immClassifierTestMatri
   #saveRDS(cell.ident, paste0("output/",out.prefix,"_cell.ident.rds"))
 }
 
-
-
-##########################################
-# Run the analysis
-
-predict_immune_cell_types(input.path, prob.unknown, num.cores, ml.file, out.prefix,  mode)
+main()
