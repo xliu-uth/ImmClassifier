@@ -9,11 +9,11 @@ requirements:
     dockerPull: sgosline/imm-classifier
   - class: InlineJavascriptRequirement
   - class: InitialWorkDirRequirement
-    listing: 
+    listing:
       - entry: $(inputs.synapse_config)
         entryname: "~/.synapseConfig"
 
-baseCommand: ["Rscript", "/immClassifier.R", "--testmode"]
+baseCommand: ["Rscript", "/usr/local/bin/run-ic.R", "--testmode"]
 
 inputs:
   synapse_config:
