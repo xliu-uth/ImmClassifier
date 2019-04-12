@@ -18,7 +18,7 @@ COPY R_cmdline/visualization.R/ /
 RUN mkdir -p data/
 COPY test/bulk.logrma.rds /data/
 
-RUN chmod a+x /R/assign_cell_identity.R
-RUN chmod a+x /R/immClassifier.R
-RUN chmod a+x /R/mlr_train.R
-RUN chmod a+x /R/visualization.R
+RUN chmod a+x /assign_cell_identity.R
+RUN chmod a+x /immClassifier.R
+RUN chmod a+x /mlr_train.R
+RUN chmod a+x /visualization.R
