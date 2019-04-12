@@ -4,3 +4,4 @@ synapse_config:
 input-file: syn18497731
 output-name: saratest
 output-id: syn18496218
+prob_unknown: 0

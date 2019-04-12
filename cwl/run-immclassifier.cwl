@@ -33,6 +33,7 @@ inputs:
       prefix: --output
 
 outputs:
-  type: File []
-  outputBinding:
-    glob: "*.txt"
+  predictions:
+    type: File []
+    outputBinding:
+      glob: "*.txt"

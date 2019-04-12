@@ -28,5 +28,7 @@ steps:
     run: run-immclassifier.cwl
     in:
       input: get-input-file/filepath
+      prob_uknown: prob_unknown
+      output: output-name
     out:
       [predictions]
