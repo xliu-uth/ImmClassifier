@@ -1,4 +1,4 @@
-source("R/assign_cell_identity.R")
+#source("/assign_cell_identity.R")
 
 
 #' @author AXL
@@ -9,7 +9,8 @@ source("R/assign_cell_identity.R")
 #' plot_immune_tree()
 plot_immune_tree <- function(){
 
-  integrated.cluster.names <- readRDS('data/integrated.cluster.names.rds')
+    require(igraph)
+  integrated.cluster.names <- readRDS('../inst/integrated.cluster.names.rds') #update this when we have a proper package
   tree <- define_tree_structure()
   tree.edges <- data.frame(source=character(), target=character(),stringsAsFactors=FALSE)
   i <- length(tree)
