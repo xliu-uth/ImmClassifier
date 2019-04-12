@@ -9,9 +9,11 @@ requirements:
     dockerPull: sgosline/imm-classifier
   - class: InlineJavascriptRequirement
   - class: InitialWorkDirRequirement
-    listing: $(inputs.synapse_config)
+    listing: 
+      - entry: $(inputs.synapse_config)
+        entryname: "~/.synapseConfig"
 
-baseCommand: [Rscript, immClassifier.R, --testmode]
+baseCommand: ["Rscript", "/immClassifier.R", "--testmode"]
 
 inputs:
   synapse_config:
@@ -26,7 +28,7 @@ inputs:
     inputBinding:
       position: 2
       prefix: --prob
-  output:
+  out-name:
     type: string
     inputBinding:
       position: 3
@@ -34,6 +36,6 @@ inputs:
 
 outputs:
   predictions:
-    type: File []
+    type: File
     outputBinding:
       glob: "*.txt"

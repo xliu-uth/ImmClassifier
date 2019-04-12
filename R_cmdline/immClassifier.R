@@ -8,9 +8,9 @@ suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(synapser)) ##adding in the synapse requirement here; remove when it's an R package
 
 
-source("./mlr_train.R")
-source("./assign_cell_identity.R")
-source("./visualization.R")
+source("/mlr_train.R")
+source("/assign_cell_identity.R")
+source("/visualization.R")
 
 ############################################
 ### Extract params from the command line ###
