@@ -10,7 +10,7 @@
 plot_immune_tree <- function(){
 
     require(igraph)
-  integrated.cluster.names <- readRDS('../inst/integrated.cluster.names.rds') #update this when we have a proper package
+  integrated.cluster.names <- readRDS(system.file('integrated.cluster.names.rds',package='ImmClassifier')) #update this when we have a proper package
   tree <- define_tree_structure()
   tree.edges <- data.frame(source=character(), target=character(),stringsAsFactors=FALSE)
   i <- length(tree)

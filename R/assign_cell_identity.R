@@ -160,7 +160,7 @@ infer_identity <- function(probs){
 #' @description Infer cell identity using auto, enforce and general mode
 #' @export
 assign_cell_type <- function(pred.res, p=0){
-  integrated.cluster.names <- readRDS('../inst/integrated.cluster.names.rds') #update this when we have proper package
+  integrated.cluster.names <- readRDS(system.file('integrated.cluster.names.rds',package='ImmClassifier')) #update this when we have proper package
   # normalize prediction probability
   pred.res[, !grepl('Response', colnames(pred.res))] <- pred.res[, !grepl('Response', colnames(pred.res))]/4
   maxP <- pred.res[, !grepl('Response', colnames(pred.res))] %>% apply(1, max)

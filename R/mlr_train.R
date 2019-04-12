@@ -52,7 +52,7 @@ data_partition <- function(train.dat.path, ext.dat){
   trainCellN <- nrow(train.test.mat$train)
   testCellN <- nrow(train.test.mat$test)
   extCellN <- nrow(ext.feat.mat)
-
+  require(sva)
   #combat
   dataset <- c(rep ("TRAIN", trainCellN + testCellN), rep("EXT", extCellN))
 

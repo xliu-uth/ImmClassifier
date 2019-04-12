@@ -3,7 +3,7 @@
 getArgs<-function(){
     require(optparse)
     option_list <- list(
-        make_option(c("-i", "--input"), dest='input',default='../inst_immClassifierTestMatrix.tsv', help="Path to tab-delimited input matrix"),
+        make_option(c("-i", "--input"), dest='input',default='inst/immClassifierTestMatrix.tsv', help="Path to tab-delimited input matrix"),
         make_option(c("-p", "--prob"), default=0,dest='prob', help="Probability the cell types are unknown"),
         make_option(c("-o", "--output"), default="testout", dest='output',help = "Prefix to add to output files"),
         make_option(c('-c','--cores'), default=1, dest='cores',help="Number of cores"),
