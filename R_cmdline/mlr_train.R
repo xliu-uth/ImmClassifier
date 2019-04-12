@@ -138,7 +138,7 @@ pred_pd1_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data
 
 pred_liver_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data/liver-immune-train-test-dat.rds"){
     require(randomForest)
-    require(mlr)(
+    require(mlr)
   # clusters from nature communications paper, healthy liver donors
   print("training using cells from liver")
   data.folds <- data_partition(training.set, ext.dat)

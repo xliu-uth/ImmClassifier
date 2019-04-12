@@ -7,15 +7,16 @@ RUN Rscript -e "install.packages('synapser', repos=c('http://ran.synapse.org', '
 RUN Rscript -e "install.packages('BiocManager')"
 RUN Rscript -e "BiocManager::install('sva')"
 
+COPY bin/run-ic.R /usr/local/bin/run-ic.R
+RUN chmod a+x /usr/local/bin/run-ic.R
+
 WORKDIR ImmClassifier
 
 COPY DESCRIPTION .
 COPY NAMESPACE .
 
 RUN mkdir -p R/
-COPY R_cmdline/assign_cell_identity.R R/
-COPY R_cmdline/visualization.R R/
-COPY R_cmdline/mlr_train.R R/
+COPY R_cmdline/* R/
 
 RUN mkdir -p inst/
 COPY inst/integrated.cluster.names.rds inst/
@@ -23,5 +24,3 @@ COPY inst/integrated.cluster.names.rds inst/
 RUN Rscript -e 'devtools::install_deps(pkg = ".", dependencies=TRUE,threads = getOption("Ncpus",1))'
 RUN R CMD INSTALL .
 
-COPY immClassifier.R /usr/local/bin/
-RUN chmod a+x /usr/local/bin/immClassifier.R
