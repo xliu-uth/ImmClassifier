@@ -16,7 +16,7 @@ source("./visualization.R")
 ### Extract params from the command line ###
 option_list <- list(
     make_option(c("-i", "--input"), default='../inst_immClassifierTestMatrix.tsv', help="Path to tab-delimited input matrix"),
-    make_option(c("-p", "--prob"), type="double", default=0, help="Probability the cell types are unknown"),
+    make_option(c("-p", "--prob"), default=0, help="Probability the cell types are unknown"),
     make_option(c("-o", "--output"), default="testout", help = "Prefix to add to output files"),
     make_option(c('-c','--cores'), default=1, help="Number of cores"),
     make_option(c('-m','--mlfile'),default=NULL, help="Path to ml file"),
@@ -27,7 +27,7 @@ args=parse_args(OptionParser(option_list = option_list),args=commandArgs(trailin
 
 
 input.path <- args$input
-prob.unknown <- args$unknown
+prob.unknown <- args$prob
 out.prefix <- args$output
 num.cores <- args$cores
 ml.file <- args$mlfile
