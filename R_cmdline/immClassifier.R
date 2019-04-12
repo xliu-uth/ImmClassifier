@@ -57,7 +57,7 @@ predict_immune_cell_types <- function(input.path='../inst/immClassifierTestMatri
   pred.res <- pred_dataset(ext.dat, num.cores = num.cores, mode,hca.path,bm.path,liver.path,pbmc.path)
   print("assign cell identity")
   cell.ident <- assign_cell_type(pred.res$res, prob.unknown)
-  print (paste("writing mlr prediction results to",out.dir))
+  print (paste("writing mlr prediction results to",out.prefix))
 
   if(!dir.exists(out.dir))
       dir.create(out.dir)
