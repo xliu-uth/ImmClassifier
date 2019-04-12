@@ -5,8 +5,9 @@
 #' @param ext.dat dataframe cell x features in external dataset
 #' @export
 mlr_pred <- function(lrn.name, train.dat, test.dat, ext.dat){
-
-  task <- makeClassifTask(id = lrn.name, data = train.dat, target = "target")
+    require(randomforest)
+    require(mlr)
+  task <- mlr::makeClassifTask(id = lrn.name, data = train.dat, target = "target")
   lrn <- makeLearner(lrn.name, predict.type = "prob")
   mod <- train(lrn, task)
 
@@ -78,6 +79,8 @@ data_partition <- function(train.dat.path, ext.dat){
 #' @return list BM prediction results
 
 pred_hca_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data/hca-bm-train-test-dat.rds"){
+    require(mlr)
+    require(randomForest)
   # clusters from hca bone marrow cells
   data.folds <- data_partition(training.set, ext.dat)
   train.feat.combat <- data.folds[['train']]
@@ -107,6 +110,8 @@ pred_hca_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data
 pred_pd1_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data/pbmc-train-test-dat.rds"){
   # clusters from PD1 clinical trial
 
+    require(randomForest)
+    require(mlr)
   data.folds <- data_partition(training.set, ext.dat)
   train.feat.combat <- data.folds[['train']]
   print("training using cells from colon cancer PBMC")
@@ -132,6 +137,8 @@ pred_pd1_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data
 #' @return list liver prediction results
 
 pred_liver_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../data/liver-immune-train-test-dat.rds"){
+    require(randomForest)
+    require(mlr)(
   # clusters from nature communications paper, healthy liver donors
   print("training using cells from liver")
   data.folds <- data_partition(training.set, ext.dat)
@@ -163,6 +170,8 @@ pred_liver_clusters <- function(ext.dat, num.cores = 1, mode,training.set="../da
 #' @return list bm prediction results
 
 pred_bm_clusters <- function(ext.dat, num.cores = 1, mode,training.set='../data/jci-bm-train-test-dat.rds'){
+    require(randomForest)
+    require(mlr)
   # clusters from JCI paper, healthy bone marrow doners
   print("training using cells from bone marrow (JCI)")
   data.folds <- data_partition(training.set, ext.dat)
