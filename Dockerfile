@@ -10,17 +10,8 @@ RUN Rscript -e "BiocManager::install('sva')"
 COPY bin/run-ic.R /usr/local/bin/
 RUN chmod a+x /usr/local/bin/run-ic.R
 
+COPY . ImmClassifier
 WORKDIR ImmClassifier
-
-COPY DESCRIPTION .
-COPY NAMESPACE .
-
-RUN mkdir -p R/
-COPY R/* R/
-
-RUN mkdir -p inst/
-COPY inst/integrated.cluster.names.rds inst/
 
 RUN Rscript -e 'devtools::install_deps(pkg = ".", dependencies=TRUE,threads = getOption("Ncpus",1))'
 RUN R CMD INSTALL .
-
