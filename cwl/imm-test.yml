@@ -5,4 +5,6 @@ input-file: syn18497731
 output-name: saratest
 output-id: syn18496218
 prob_unknown: 0
-
+input_path: 
+  class: File
+  path: immClassifierTestMatrix.tsv 

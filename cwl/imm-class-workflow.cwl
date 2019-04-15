@@ -39,6 +39,6 @@ steps:
       synapse_config: synapse_config
       input_path: get-input-file/filepath
       prob_unknown: prob_unknown
-      out-name: output-name
+      output-name: output-name
     out:
       [predictions]

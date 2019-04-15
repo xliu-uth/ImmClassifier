@@ -11,9 +11,9 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.synapse_config)
-        entryname: "~/.synapseConfig"
+        entryname: .synapseConfig
 
-baseCommand: ["Rscript", "/usr/local/bin/run-ic.R", "--testmode"]
+baseCommand: [Rscript, /usr/local/bin/run-ic.R, --testmode]
 
 inputs:
   synapse_config:
@@ -28,7 +28,7 @@ inputs:
     inputBinding:
       position: 2
       prefix: --prob
-  out-name:
+  output-name:
     type: string
     inputBinding:
       position: 3
