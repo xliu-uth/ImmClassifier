@@ -16,11 +16,7 @@ inputs:
     type: double
 
 outputs:
-  preds:
-    type: 
-      File
-    outputSource: 
-      run-immclass/predictions 
+  preds: []
 
 requirements:
   - class: SubworkflowFeatureRequirement
@@ -42,3 +38,12 @@ steps:
       output-name: output-name
     out:
       [predictions]
+  store-output-files:
+    run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-store-tool.cwl
+    in: 
+      synapse_config: synapse_config
+      file_to_store: run-immclass/predictions
+      parentid: output-id
+    out: 
+      []
+
