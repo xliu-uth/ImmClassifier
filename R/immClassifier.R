@@ -1,10 +1,3 @@
-suppressPackageStartupMessages(require(dplyr))
-suppressPackageStartupMessages(require(mlr))
-suppressPackageStartupMessages(require(sva))
-suppressPackageStartupMessages(require(stringr))
-suppressPackageStartupMessages(require(igraph))
-suppressPackageStartupMessages(require(randomForest))
-
 
 
 #'@export
@@ -21,7 +14,7 @@ predict_immune_cell_types <- function(input.path='../inst/immClassifierTestMatri
   # replace - as . in gene symbols to match genes in exp.dat to training dat
   colnames(ext.dat) <- gsub("-", ".",colnames(ext.dat))
   print('getting files from synapse')
-  synLogin()
+  synapser::synLogin()
   hca.path=synapser::synGet('syn18496221')$path
   bm.path=synapser::synGet('syn18496223')$path
   liver.path=synapser::synGet('syn18496224')$path
