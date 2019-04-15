@@ -8,7 +8,7 @@
 #' @examples
 #' plot_immune_tree()
 plot_immune_tree <- function(){
-
+    require(dplyr)
     require(igraph)
   integrated.cluster.names <- readRDS(system.file('integrated.cluster.names.rds',package='ImmClassifier')) #update this when we have a proper package
   tree <- define_tree_structure()

@@ -20,6 +20,7 @@ outputs:
 
 requirements:
   - class: SubworkflowFeatureRequirement
+  - class: ScatterFeatureRequirement
 
 steps:
   get-input-file:
@@ -40,6 +41,7 @@ steps:
       [predictions]
   store-output-files:
     run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-store-tool.cwl
+    scatter: file_to_store
     in: 
       synapse_config: synapse_config
       file_to_store: run-immclass/predictions
