@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ############################################
 ### Extract params from the command line ###
 getArgs<-function(){
