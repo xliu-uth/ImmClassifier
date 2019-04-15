@@ -27,8 +27,6 @@ predict_immune_cell_types <- function(input.path='../inst/immClassifierTestMatri
   cell.ident <- assign_cell_type(pred.res$res, prob.unknown)
   print (paste("writing mlr prediction results to",out.prefix))
 
-  if(!dir.exists(out.dir))
-      dir.create(out.dir)
   write.table (cell.ident$known, paste0(out.prefix,"_celltype_prediction_known.txt"), sep = '\t', quote = F)
   write.table (cell.ident$unknown, paste0(out.prefix,"_celltype_prediction_unknown.txt"), sep = '\t', quote = F)
   end_time <- Sys.time()

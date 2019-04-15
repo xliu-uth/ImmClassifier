@@ -36,6 +36,6 @@ inputs:
 
 outputs:
   predictions:
-    type: File
+    type: File[]
     outputBinding:
       glob: "*.txt"
