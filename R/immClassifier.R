@@ -1,10 +1,3 @@
-suppressPackageStartupMessages(require(dplyr))
-suppressPackageStartupMessages(require(mlr))
-suppressPackageStartupMessages(require(sva))
-suppressPackageStartupMessages(require(stringr))
-suppressPackageStartupMessages(require(igraph))
-suppressPackageStartupMessages(require(randomForest))
-
 
 
 #'@export
