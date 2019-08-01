@@ -16,7 +16,9 @@ inputs:
     type: double
 
 outputs:
-  preds: []
+  preds: 
+    type: File
+    outputSource: run-immclass/predictions
 
 requirements:
   - class: SubworkflowFeatureRequirement
