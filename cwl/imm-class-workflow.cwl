@@ -16,9 +16,12 @@ inputs:
     type: double
 
 outputs:
-  preds: 
+  known-preds: 
     type: File
-    outputSource: run-immclass/predictions
+    outputSource: run-immclass/known
+  unknown-preds:
+    type: File
+    outputSource: run-immclass/unknown
 
 requirements:
   - class: SubworkflowFeatureRequirement
@@ -40,13 +43,12 @@ steps:
       prob_unknown: prob_unknown
       output-name: output-name
     out:
-      [predictions]
+      [known,unknown]
   store-output-files:
     run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-store-tool.cwl
-    scatter: file_to_store
     in: 
       synapse_config: synapse_config
-      file_to_store: run-immclass/predictions
+      file_to_store: run-immclass/known
       parentid: output-id
     out: 
       []

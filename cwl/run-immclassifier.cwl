@@ -35,7 +35,11 @@ inputs:
       prefix: --output
 
 outputs:
-  predictions:
-    type: File[]
+  known:
+    type: File
     outputBinding:
-      glob: "*.txt"
+      glob: "*_known.txt"
+  unknown:
+    type: File
+    outputBinding:
+      glob: "*_unknown.txt"
