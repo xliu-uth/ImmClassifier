@@ -40,11 +40,6 @@ Python modules
 
 Usage Examples
 
-Input:
-
-tab-delimited gene by cell gene expression matrix in text format. The gene expression values can be logCPM, logTPM or logRMA (microarray dataset).
-
-
 ImmClassifier is implemented by a combination of R and python. 
 
 ImmClassifier workflow contains three steps:
@@ -56,7 +51,7 @@ For example,
 
 Input: 
        
-queryfile.path, a string, path of query dataset (gene by cell matrix) eg: test/bulk.logrma.txt.
+queryfile.path, a string, path of query dataset (gene by cell matrix) eg: test/bulk.logrma.txt. This file is tab-delimited gene by cell gene expression matrix in text format. The gene expression values can be logCPM, logTPM or logRMA (microarray dataset).
 
 output.prefix, a string, the prefix of query dataset
        
