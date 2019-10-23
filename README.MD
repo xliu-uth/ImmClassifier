@@ -42,7 +42,7 @@ Usage Examples
 
 Input:
 
-    tab-delimited gene by cell gene expression matrix in text format. The gene expression values can be logCPM, logTPM or logRMA (microarray dataset).
+tab-delimited gene by cell gene expression matrix in text format. The gene expression values can be logCPM, logTPM or logRMA (microarray dataset).
 
 
 ImmClassifier is implemented by a combination of R and python. 
@@ -56,11 +56,11 @@ For example,
 
 Input: 
        
-    queryfile.path, a string, path of query dataset (gene by cell matrix) eg: test/bulk.logrma.txt.
+queryfile.path, a string, path of query dataset (gene by cell matrix) eg: test/bulk.logrma.txt.
 
-    output.prefix, a string, the prefix of query dataset
+output.prefix, a string, the prefix of query dataset
        
-    mode, a string (default: run), "debug" or "run". "debug" mode is for time-efficient debug run
+mode, a string (default: run), "debug" or "run". "debug" mode is for time-efficient debug run
        
         
 Output: output file written in "tensorflow/input/bulk.dnn.input.txt"
@@ -73,13 +73,9 @@ R Command:
 
 This step is implemented using Python. The python code is written in dnn.py.
 
-Input: 
-  
-    string, the prefix of query dataset
+Input: string, the prefix of query dataset
 
-Output: 
-        
-    output file written in tensorflow/output/bulk.deeplearning.ontotree.stats.txt
+Output: output file written in tensorflow/output/bulk.deeplearning.ontotree.stats.txt
 
 Python Command: 
     
@@ -92,13 +88,9 @@ This step is implemented using R. The R code is written in assign_cell.R.
 
 For example,  
 
-Input: 
+Input: the prefix of query dataset
 
-    the prefix of query dataset
-
-Output: 
-  
-    output file written in output/bulk.output.txt. The first column is cell ID and the second column is predicted cell type label by ImmClassifier
+Output:  output file written in output/bulk.output.txt. The first column is cell ID and the second column is predicted cell type label by ImmClassifier
 
 R Command: 
 
