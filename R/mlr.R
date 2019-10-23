@@ -1,0 +1,209 @@
+# load required R packages
+
+library(dplyr)
+library(mlr)
+library(sva)
+library(stringr)
+library(randomForest)
+
+
+mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, ext.dat, num.cores, mode){
+  # Train a random forest model to predict cell types using one reference dataset
+  #
+  # Args:
+  #   lrn.name: random.forest
+  #   train.dat: part of the reference dataset with cell as rows and feature as columns,
+  #   the last column is target(celltype)
+  #   test.dat: held-out part of the reference dataset for evaluating, cell by feature,
+  #   last column is target
+  #   ext.dat: query dataset datframe in format of cell by feature
+
+  #
+  # Returns:
+  #   a list containing trained random forest model, prediction of training part and held-out part of reference dataset,
+  #    prediction of query dataset, evaluation result using in trainig
+  #   and test parts of the trainng dataset.
+
+
+
+  print(paste0("Training a classifier from ", refdat.name))
+
+  # partition the reference dataset into training and held-out part
+  # batch correction between reference and query datasets
+
+  dat.folds <- dat_partition(refdat.path, ext.dat)
+  train.dat <- dat.folds[['train']]
+  test.dat <- dat.folds[['test']]
+  ext.dat <- dat.folds[['ext']]
+
+  if(mode == "debug"){ # use a small number of cells to debug the workflow
+        print ("Activate debug mode, use 1000 cells for training")
+        train.dat <- train.dat[sample(1:nrow(train.dat), 1000), ]
+  }
+
+
+  # train a random forest classifier using the training part of reference dataset
+  task <- makeClassifTask(id = lrn.name, dat = train.dat, target = "target")
+  lrn <- makeLearner(lrn.name, predict.type = "prob")
+  mod <- train(lrn, task)
+
+  # apply the trained model to training, test part of the reference dataset and query dataset
+  pred.train <- predict(mod, task = task)
+  pred.test <- predict(mod, newdat = test.dat)
+  pred.ext <- predict(mod, newdat = ext.dat)
+
+  # evaluation of performance within training part and test part of reference dataset
+  measure.list <- list(mlr::multiclass.aunp,  acc, mlr::timepredict)
+  perf.train <- performance(pred.train, measures = measure.list)
+  perf.test <- performance(pred.test, measures = measure.list)
+
+  print("Prediction evaluation using held-out samples in reference dataset")
+  print("-----------------------------------------------------------------")
+  print (perf.test)
+
+  #return (list(mod, pred.train, pred.test, pred.ext, perf.train, perf.test))
+  #return the probabilities of query cells across all cell types in reference dataset
+
+  ref.index <- str_extract(refdat.name, "Ref[0-9]")
+  colnames(pred.ext$data) <- gsub("prob", ref.index,  colnames(pred.ext$data))
+  return (pred.ext$data[, !grepl("response", colnames(pred.ext$data))])
+
+}
+
+
+
+
+dat_partition <- function(refdat.path, ext.dat){
+  # This function performs:
+  # 1. Batch correction between the query dataset and reference dataset
+  # 2. partition of reference dataset into training and held-out parts
+  #
+  # Args:
+  #   train.dat.path: reference dat path in RDS format
+  #   ext.dat: query dataset datframe in format of cell by feature
+
+  #
+  # Returns:
+  #   a list containing trained random forest model, prediction of training part
+  #   and held-out part of reference dataset, prediction of query dataset, evaluation
+  #   result using in training and test parts of the trainng dataset.
+  #
+
+
+  print (paste("load train/test parition from training set", refdat.path))
+  train.test.mat <- readRDS(refdat.path)
+
+  # due to high drop-out rate, only feature genes that are expressed in query dataset will be used
+  common.genes <- intersect(colnames(train.test.mat$train), colnames(ext.dat))
+  print(paste("Feature reduced from #", ncol(train.test.mat$train), "to", length(common.genes)))
+  ext.feat.mat <- ext.dat[, common.genes]
+
+  # For reference dataset, only immune cells are used.
+  # In case that held-out cells contain non-immune cells,
+  # non-immune held-out cells are filtered out.
+  train.class <- train.test.mat$train %>% count(target) %>% select(target)  %>% unlist
+  train.test.mat$test <- train.test.mat$test[train.test.mat$test$target %in% train.class, ]
+
+
+  # use ComBat to correct the batch effect between ref and query dataset
+
+  uncorrected.matrix <- rbind(data.frame(train.test.mat$train[, common.genes], dataset="ref", stringsAsFactors = F),
+                              data.frame(train.test.mat$test[, common.genes], dataset="ref", stringsAsFactors = F),
+                              data.frame(ext.feat.mat[, common.genes], dataset = "query", stringsAsFactors = F)
+                             )
+  corrected.matrix <- t(ComBat(t(uncorrected.matrix[, -ncol(uncorrected.matrix)]), uncorrected.matrix$dataset))
+
+
+  trainN <- nrow(train.test.mat$train)
+  testN <- nrow(train.test.mat$test)
+  queryN <- nrow(ext.feat.mat)
+
+  train.corrected <- data.frame(corrected.matrix[1:trainN,],
+                                target=train.test.mat$train$target, stringsAsFactors = F)
+
+  test.corrected <- data.frame(corrected.matrix[(trainN+1):(trainN+testN),],
+                                     target =train.test.mat$test$target, stringsAsFactors = F)
+
+  ext.corrected <- data.frame(corrected.matrix[(trainN+testN+1):nrow(corrected.matrix),])
+
+  return(list(train=train.corrected, test=test.corrected, ext=ext.corrected))
+
+}
+
+#' Predict cell type and return probabilities across all cell types within one training dataset
+#'
+#' @param mat queryfile.path: string, path of the query dataset in tab-delimited text file with
+#'   the rows as gene symbol, and columns as sampleID.
+#' @param output.prefix: string, the prefix of query dataset
+#'
+#' @return a list containing trained random forest model, prediction of training part
+#'   and held-out part of reference dataset, prediction of query dataset, evaluation
+#'   result using in training and test parts of the trainng dataset.
+#' @examples within_reference_pred(queryfile.path = "test/bulk.logrma.txt", output.prefix = "bulk", mode = "run")
+#' @export
+within_reference_pred <- function(queryfile.path, output.prefix = "query", num.cores = 1, mode = "run"){
+  # This function call mlr_pred to predict for each reference dataset
+  #
+  #
+  #
+  # Args:
+  #
+  #   queryfile.path: string, path of the query dataset in tab-delimited text file with
+  #   the rows as gene symbol, and columns as sampleID.
+  #   output.prefix: string, the prefix of query dataset
+
+  #
+  # Returns:
+  #   a list containing trained random forest model, prediction of training part
+  #   and held-out part of reference dataset, prediction of query dataset, evaluation
+  #   result using in training and test parts of the trainng dataset.
+  #
+
+    if(grepl("rds$", queryfile.path)){
+        ext.dat <- readRDS(queryfile.path)
+    }else{
+        print (paste("Open query file", queryfile.path))
+        ext.dat <- read.table(queryfile.path, header = T, sep = "\t", row.names = 1, stringsAsFactors = F)
+        rownames(ext.dat) <- gsub("-|_", ".", toupper(rownames(ext.dat)))
+        ext.dat <- t(ext.dat)
+
+
+    }
+
+
+    reference.paths <- c('Ref1: The Human Cell Atlas bone marrow single-cell interactive web portal' = 'hca-bm',
+                         'Ref2: Circulating immune cell phenotype dynamics reflect the strength of tumor-immune cell interactions in patients during immunotherapy' = 'pbmc',
+                         'Ref3: Single cell RNA sequencing of human liver reveals distinct intrahepatic macrophage populations' = 'liver-immune',
+                         'Ref4: Human bone marrow assessment by single-cell RNA sequencing, mass cytometry, and flow cytometry' = 'jci-bm',
+                         'Ref5: Single-Cell Transcriptomics of Human and Mouse Lung Cancers Reveals Conserved Myeloid Populations across Individuals and Species' = 'nsclc-zilionis-tii-minor',
+                         'Ref6: Single-cell profiling of breast cancer T cells reveals a tissue-resident memory subset associated with improved prognosis' = 'brcatil',
+                         'Ref7: Global characterization of T cells in non-small-cell lung cancer by single-cell sequencing' = 'nsclc-guo')
+
+
+    lrn.name <- "classif.randomForest"
+    res <- mlr_pred(lrn.name,
+                    refdat.path = paste0("feature_data/", reference.paths[1], "-train-test-dat.rds"),
+                    refdat.name = names(reference.paths)[1],
+                    ext.dat, num.cores, mode)
+
+
+    # concatenate prediction probabilities from all reference datasets
+    for (i in 2:length(reference.paths)){
+
+        res <- cbind(res,
+                     mlr_pred(lrn.name,
+                              refdat.path = paste0("feature_data/", reference.paths[i], "-train-test-dat.rds"),
+                              refdat.name = names(reference.paths)[i], ext.dat, num.cores, mode))
+
+
+    }
+
+   print(paste0("Write concanetated probabilities to tensorflow/input/",output.prefix, ".dnn.input.txt"))
+   write.table(data.frame("Cell" = rownames(res), res),
+               paste0('tensorflow/input/', output.prefix, ".dnn.input.txt"),
+               quote = F, row.names = F, sep = "\t")
+  #return (0)
+}
+
+
+

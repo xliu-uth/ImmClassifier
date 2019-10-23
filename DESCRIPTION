@@ -1,0 +1,18 @@
+Package: ImmClassifier
+Type: Package
+Title: Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
+Version: 1.1.0
+Author: Xuan Liu
+Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
+Description: ImmClassifier (Immune cell classifier), a knowledge-based and lineage-driven immune cell 
+    classification algorithm with fine annotation granularity yet high prediction accuracy. ImmClassifer 
+    seamlessly integrates the biology of immune cell differentiation, the strength of heterogeneous 
+    reference datasets and the state-of-art machine learning models. ImmClassifier cascades a machine 
+    learning module and a deep learning module. 
+License:  GPL 3.0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+Imports: dplyr,mlr,sva,stringr,randomForest
+NeedsCompilation: no
+
