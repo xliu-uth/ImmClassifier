@@ -1,17 +1,20 @@
-ImmClassifier
-Update: Oct 23, 2019
+# ImmClassifier
+
+**Update: Oct 23, 2019**
 
 Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
 
 Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
 
+# Description
+
 ImmClassifier (Immune cell classifier), a knowledge-based and lineage-driven immune cell  classification algorithm with fine annotation granularity yet high prediction accuracy. ImmClassifer seamlessly integrates the biology of immune cell differentiation, the strength of heterogeneous reference datasets and the state-of-art machine learning models. ImmClassifier cascades a machine learning module and a deep learning module. 
 
-Install
+# Install
 
 Docker version on the way!
 
-Prerequisites:
+# Prerequisites:
 
 R packages: 
 
@@ -38,13 +41,13 @@ Python modules
               import keras.models
               
 
-Usage Examples
+# Usage Examples
 
 ImmClassifier is implemented by a combination of R and python. 
 
-ImmClassifier workflow contains three steps:
+ImmClassifier workflow contains ##three## steps:
 
-1. Predict the probabilities across original cell types for each reference dataset for one query dataset. 
+## 1. Predict the probabilities across original cell types for each reference dataset for one query dataset. 
 This step is implemented using R. The R code is written in mlr.R. 
 
 For example,  
@@ -62,9 +65,9 @@ Output: output file written in "tensorflow/input/bulk.dnn.input.txt"
 
 R Command: 
 
-    within_reference_pred(queryfile.path = "test/bulk.logrma.txt", output.prefix = "bulk", mode = "run")
+```within_reference_pred(queryfile.path = "test/bulk.logrma.txt", output.prefix = "bulk", mode = "run")```
 
-2. Predict the probailities across cell types on cell ontology hierarchy. 
+## 2. Predict the probailities across cell types on cell ontology hierarchy. 
 
 This step is implemented using Python. The python code is written in dnn.py.
 
@@ -74,10 +77,10 @@ Output: output file written in tensorflow/output/bulk.deeplearning.ontotree.stat
 
 Python Command: 
     
-    dnn_predict("bulk")
+```dnn_predict("bulk")```
 
 
-3. Assign the cell type labels for query dataset
+## 3. Assign the cell type labels for query dataset
 
 This step is implemented using R. The R code is written in assign_cell.R. 
 
@@ -89,5 +92,5 @@ Output:  output file written in output/bulk.output.txt. The first column is cell
 
 R Command: 
 
-    assign_dataset('bulk')
+```assign_dataset('bulk')```
 
