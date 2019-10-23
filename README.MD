@@ -45,7 +45,7 @@ Python modules
 
 ImmClassifier is implemented by a combination of R and python. 
 
-ImmClassifier workflow contains ##three## steps:
+ImmClassifier workflow contains **Three** steps:
 
 ## 1. Predict the probabilities across original cell types for each reference dataset for one query dataset. 
 This step is implemented using R. The R code is written in mlr.R. 
