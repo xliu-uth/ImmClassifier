@@ -48,7 +48,7 @@ ImmClassifier is implemented by a combination of R and python.
 ImmClassifier workflow contains **Three** steps:
 
 ## 1. Predict the probabilities across original cell types for each reference dataset for one query dataset. 
-This step is implemented using R. The R code is written in mlr.R. 
+This step is implemented using R. The R code is written in ***mlr.R***. 
 
 For example,  
 
@@ -69,7 +69,7 @@ R Command:
 
 ## 2. Predict the probailities across cell types on cell ontology hierarchy. 
 
-This step is implemented using Python. The python code is written in dnn.py.
+This step is implemented using Python. The python code is written in ***dnn.py***.
 
 Input: string, the prefix of query dataset
 
@@ -82,7 +82,7 @@ Python Command:
 
 ## 3. Assign the cell type labels for query dataset
 
-This step is implemented using R. The R code is written in assign_cell.R. 
+This step is implemented using R. The R code is written in ***assign_cell.R***. 
 
 For example,  
 
