@@ -86,7 +86,7 @@ This step is implemented using R. The R code is written in assign_cell.R.
 
 For example,  
 
-Input: the prefix of query dataset
+Input: string, the prefix of query dataset
 
 Output:  output file written in output/bulk.output.txt. The first column is cell ID and the second column is predicted cell type label by ImmClassifier
 
