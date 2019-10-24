@@ -163,7 +163,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         ext.dat <- readRDS(queryfile.path)
     }else{
         print (paste("Open query file", queryfile.path))
-        ext.dat <- read.table(queryfile.path, header = T, sep = "\t", row.names = 1, stringsAsFactors = F)
+        ext.dat <- read.table(queryfile.path, header = T, sep = "\t", row.names = 1, stringsAsFactors = F, check.names = F)
         rownames(ext.dat) <- gsub("-|_", ".", toupper(rownames(ext.dat)))
         ext.dat <- t(ext.dat)
 
