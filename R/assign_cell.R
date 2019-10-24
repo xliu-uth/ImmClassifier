@@ -29,7 +29,7 @@ construct_tree <- function(){
                    c('L:B', 'L:T', 'L:NK', 'L:pDC', 'L:unconvT'),
                    c('M:pDC',  'M:cDC', 'M:Eos', 'M:Ery', 'M:Mac', 'M:Mast', 'M:Mega', 'M:Mono', 'M:Neu'))
 
-  names(tree[[2]]) <- c('CD34', 'M', 'L')
+  names(tree[[2]]) <- c('CD34', 'L', 'M')
 
   tree[[3]] <- list(c('L:B:PC'),
                     c('L:T:CD4', 'L:T:CD8'),
