@@ -89,7 +89,7 @@ assign_cell_label <- function(vstats){
 
 
     tree <- construct_tree()
-    probs <- vstats[1:36]
+    probs <- vstats[1:35]
     names(probs) <- gsub(".prob", "", names(probs))
     ent <- sapply(probs, function(x) get_entropy(x))
 
