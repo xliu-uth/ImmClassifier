@@ -132,13 +132,11 @@ dat_partition <- function(refdat.path, ext.dat){
 
 #' Predict cell type and return probabilities across all cell types within one training dataset
 #'
-#' @param mat queryfile.path: string, path of the query dataset in tab-delimited text file with
+#' @param queryfile.path: string, path of the query dataset in tab-delimited text file with
 #'   the rows as gene symbol, and columns as sampleID.
 #' @param output.prefix: string, the prefix of query dataset
-#'
-#' @return a list containing trained random forest model, prediction of training part
-#'   and held-out part of reference dataset, prediction of query dataset, evaluation
-#'   result using in training and test parts of the trainng dataset.
+#' @param mode: string
+#' @return a path to the file to be used as input to the deep learning step
 #' @examples within_reference_pred(queryfile.path = "test/bulk.logrma.txt", output.prefix = "bulk", mode = "run")
 #' @export
 within_reference_pred <- function(queryfile.path, output.prefix = "query", num.cores = 1, mode = "run"){
@@ -198,12 +196,10 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
     }
 
-   print(paste0("Write concanetated probabilities to tensorflow/input/",output.prefix, ".dnn.input.txt"))
+   fpath=paste0("tensorflow/input/",output.prefix, ".dnn.input.txt")
+   print(paste0("Write concanetated probabilities to ",fpath))
    write.table(data.frame("Cell" = rownames(res), res),
-               paste0('tensorflow/input/', output.prefix, ".dnn.input.txt"),
+               fpath,
                quote = F, row.names = F, sep = "\t")
-  #return (0)
+  return (fpath)
 }
-
-
-
