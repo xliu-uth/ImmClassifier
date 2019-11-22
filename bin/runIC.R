@@ -47,8 +47,8 @@ main<-function(){
 #step2: predict hierarchy
 predictHierarchy<-function(res.path,out.prefix,model.dir){
     library(reticulate)
-    dnn<-import("dnn")
-    predFile<-dnn$dnn_predict(res.path,out.prefix,model.dir)
+    dnn<-source_python("bin/dnn.py") ## i hate the absolute path but it will work in Docker
+    predFile<-dnn_predict(res.path,out.prefix,model.dir)
     return(predFile)
 
 }
