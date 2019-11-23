@@ -36,7 +36,7 @@ main<-function(){
     #altered data to write name of file
                                         # res.path=within_reference_pred(input.path, out.prefix,  mode)
     res.path='tensorflow/input/bulk.dnn.input.txt'
-    model.dir='tensorflow/intput/pre-trained-models'
+    model.dir='tensorflow/input/pre-trained-models'
     out.prefix='tensorflow/output/bulk.'
     pred.file<-predictHierarchy(res.path,out.prefix,model.dir)
 
@@ -48,7 +48,7 @@ main<-function(){
 predictHierarchy<-function(res.path,out.prefix,model.dir){
     library(reticulate)
     dnn<-source_python("bin/dnn.py") ## i hate the absolute path but it will work in Docker
-    predFile<-dnn_predict(res.path,out.prefix,model.dir)
+    predFile<-dnn_predict(res.path,out.prefix,paste0(model.dir,'/'))
     return(predFile)
 
 }
