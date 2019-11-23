@@ -34,12 +34,12 @@ main<-function(){
     require(ImmClassifier)
 
     #altered data to write name of file
-                                        # res.path=within_reference_pred(input.path, out.prefix,  mode)
+#    res.path=within_reference_pred(input.path, out.prefix,  mode)
     res.path='tensorflow/input/bulk.dnn.input.txt'
-    model.dir='tensorflow/input/pre-trained-models'
-    out.prefix='tensorflow/output/bulk.'
+    model.dir='tensorflow/pre-trained-models'
+    out.prefix='bulk'
     pred.file<-predictHierarchy(res.path,out.prefix,model.dir)
-
+    cell.types<-assignCellTypes(out.prefix,pred.file)
 }
 
 
@@ -54,8 +54,8 @@ predictHierarchy<-function(res.path,out.prefix,model.dir){
 }
 
 #step3: assign cell type
-assignCellTypes<-function(pred.file){
-    fnam=assign_dataset(out.prefix,pred.file)
+assignCellTypes<-function(out.prefix,pred.file){
+    fname=assign_dataset(out.prefix,pred.file)
     print(fname)
 }
 

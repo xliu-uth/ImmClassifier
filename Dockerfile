@@ -13,4 +13,5 @@ RUN chmod a+x /usr/local/bin/runIC.R
 COPY . ImmClassifier
 WORKDIR ImmClassifier
 
+
 RUN R CMD INSTALL .
