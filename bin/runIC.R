@@ -34,7 +34,7 @@ main<-function(){
     require(ImmClassifier)
 
     #altered data to write name of file
-#    res.path=within_reference_pred(input.path, out.prefix,  mode)
+    res.path=within_reference_pred(input.path, out.prefix,  mode)
     res.path='tensorflow/input/bulk.dnn.input.txt'
     model.dir='tensorflow/pre-trained-models'
     out.prefix='bulk'

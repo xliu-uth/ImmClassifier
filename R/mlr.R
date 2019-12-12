@@ -180,7 +180,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
     lrn.name <- "classif.randomForest"
     res <- mlr_pred(lrn.name,
-                    refdat.path = paste0("feature_data/", reference.paths[1], "-train-test-dat.rds"),
+                    refdat.path = paste0("data/", reference.paths[1], "-train-test-dat.rds"),
                     refdat.name = names(reference.paths)[1],
                     ext.dat, num.cores, mode)
 
