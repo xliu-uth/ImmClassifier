@@ -64,7 +64,7 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
   #return (list(mod, pred.train, pred.test, pred.ext, perf.train, perf.test))
   #return the probabilities of query cells across all cell types in reference dataset
 
-  ref.index <- str_extract(refdat.name, "Ref[0-9]")
+  ref.index <- stringr::str_extract(refdat.name, "Ref[0-9]")
   colnames(pred.ext$data) <- gsub("prob", ref.index,  colnames(pred.ext$data))
   return (pred.ext$data[, !grepl("response", colnames(pred.ext$data))])
 
