@@ -48,9 +48,9 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
   mod <- mlr::train(lrn, task)
 
   # apply the trained model to training, test part of the reference dataset and query dataset
-  pred.train <- mlr::predict(mod, task = task)
-  pred.test <- mlr::predict(mod, newdat = test.dat)
-  pred.ext <- mlr::predict(mod, newdat = ext.dat)
+  pred.train <- predict(mod, task = task)
+  pred.test <- predict(mod, newdat = test.dat)
+  pred.ext <- predict(mod, newdat = ext.dat)
 
   # evaluation of performance within training part and test part of reference dataset
   measure.list <- list(mlr::multiclass.aunp,  mlr::acc, mlr::timepredict)
