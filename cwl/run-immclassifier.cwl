@@ -28,7 +28,7 @@ inputs:
       position: 3
       prefix: --output
   cores:
-    type: string
+    type: double
     inputBinding:
       position: 4
       prefix: --cores
