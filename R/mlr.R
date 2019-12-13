@@ -43,19 +43,19 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
 
 
   # train a random forest classifier using the training part of reference dataset
-  task <- makeClassifTask(id = lrn.name, dat = train.dat, target = "target")
-  lrn <- makeLearner(lrn.name, predict.type = "prob")
-  mod <- train(lrn, task)
+  task <- mlr::makeClassifTask(id = lrn.name, dat = train.dat, target = "target")
+  lrn <- mlr::makeLearner(lrn.name, predict.type = "prob")
+  mod <- mlr::train(lrn, task)
 
   # apply the trained model to training, test part of the reference dataset and query dataset
-  pred.train <- predict(mod, task = task)
-  pred.test <- predict(mod, newdat = test.dat)
-  pred.ext <- predict(mod, newdat = ext.dat)
+  pred.train <- mlr::predict(mod, task = task)
+  pred.test <- mlr::predict(mod, newdat = test.dat)
+  pred.ext <- mlr::predict(mod, newdat = ext.dat)
 
   # evaluation of performance within training part and test part of reference dataset
-  measure.list <- list(mlr::multiclass.aunp,  acc, mlr::timepredict)
-  perf.train <- performance(pred.train, measures = measure.list)
-  perf.test <- performance(pred.test, measures = measure.list)
+  measure.list <- list(mlr::multiclass.aunp,  mlr::acc, mlr::timepredict)
+  perf.train <- mlr::performance(pred.train, measures = measure.list)
+  perf.test <- mlr::performance(pred.test, measures = measure.list)
 
   print("Prediction evaluation using held-out samples in reference dataset")
   print("-----------------------------------------------------------------")
@@ -89,7 +89,8 @@ dat_partition <- function(refdat.path, ext.dat){
   #   result using in training and test parts of the trainng dataset.
   #
 
-
+    require(dplyr)
+    require(sva)
   print (paste("load train/test parition from training set", refdat.path))
   train.test.mat <- readRDS(refdat.path)
 
@@ -180,7 +181,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
     lrn.name <- "classif.randomForest"
     res <- mlr_pred(lrn.name,
-                    refdat.path = paste0("data/", reference.paths[1], "-train-test-dat.rds"),
+                    refdat.path = paste0("/ImmClassifier/data/", reference.paths[1], "-train-test-dat.rds"),
                     refdat.name = names(reference.paths)[1],
                     ext.dat, num.cores, mode)
 
@@ -190,7 +191,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
         res <- cbind(res,
                      mlr_pred(lrn.name,
-                              refdat.path = paste0("feature_data/", reference.paths[i], "-train-test-dat.rds"),
+                              refdat.path = paste0("/ImmClassifier/data/", reference.paths[i], "-train-test-dat.rds"),
                               refdat.name = names(reference.paths)[i], ext.dat, num.cores, mode))
 
 
