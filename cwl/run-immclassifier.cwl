@@ -8,16 +8,10 @@ requirements:
   - class: DockerRequirement
     dockerPull: sgosline/imm-classifier
   - class: InlineJavascriptRequirement
-  - class: InitialWorkDirRequirement
-    listing:
-      - entry: $(inputs.synapse_config)
-        entryname: .synapseConfig
 
-baseCommand: ["Rscript", "/usr/local/bin/run-ic.R", "--testmode"]
+baseCommand: ["Rscript", "/usr/local/bin/runIC.R"]
 
 inputs:
-  synapse_config:
-    type: File
   input_path:
     type: File
     inputBinding:

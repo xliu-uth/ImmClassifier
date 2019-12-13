@@ -12,7 +12,7 @@ getArgs<-function(){
         make_option(c("-p", "--prob"), default=0,dest='prob', help="Probability the cell types are unknown"),
         make_option(c("-o", "--output"), default="testout", dest='output',help = "Prefix to add to output files"),
         make_option(c('-c','--cores'), default=1, dest='cores',help="Number of cores"),
-        make_option(c('-m','--mlfile'),default=NULL, dest='mlfile',help="Path to ml file"),
+   #     make_option(c('-m','--mlfile'),default=NULL, dest='mlfile',help="Path to ml file"),
         make_option(c('-t','--testmode'),default=FALSE,dest='testmode',action='store_true',help='Run in test mode')
     )
 
@@ -27,13 +27,11 @@ main<-function(){
     prob.unknown <- args$prob
     out.prefix <- args$output
     num.cores <- args$cores
-    ml.file <- args$mlfile
 
     mode=ifelse(args$testmode,'mode','prod')
 
     require(ImmClassifier)
 
-    #altered data to write name of file
     res.path=within_reference_pred(input.path, out.prefix,  mode)
     res.path='tensorflow/input/bulk.dnn.input.txt'
     model.dir='tensorflow/pre-trained-models'
