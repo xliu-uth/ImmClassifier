@@ -34,7 +34,7 @@ main<-function(){
 
     res.path=within_reference_pred(input.path, out.prefix,num.cores, mode)
 
-    model.dir='/tmp' ##this is the only writeable directory in the docker image, we cannot write locally
+    model.dir='/ImmClassifier/tensorflow/pre-trained-models' ##not writeable, absolute path won't work outside docker
     pred.file<-predictHierarchy(res.path,out.prefix,model.dir)
     cell.types<-assignCellTypes(out.prefix,pred.file)
 }
