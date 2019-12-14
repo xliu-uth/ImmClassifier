@@ -27,12 +27,6 @@ inputs:
     inputBinding:
       position: 3
       prefix: --output
-  cores:
-    type: double
-    inputBinding:
-      position: 4
-      prefix: --cores
-    default: 1
 
 outputs:
   predictions:

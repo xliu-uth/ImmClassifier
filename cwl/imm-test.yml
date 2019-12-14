@@ -4,4 +4,3 @@ input_path:
   class: File
   path: immClassifierTestMatrix.tsv
 out-name: testOutput
-cores: 12
