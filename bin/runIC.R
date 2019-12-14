@@ -33,9 +33,8 @@ main<-function(){
     require(ImmClassifier)
 
     res.path=within_reference_pred(input.path, out.prefix,num.cores, mode)
-   # res.path='tensorflow/input/bulk.dnn.input.txt'
-    model.dir='/tmp'
-    out.prefix='bulk'
+
+    model.dir='/tmp' ##this is the only writeable directory in the docker image, we cannot write locally
     pred.file<-predictHierarchy(res.path,out.prefix,model.dir)
     cell.types<-assignCellTypes(out.prefix,pred.file)
 }
