@@ -197,7 +197,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
     }
 
-   fpath=paste0("tensorflow/input/",output.prefix, ".dnn.input.txt")
+   fpath=paste0("/tmp/",output.prefix, ".dnn.input.txt")
    print(paste0("Write concanetated probabilities to ",fpath))
    write.table(data.frame("Cell" = rownames(res), res),
                fpath,

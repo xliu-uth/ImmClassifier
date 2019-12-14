@@ -64,7 +64,7 @@ def dnn_predict(dnn_input,output_prefix="./tensorflow/output/",model_dir="./tens
     Y_new_pred_stochastic_mean = np.mean(Y_new_pred_stochastic, axis = 0)
     Y_new_pred_stochastic_std = np.std(Y_new_pred_stochastic, axis = 0)
     print ("save results to disk")
-    fname='tensorflow/output/%s.deeplearning.%s.stats.txt' % (output_prefix, norm_method)
+    fname='/tmp/%s.deeplearning.%s.stats.txt' % (output_prefix, norm_method)
     np.savetxt(fname,\
               np.append(np.append(qdata[:, 0].reshape(qdata.shape[0], 1), \
                                   Y_new_pred_stochastic_mean,  1), \

@@ -14,7 +14,7 @@ RUN chmod a+x /usr/local/bin/runIC.R
 COPY . ImmClassifier
 WORKDIR ImmClassifier
 
-VOLUME ['/ImmClassifier/tensorflow/']
+VOLUME ['/tmp']
 
 RUN wget -O data/hca-bm-train-test-dat.rds --no-check-certificate https://ndownloader.figshare.com/files/20076257
 RUN wget -O data/jci-bm-train-test-dat.rds --no-check-certificate https://ndownloader.figshare.com/files/20076248
