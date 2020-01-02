@@ -13,23 +13,34 @@ ImmClassifier (Immune cell classifier), a knowledge-based and lineage-driven imm
 # Install
 
 The docker image can be built locally from this repository using the following command:
-`docker build . -t imm-classifier`
+'''
+docker build . -t imm-classifier
+'''
 
 Alternatively you can pull a fully working docker image using this command:
-`docker pull sgosline/imm-classifier`
+'''
+docker pull sgosline/imm-classifier
+'''
 
-# Prerequisites:
+# Prerequisites
 
 All pre-requisites are in the Docker image. We recommend using this image instead of installing locally.
 
 # Usage Examples
 
 ImmClassifier runs a series of three individual commands using both R and Python. It requires two parameters:
+- the input file
+- the output prefix
 
-## Input File
+### Input File
 
 This file is a matrix of gene counts where the rows represent gene names with the HUGO identifiers and the columns represent individual cells.
 
-## Output File
+### Output File
 
 This file is a matrix of
+
+### To run
+'''
+docker run --volume $PWD:/tmp -ti sgosline/imm-classifier Rscript /ImmClassifier/bin/runIC.R --input test/bulk.logrma.txt --output testOut
+'''
