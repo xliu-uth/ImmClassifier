@@ -43,5 +43,5 @@ This file is a matrix of cell type predictions for each cell.
 ### To run
 To run the command you must provide the path to your input file, the output prefix and mount the `/tmp` directory to get the output files.
 ```
-docker run --volume $PWD:/tmp -ti sgosline/imm-classifier Rscript /ImmClassifier/bin/runIC.R --input test/bulk.logrma.txt --output testOut
+docker run --volume $PWD:/ImmClassifier -ti sgosline/imm-classifier Rscript /ImmClassifier/bin/runIC.R --input test/bulk.logrma.txt --output testOut
 ```
