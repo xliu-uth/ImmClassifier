@@ -1,5 +1,3 @@
-
-
 #'@export
 predict_immune_cell_types <- function(input.path='../inst/immClassifierTestMatrix.tsv',
                                       prob.unknown = 0,
