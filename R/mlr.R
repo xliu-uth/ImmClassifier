@@ -43,9 +43,9 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
 
 
   # train a random forest classifier using the training part of reference dataset
-  task <- makeClassifTask(id = lrn.name, dat = train.dat, target = "target")
-  lrn <- makeLearner(lrn.name, predict.type = "prob")
-  mod <- train(lrn, task)
+  task <- mlr::makeClassifTask(id = lrn.name, dat = train.dat, target = "target")
+  lrn <- mlr::makeLearner(lrn.name, predict.type = "prob")
+  mod <- mlr::train(lrn, task)
 
   # apply the trained model to training, test part of the reference dataset and query dataset
   pred.train <- predict(mod, task = task)
@@ -53,9 +53,9 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
   pred.ext <- predict(mod, newdat = ext.dat)
 
   # evaluation of performance within training part and test part of reference dataset
-  measure.list <- list(mlr::multiclass.aunp,  acc, mlr::timepredict)
-  perf.train <- performance(pred.train, measures = measure.list)
-  perf.test <- performance(pred.test, measures = measure.list)
+  measure.list <- list(mlr::multiclass.aunp,  mlr::acc, mlr::timepredict)
+  perf.train <- mlr::performance(pred.train, measures = measure.list)
+  perf.test <- mlr::performance(pred.test, measures = measure.list)
 
   print("Prediction evaluation using held-out samples in reference dataset")
   print("-----------------------------------------------------------------")
@@ -64,7 +64,7 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
   #return (list(mod, pred.train, pred.test, pred.ext, perf.train, perf.test))
   #return the probabilities of query cells across all cell types in reference dataset
 
-  ref.index <- str_extract(refdat.name, "Ref[0-9]")
+  ref.index <- stringr::str_extract(refdat.name, "Ref[0-9]")
   colnames(pred.ext$data) <- gsub("prob", ref.index,  colnames(pred.ext$data))
   return (pred.ext$data[, !grepl("response", colnames(pred.ext$data))])
 
@@ -89,7 +89,8 @@ dat_partition <- function(refdat.path, ext.dat){
   #   result using in training and test parts of the trainng dataset.
   #
 
-
+    require(dplyr)
+    require(sva)
   print (paste("load train/test parition from training set", refdat.path))
   train.test.mat <- readRDS(refdat.path)
 
@@ -132,13 +133,11 @@ dat_partition <- function(refdat.path, ext.dat){
 
 #' Predict cell type and return probabilities across all cell types within one training dataset
 #'
-#' @param mat queryfile.path: string, path of the query dataset in tab-delimited text file with
+#' @param queryfile.path: string, path of the query dataset in tab-delimited text file with
 #'   the rows as gene symbol, and columns as sampleID.
 #' @param output.prefix: string, the prefix of query dataset
-#'
-#' @return a list containing trained random forest model, prediction of training part
-#'   and held-out part of reference dataset, prediction of query dataset, evaluation
-#'   result using in training and test parts of the trainng dataset.
+#' @param mode: string
+#' @return a path to the file to be used as input to the deep learning step
 #' @examples within_reference_pred(queryfile.path = "test/bulk.logrma.txt", output.prefix = "bulk", mode = "run")
 #' @export
 within_reference_pred <- function(queryfile.path, output.prefix = "query", num.cores = 1, mode = "run"){
@@ -182,7 +181,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
     lrn.name <- "classif.randomForest"
     res <- mlr_pred(lrn.name,
-                    refdat.path = paste0("feature_data/", reference.paths[1], "-train-test-dat.rds"),
+                    refdat.path = paste0("/ImmClassifier/data/", reference.paths[1], "-train-test-dat.rds"),
                     refdat.name = names(reference.paths)[1],
                     ext.dat, num.cores, mode)
 
@@ -192,18 +191,16 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
         res <- cbind(res,
                      mlr_pred(lrn.name,
-                              refdat.path = paste0("feature_data/", reference.paths[i], "-train-test-dat.rds"),
+                              refdat.path = paste0("/ImmClassifier/data/", reference.paths[i], "-train-test-dat.rds"),
                               refdat.name = names(reference.paths)[i], ext.dat, num.cores, mode))
 
 
     }
 
-   print(paste0("Write concanetated probabilities to tensorflow/input/",output.prefix, ".dnn.input.txt"))
+   fpath=paste0("/tmp/",output.prefix, ".dnn.input.txt")
+   print(paste0("Write concanetated probabilities to ",fpath))
    write.table(data.frame("Cell" = rownames(res), res),
-               paste0('tensorflow/input/', output.prefix, ".dnn.input.txt"),
+               fpath,
                quote = F, row.names = F, sep = "\t")
-  #return (0)
+  return (fpath)
 }
-
-
-

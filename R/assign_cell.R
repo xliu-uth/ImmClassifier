@@ -122,8 +122,9 @@ assign_cell_label <- function(vstats){
 #'
 #' @return a dataframe with column1 as cell id and column2 as the predicted cell type
 #' @examples assign_dataset('bulk')
+#'
 #' @export
-assign_dataset <- function(output.prefix){
+assign_dataset <- function(output.prefix,deep.learning.file){
   # This function assign the final cell label for each cell in the query dataset:
   #
   # Args:
@@ -134,7 +135,7 @@ assign_dataset <- function(output.prefix){
   # Returns:
   # 1. return a dataframe with column1 as cell id and column2 as the predicted cell type
   # 2. write the returned dataframe to disk
-
+    require(dplyr)
     ref.nodes <- c("CD34","CD34:HSC","L","L:NK","L:B",
                    "M","M:Mega","M:Mega:Platelet","M:Ery","M:Eos",
                    "M:Neu","M:Mono", "L:pDC","M:pDC","L:B:PC",
@@ -144,7 +145,7 @@ assign_dataset <- function(output.prefix){
                    "M:Mast","L:T:CD4:TRM", "L:T:CD8:TRM","L:T:CD4:Ex","L:T:CD8:Mait")
 
     norm.method <- "ontotree"
-    fpath <- paste0('tensorflow/output/', output.prefix,  '.deeplearning.', norm.method, '.stats.txt', sep = "")
+    fpath <- deep.learning.file #paste0('tensorflow/output/', output.prefix,  '.deeplearning.', norm.method, '.stats.txt', sep = "")
     print (paste0('Read ', fpath))
     dnn.stats <- read.table(fpath, header = F, sep = " ",stringsAsFactors=F)
 
@@ -155,12 +156,13 @@ assign_dataset <- function(output.prefix){
     assign.labels <- dnn.stats[, -1] %>%
            apply(1, function(x) assign_cell_label(x))
     print (paste0('Finish assigning the final labels'))
+    outfile= paste0(output.prefix, ".output.txt")
     write.table(data.frame(Cell=dnn.stats$Cell,
            ImmClassifier_prediction= assign.labels),
-                paste0("output/", output.prefix, ".output.txt"),
+               outfile,
            quote = F, sep = "\t", row.names = F)
-    return (data.frame(Cell=dnn.stats$Cell, ImmClassifier_prediction=assign.labels, stringsAsFactors = F))
-
+#    return (data.frame(Cell=dnn.stats$Cell, ImmClassifier_prediction=assign.labels, stringsAsFactors = F))
+    return(outfile)
 
 
 }
