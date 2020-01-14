@@ -5,7 +5,7 @@
 Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
 
 Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
-            Sara Gosling
+            Sara Gosline <sara.gosline@sagebase.org>
 
 # Description
 
