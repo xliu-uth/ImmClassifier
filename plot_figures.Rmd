@@ -1,0 +1,743 @@
+---
+title: "Figure plots for ImmClassifier Manuscript"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook associated with ImmClassifier manuscript. 
+
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(reshape)
+library(RColorBrewer)
+library(dplyr)
+library(ggalluvial)
+library(ggrepel)
+library(ggfittext)
+source('plot_figure.R')
+```
+
+
+# Figure 4
+
+## Figure 4a microarray of purified hematopoietic populations
+
+```{r}
+# read ImmClassifier prediction result
+bulk_immc <- fread('data_for_figure_plots/immc/bulk.output.txt')
+
+# group and rename the replicates of original annotation 
+f4a <- bulk_immc %>% 
+    mutate(annot = ImmClassifier_prediction) %>%
+    mutate(Cell = ifelse(grepl("NKA4", Cell), "NKT", Cell)) %>%
+    mutate(Cell = ifelse(grepl("ERY1|GRAN1|PRE_BCELL2|GMP|CMP|MEP|MEGA1|HSC", Cell), "CD34+", Cell)) %>%
+    mutate(Cell = ifelse(grepl("DENDA1", Cell), "pDC", Cell)) %>%
+    mutate(Cell = ifelse(grepl("DENDA2", Cell), "mDC", Cell)) %>%
+    mutate(Known=gsub("[0-9]*_[0-9]+$", "", Cell)) %>%
+    mutate(Known = ifelse(grepl("TCELLA[1-4]", Cell), "CD8", Known)) %>%
+    mutate(Known = ifelse(grepl("TCELLA[6-8]", Cell), "CD4", Known)) %>%
+    mutate(annot = ifelse(grepl("CD4", annot), "CD4", annot)) %>%
+    mutate(annot = ifelse(grepl("HSC", annot), "CD34", annot)) %>%
+    mutate(annot = ifelse(grepl("CD8", annot), "CD8", annot)) %>%
+    mutate(annot = ifelse(grepl("pDC", annot), "pDC", annot)) %>%
+    mutate(annot = ifelse(grepl("L:B", annot), "B", annot)) %>%
+    mutate(annot = ifelse(grepl("Mega", annot), "M:Mega", annot)) %>%
+    select(Known, annot) %>% 
+    table %>%
+    plot_heatmap(title = "", palette= "RdPu", 
+              minshow = 19, size =10, size2= 3, minpct=0, legend.pos = "none",
+            ord1 = c('B', 'CD4', 'CD8', 'L:NK', 'M:cDC', 'pDC',
+                     'M:Mono', 'M:Neu', 'M:Mega','M:Ery',  'CD34:HSC', 'CD34', 'M:Eos', 
+                     'L','M:Mac'),
+            ord2 = c( 'BCELLA', 'CD4', 'CD8', 'NKA', 'mDC', 'pDC', 
+                      'MONO','GRAN', 'MEGA','ERY', 'HSC', 'CD34+', 'EOS', 
+                      'PRE_BCELL','NKT',  'BASO'), 
+            measures = c('Recall', 'Precision')                                                    
+ )
+
+f4a
+```
+
+## Figure 4b SKCM dataset
+
+```{r}
+
+skcm_immc <- fread('data_for_figure_plots/immc/skcm.output.txt')
+skcm_meta <- readRDS("data_for_figure_plots/metadata/SKCM-NH-meta.rds")
+skcm_cluster_names <- readRDS("data_for_figure_plots/metadata/SKCM-NH-clusternames.rds")
+
+f4b <- skcm_immc %>%
+  mutate(Known= skcm_cluster_names[skcm_meta[Cell, 'Cluster'], 'clusterName']) %>%
+  mutate(Known = ifelse(grepl("^T:|Lym", Known), "Lymphocytes", Known)) %>%  
+  mutate(annot = ImmClassifier_prediction) %>%
+  mutate(annot = ifelse(grepl("Mono|Mac", annot), "Mono/Mac", annot)) %>%
+  mutate(annot = ifelse(grepl("PC", annot), "PlasmaCell", annot)) %>%  
+  mutate(annot = ifelse(grepl("B", annot), "B", annot)) %>%  
+  mutate(annot = ifelse(grepl("reg", annot), "Treg", annot)) %>%  
+  mutate(annot = ifelse(grepl("T:", annot), "T", annot)) %>%  
+  mutate(annot = ifelse(grepl("DC", annot) , "DC", annot)) %>%  
+  mutate(annot = ifelse(grepl("CD34", annot) , "CD34", annot)) %>%  
+  mutate(annot = ifelse(annot %in% c('Mono/Mac', 'B', 'PlasmaCell', 'DC', 'Treg', 'T', 'CD34') , annot, 'Other')) %>%  
+       
+  select(Known, annot) %>% 
+  table %>%
+  plot_heatmap(title = "", palette= "RdPu", 
+              minshow = 19, size =16, size2= 5, minpct=0, measures = c('Recall', 'Precision'),
+                        ord1 = c('B', 'PlasmaCell', 'Treg',"T",'Mono/Mac', 'DC' , 'CD34'),
+                        ord2 = c('B', 'Plasma Cells', 'Treg','Lymphocytes', 'Monocytes/Macrophage','DC'))                                                      
+
+f4b
+
+```
+
+
+
+
+## Figure 4c HNSCC dataset
+
+```{r}
+hnscc_meta <- readRDS("data_for_figure_plots/metadata/HNSCC.meta.rds")
+hnscc_immc <- fread('data_for_figure_plots/immc/hnscc.output.txt')
+f4c <- hnscc_immc %>%
+          mutate(annot = ImmClassifier_prediction) %>%
+           mutate(Known=hnscc_meta[Cell,'non_cancer_cell_type']) %>% 
+            filter(grepl("B|Den|Ma|T", Known)) %>%
+            mutate(annot=ifelse(grepl("L:T", annot), "T", annot)) %>% 
+            mutate(annot=ifelse(grepl("L:unc", annot), "T", annot)) %>% 
+            mutate(annot=ifelse(grepl("L:B:PC", annot), "L:B", annot)) %>% 
+            mutate(annot=ifelse(grepl("DC", annot), "DC", annot)) %>% 
+            mutate(annot=ifelse(annot %in% c('L:B', 'DC',  'M:Mac', 'M:Mast', 'T'),  annot, 'Other')) %>% 
+            select(Known, annot) %>% table %>%
+            plot_heatmap(title = "", palette= "RdPu", 
+              minshow = 19, size =20, size2= 6, minpct=0, measures = c('Recall', 'Precision'),
+                        ord1 = c('L:B', 'DC', 'M:Mac', 'M:Mono', 'M:Mast', 'T'), legend.pos = "none")                                                      
+ 
+f4c
+```
+
+
+
+
+# Figure 5
+
+## Figure 5a 3' sequencing data from BRCA paper
+
+```{r}
+
+# load metadata associated with the reference paper
+brca3p_meta <- data.table(readRDS('data_for_figure_plots/metadata/BRCA-DP-meta.rds'))
+brca3p_clsnames <- data.table(readRDS('data_for_figure_plots/metadata/BRCA-DP-clusternames.rds'))
+setkey(brca3p_clsnames, ClusterID)
+setkey(brca3p_meta, cellid)
+
+# load prediction results from ImmClassifier, SingleR and Garnett
+brca3p_immc <- fread('data_for_figure_plots/immc/brca3p.output.txt')
+
+load('data_for_figure_plots/singleR/singler_brca3p.RData')
+brca3p_singler_dt <- data.table(cell=singler$singler[[1]]$SingleR.single$cell.names,
+                                singler=singler$singler[[1]]$SingleR.single$labels)
+brca3p_garnett_extend  <- readRDS('data_for_figure_plots/garnett/brca.3p.garnett.extend.rds')
+brca3p_garnett_extend_dt <- data.table(cell=brca3p_garnett_extend$cellid, 
+                                       garnett=brca3p_garnett_extend$cluster_ext_type)
+# load UMAP coordinates
+brca3p_umap <- fread('data_for_figure_plots/umap/out-brca3p_umap/models//umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt')
+
+```
+
+```{r}
+
+# Combine all prediction results and the original annotation into one data table
+brca3p_dt <- data.table(merge(
+              merge(
+                merge(brca3p_umap[, .(Cell, UMAP1, UMAP2, Cluster)], 
+                      brca3p_immc, by.x='Cell', by.y='Cell', all.x = T),
+                brca3p_singler_dt, by.x='Cell', by.y='cell', all.x = T),
+                  brca3p_garnett_extend_dt, by.x='Cell', by.y='cell', all.x = T) # use extended mode prediction
+              )[, original_annotation:=brca3p_clsnames[brca3p_meta[Cell, cluster], Final_annotation]]
+                  
+brca3p_dt[, Cluster:=as.character(Cluster)]
+colnames(brca3p_dt)[grepl("ImmC", colnames(brca3p_dt))] <- "ImmC"
+colnames(brca3p_dt)[grepl("singler", colnames(brca3p_dt))] <- "SingleR"
+setkey(brca3p_dt, Cell)
+
+```
+
+
+## Due to the annotation differences, I have to rename the annotation from prediction tools to match original annotation
+```{r}
+
+brca3p_celltypes <- c('MAST', 'B', 'mDC', 'NK', 'MONOCYTE', 
+                                   'CD4+T' ,'pDC', 'CD8+T' ,'NEUTROPHIL' ,'NKT', 
+                                   'MACROPHAGE' , 'Treg' , 'T', 'Other', 'Unassigned')
+# rename Original annotation cell types
+brca3p_dt[grepl("^NKT", original_annotation), original_annotation:="NKT"]
+brca3p_dt[grepl("T:Reg", original_annotation), original_annotation:="Treg"]
+brca3p_dt[grepl("T:CD4", original_annotation), original_annotation:="CD4+T"]
+brca3p_dt[grepl("T:CD8", original_annotation), original_annotation:="CD8+T"]
+brca3p_dt[, original_annotation:=gsub(":[^:]+.*$", "", original_annotation)]
+brca3p_dt[, original_annotation:=gsub(":$", "", original_annotation)]
+
+# rename ImmClassifier output cell types
+brca3p_dt[grepl("B", ImmC), ImmC:="B"]
+brca3p_dt[grepl("NK", ImmC), ImmC:="NK"]
+brca3p_dt[grepl("pDC", ImmC), ImmC:="pDC"]
+brca3p_dt[grepl("cDC", ImmC), ImmC:="mDC"]
+brca3p_dt[grepl("reg", ImmC), ImmC:="Treg"]
+brca3p_dt[grepl("CD4", ImmC), ImmC:="CD4+T"]
+brca3p_dt[grepl("CD8", ImmC), ImmC:="CD8+T"]
+brca3p_dt[grepl("Mono", ImmC), ImmC:="MONOCYTE"]
+brca3p_dt[grepl("Mac", ImmC), ImmC:="MACROPHAGE"]
+brca3p_dt[grepl("Mast", ImmC), ImmC:="MAST"]
+brca3p_dt[grepl("Neu", ImmC), ImmC:="NEUTROPHIL"]
+
+# rename SingleR output cell types
+brca3p_dt[grepl("B_cell", SingleR), SingleR:="B"]
+brca3p_dt[grepl("NK", SingleR), SingleR:="NK"]
+brca3p_dt[grepl("Monocyte", SingleR), SingleR:="MONOCYTE"]
+brca3p_dt[grepl("DC:m", SingleR), SingleR:="mDC"]
+brca3p_dt[grepl("Macrophage", SingleR), SingleR:="MACROPHAGE"]
+brca3p_dt[grepl("Treg", SingleR), SingleR:="Treg"]
+brca3p_dt[grepl("T_cell:CD4", SingleR), SingleR:="CD4+T"]
+brca3p_dt[grepl("T_cell:CD8", SingleR), SingleR:="CD8+T"]
+brca3p_dt[grepl("Neutrophil", SingleR), SingleR:="NEUTROPHIL"]
+
+# rename Garnett output cell types
+brca3p_dt[grepl("B cells", garnett), garnett:="B"]
+brca3p_dt[grepl("CD4 T cells", garnett), garnett:="CD4+T"]
+brca3p_dt[grepl("CD8 T cells", garnett), garnett:="CD8+T"]
+brca3p_dt[grepl("Den", garnett), garnett:="mDC"]
+brca3p_dt[grepl("Mono", garnett), garnett:="MONOCYTE"]
+brca3p_dt[grepl("NK", garnett), garnett:="NK"]
+brca3p_dt[grepl("T cells", garnett), garnett:="T"]
+brca3p_dt[grepl("Unknown", garnett), garnett:="Unassigned"]
+
+# handle prediction tool-unique and unassigned cell types
+brca3p_dt[!ImmC %in% brca3p_celltypes, ImmC:= "Other"]
+brca3p_dt[is.na(SingleR), SingleR:= "Unassigned"]
+brca3p_dt[!SingleR %in% brca3p_celltypes, SingleR:= "Other"]
+brca3p_dt[!garnett %in% brca3p_celltypes, garnett:= "Other"]
+```
+
+## subsample cells to make visualization clear
+```{r}
+
+set.seed(100)
+brca3p_subset_dt <- brca3p_dt[brca3p_dt[,sample(Cell, 200, replace = T) ,by=original_annotation][, V1],]
+brca3p_subset_dt[, random:=brca3p_subset_dt$original_annotation[sample(1:nrow(brca3p_subset_dt), nrow(brca3p_subset_dt))]]
+
+order_methods <- c('original_annotation', 'random', 'ImmC', 'SingleR', 'garnett')
+
+f5a <- melt(brca3p_subset_dt,
+     id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=brca3p_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = value), size = .5, pch = 18) + 
+        theme_minimal() + 
+        theme(legend.pos = "bottom", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
+    coord_equal () + 
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'lightgrey', 'black'),guide = guide_legend(nrow=3,override.aes = list(size=4))) +
+    facet_wrap(~variable, ncol = 5)
+
+f5a
+```
+
+
+
+## Take a deeper look at the differences of annotations between different methods
+```{r}
+
+brca3p_celltypes_alluvium <- c('mDC', 'pDC', 'MONOCYTE',  'MACROPHAGE' ,'NEUTROPHIL' ,'MAST',  
+                                  'B', 'CD4+T' ,'Treg',  'CD8+T' ,'NK','NKT', 
+                                     'T', 'Other', 'Unassigned')
+
+f5b <- brca3p_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')] %>%
+  mutate(ImmC = factor(ImmC, levels = brca3p_celltypes_alluvium),
+         SingleR = factor(SingleR, levels = brca3p_celltypes_alluvium),
+         original_annotation = factor(original_annotation, levels = brca3p_celltypes_alluvium)
+         ) %>%
+ggplot(aes(axis1 = ImmC, axis2 = original_annotation, axis3 = SingleR,y = N)) +
+  scale_x_discrete(limits = c('ImmC', 'original_annotation', 'SingleR'), expand = c(.1, 0)) +
+  scale_fill_manual(values =sample(colorRampPalette(brewer.pal(11, "Spectral"))(13)))+
+  geom_alluvium(aes(fill = original_annotation)) +
+  geom_stratum(width = .5, color = 'darkgrey') + 
+  geom_text(stat = "stratum", infer.label = T)+
+  #ggfittext::geom_fit_text(stat = "stratum", infer.label = T) +
+  theme_minimal() + #coord_flip()+
+   xlab("Method") +
+  theme(legend.pos = "none") 
+
+
+f5b
+
+```
+
+
+## PBMC68k
+```{r}
+pbmc68k_meta <- readRDS('data_for_figure_plots/metadata/pbmc68k.meta.rds')
+
+pbmc68k_immc <- fread('data_for_figure_plots/immc/pbmc68k.output.txt')
+
+load('data_for_figure_plots/singleR/singler_pbmc68k.RData')
+pbmc68k_singler <- singler
+pbmc68k_singler_dt <- data.table(Cell=pbmc68k_singler$singler[[1]]$SingleR.single$cell.names,
+                                 singler=pbmc68k_singler$singler[[1]]$SingleR.single$labels)
+setkey(pbmc68k_singler_dt, Cell)
+
+pbmc68k_garnett_extend  <- readRDS('data_for_figure_plots/garnett/pbmc68k.garnett.extend.rds')
+pbmc68k_garnett_extend_dt <- data.table(Cell = rownames(pbmc68k_garnett_extend), 
+                                        garnett=pbmc68k_garnett_extend$cluster_ext_type)
+setkey(pbmc68k_garnett_extend_dt, Cell)
+
+pbmc68k_umap <- fread('data_for_figure_plots/umap/out-pbmc_umap/models/umap.pca_1000.cluster_10.k_25.res_0.8.umap_25/coordinates.txt')
+setkey(pbmc68k_umap, Cell)
+
+```
+
+
+```{r}
+
+pbmc68k_dt <- data.table(merge(
+              merge(
+                merge(pbmc68k_umap[, .(Cell, UMAP1, UMAP2, Cluster)], 
+                      pbmc68k_immc, by.x='Cell', by.y='Cell', all.x = T),
+                pbmc68k_singler_dt, by.x='Cell', by.y='Cell', all.x = T),
+                  pbmc68k_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T)
+              )[, original_annotation:=pbmc68k_meta[Cell, 'celltype']]
+                  
+pbmc68k_dt[, Cluster:=as.character(Cluster)]
+colnames(pbmc68k_dt)[grepl("ImmC", colnames(pbmc68k_dt))] <- "ImmC"
+colnames(pbmc68k_dt)[grepl("singler", colnames(pbmc68k_dt))] <- "SingleR"
+setkey(pbmc68k_dt, Cell)
+
+
+pbmc68k_celltypes <- c('CD14+ Monocyte', 'CD19+ B', 'CD34+', 'CD4+ T Helper2', 
+                        'CD4+/CD25 T Reg', 'CD4+/CD45RA+/CD25- Naive T', 'CD4+/CD45RO+ Memory',
+                        'CD56+ NK', 'CD8+ Cytotoxic T', 'CD8+/CD45RA+ Naive Cytotoxic', 
+                       'Dendritic','CD4+T', 'CD8+T',  'CD8+ memory', 'T', 'Other', 'Unassigned')
+
+
+pbmc68k_dt[grepl("M:Mono", ImmC), ImmC:="CD14+ Monocyte"]
+pbmc68k_dt[grepl("L:B", ImmC), ImmC:="CD19+ B"]
+pbmc68k_dt[grepl("CD34", ImmC), ImmC:="CD34+"]
+pbmc68k_dt[grepl("L:T:CD4:Naïve", ImmC), ImmC:="CD4+/CD45RA+/CD25- Naive T"]      
+pbmc68k_dt[grepl("L:T:CD8:Naïve", ImmC), ImmC:="CD8+/CD45RA+ Naive Cytotoxic"]      
+pbmc68k_dt[grepl("L:T:CD4:CM|L:T:CD4:EM", ImmC), ImmC:="CD4+/CD45RO+ Memory"]
+pbmc68k_dt[grepl("L:T:CD8:CM|L:T:CD8:EM", ImmC), ImmC:="CD8+ memory"]
+pbmc68k_dt[grepl("NK", ImmC), ImmC:="CD56+ NK"]
+pbmc68k_dt[grepl("L:T:CD4:Tfh", ImmC), ImmC:="CD4+ T Helper2"]
+pbmc68k_dt[grepl("L:T:CD4:Treg", ImmC), ImmC:="CD4+/CD25 T Reg"]
+pbmc68k_dt[grepl("L:NK", ImmC), ImmC:="CD56+ NK"]
+pbmc68k_dt[grepl("cDC|pDC", ImmC), ImmC:="Dendritic"]
+
+
+
+pbmc68k_dt[grepl("B_cell|Plasma_cell", SingleR), SingleR:="CD19+ B"]
+pbmc68k_dt[grepl("CMP|GMP|MEP|CD34", SingleR), SingleR:="CD19+ B"]
+pbmc68k_dt[grepl("CD34", SingleR), SingleR:="CD34+"]
+pbmc68k_dt[grepl("Monocyte", SingleR), SingleR:="CD14+ Monocyte"]      
+pbmc68k_dt[grepl("Treg", SingleR), SingleR:="CD4+/CD25 T Reg"] 
+pbmc68k_dt[grepl("NK_cell", SingleR), SingleR:="CD56+ NK"]
+pbmc68k_dt[grepl("T_cell:CD4\\+_central_memory|T_cell:CD4\\+_effector_memory",SingleR), SingleR:="CD4+/CD45RO+ Memory"]
+pbmc68k_dt[grepl("T_cell:CD4\\+_Naive", SingleR), SingleR:="CD4+/CD45RA+/CD25- Naive T"]
+pbmc68k_dt[grepl("T_cell:CD8\\+_Naive", SingleR), SingleR:="CD8+/CD45RA+ Naive Cytotoxic"]
+pbmc68k_dt[SingleR=='T_cell:CD8+', SingleR:="CD8+T"]
+pbmc68k_dt[SingleR=='T_cell:CD4+', SingleR:="CD4+T"]
+pbmc68k_dt[grepl("T_cell:CD8\\+_Central_memory|T_cell:CD8\\+_effector_memory", SingleR), SingleR:="CD8+ memory"]
+pbmc68k_dt[grepl("Dendritic", SingleR), SingleR:="Dendritic"]
+
+
+pbmc68k_dt[grepl("CD4 T cells", garnett), garnett:="CD4+T"]
+pbmc68k_dt[grepl("CD8 T cells", garnett), garnett:="CD8+T"]
+pbmc68k_dt[grepl("CD34", garnett), garnett:="CD34+"]
+pbmc68k_dt[grepl("Dendritic", garnett), garnett:="Dendritic"]      
+pbmc68k_dt[grepl("Monocytes", garnett), garnett:="CD14+ Monocyte"] 
+pbmc68k_dt[grepl("T cells", garnett), garnett:="T"] 
+pbmc68k_dt[grepl("Unknown", garnett), garnett:="Unassigned"] 
+pbmc68k_dt[grepl("NK", garnett), garnett:="CD56+ NK"] 
+pbmc68k_dt[grepl("B cells", garnett), garnett:="CD19+ B"] 
+
+
+pbmc68k_dt[!ImmC %in% pbmc68k_celltypes, ImmC:= "Other"]
+pbmc68k_dt[is.na(SingleR), SingleR:= "Unassigned"]
+pbmc68k_dt[!SingleR %in% pbmc68k_celltypes, SingleR:= "Other"]
+pbmc68k_dt[!garnett %in% pbmc68k_celltypes, garnett:= "Other"]
+                   
+
+```
+
+
+```{r}
+set.seed(55)
+
+pbmc68k_subset_dt <- pbmc68k_dt[pbmc68k_dt[,sample(Cell, 100, replace = T) ,by=original_annotation][, V1],]
+pbmc68k_subset_dt[, random:=pbmc68k_subset_dt$original_annotation[sample(1:nrow(pbmc68k_subset_dt), nrow(pbmc68k_subset_dt))]]
+
+order_methods <- c('original_annotation', 'random', 'ImmC', 'SingleR', 'garnett')
+
+
+
+f5c <- pbmc68k_subset_dt %>% 
+  melt(id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=pbmc68k_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = value), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "bottom", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
+    coord_equal () + 
+      #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(15), 'lightgrey', 'black'),
+                       guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
+    facet_wrap(~variable, ncol = 5)
+f5c
+```
+
+```{r}
+pbmc68k_order_celltypes <- c('CD34+', 'CD19+ B', 'CD4+ T Helper2', 'CD4+/CD25 T Reg', 'CD4+/CD45RA+/CD25- Naive T', 'CD4+/CD45RO+ Memory','CD4+T', 'CD8+/CD45RA+ Naive Cytotoxic', 'CD8+ Cytotoxic T',   'CD8+ memory','CD8+T', 'T','CD56+ NK','CD14+ Monocyte', 'Dendritic',   'Other', 'Unassigned')
+
+
+f5d <- pbmc68k_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')]  %>%
+  mutate(ImmC = factor(ImmC, levels = pbmc68k_order_celltypes),
+         SingleR = factor(SingleR, levels = pbmc68k_order_celltypes),
+         original_annotation = factor(original_annotation, levels = pbmc68k_order_celltypes)
+         ) %>%
+ggplot(aes(axis1 = ImmC, axis2 = original_annotation, axis3 = SingleR,y = N)) +
+  scale_x_discrete(limits = c('ImmC', 'Original', 'SingleR'), expand = c(.1, 0)) +
+  xlab("Method") +
+  
+  scale_fill_manual(values =sample(colorRampPalette(brewer.pal(10, "Spectral"))(13)))+
+  geom_alluvium(aes(fill = original_annotation)) +
+  geom_stratum(width = .6) + 
+  geom_text(stat = "stratum", infer.label = T)+
+  #ggfittext::geom_fit_text(stat = "stratum", infer.label = T) +
+  theme_minimal() + #coord_flip()+
+  theme(legend.pos = "none") 
+
+
+f5d
+```
+
+## HCC
+
+
+```{r}
+
+
+
+hcc_meta <- readRDS('data_for_figure_plots/metadata/HCC-ZZ-meta.rds')
+hcc_clusternames <- readRDS('data_for_figure_plots/metadata/HCC-ZZ-clusternames.rds')
+
+
+hcc_immc <- fread('data_for_figure_plots/immc/hcc.output.txt')
+
+
+load('data_for_figure_plots//singleR//singler_hcc.RData')
+hcc_singler_dt <- data.table(Cell=singler$singler[[1]]$SingleR.single$cell.names,
+                                 singler=singler$singler[[1]]$SingleR.single$labels)
+setkey(hcc_singler_dt, Cell)
+
+
+hcc_garnett_extend  <- readRDS('data_for_figure_plots/garnett/hcc.garnett.extend.rds')
+
+hcc_garnett_extend_dt <- data.table(Cell = rownames(hcc_garnett_extend), 
+                                        garnett=hcc_garnett_extend$cluster_ext_type)
+setkey(hcc_garnett_extend_dt, Cell)
+
+
+hcc_umap <- fread('data_for_figure_plots/umap/out-hcc_all_umap/models/umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt')
+setkey(hcc_umap, Cell)
+
+
+```
+
+```{r}
+
+hcc_dt <- data.table(merge(
+              merge(
+                merge(hcc_umap[, .(Cell, UMAP1, UMAP2, Cluster)], 
+                      hcc_immc, by.x='Cell', by.y='Cell', all.x = T),
+                hcc_singler_dt, by.x='Cell', by.y='Cell', all.x = T),
+                  hcc_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T)
+              )[, original_annotation:=hcc_clusternames[hcc_meta[Cell, 'majorCluster'], 'clusterName']]
+                  
+hcc_dt[, Cluster:=as.character(Cluster)]
+colnames(hcc_dt)[grepl("ImmC", colnames(hcc_dt))] <- "ImmC"
+colnames(hcc_dt)[grepl("singler", colnames(hcc_dt))] <- "SingleR"
+setkey(hcc_dt, Cell)
+
+
+```
+
+
+
+```{r}
+
+hcc_celltypes <- c('cytotoxic CD4 cells','effector memory CD8+T cells','exhausted CD4+ T cells ',
+                  'intermediate of EM and Exhausted T', 'exhausted CD8+ T cells ', 'MAIT cells',
+                  'naive CD4+ T cells', 'Tregs ','naive CD8+ T cells', 'CD4+T', 
+                  'CD8+T',  'T helper', 'unknown',#'unconvT',
+                  'T', 'central memory T', 'Other', 'Unassigned')
+
+hcc_dt[grepl("Tregs",original_annotation), original_annotation:="Tregs "]
+
+
+hcc_dt[grepl("L:T:CD8:Ex",ImmC), ImmC:="exhausted CD8+ T cells "]
+hcc_dt[grepl("L:T:CD4:Ex",ImmC), ImmC:="exhausted CD4+ T cells "]
+hcc_dt[grepl("Treg",ImmC), ImmC:="Tregs "]
+hcc_dt[grepl("L:T:CD4:Tfh",ImmC), ImmC:="T helper"]
+hcc_dt[grepl("L:T:CD8:Mait",ImmC), ImmC:="MAIT cells"]
+hcc_dt[grepl("L:T:CD8:EM",ImmC), ImmC:="effector memory CD8+T cells"]
+hcc_dt[grepl("EM|TRM|Ex",ImmC), ImmC:="intermediate of EM and Exhausted T"]
+hcc_dt[grepl("CM",ImmC), ImmC:="central memory T"]
+hcc_dt[grepl("L:T:CD8:Naïve",ImmC), ImmC:="naive CD8+ T cells"]
+hcc_dt[grepl("L:T:CD4:Naïve",ImmC), ImmC:="naive CD4+ T cells"]
+hcc_dt[!ImmC %in% hcc_celltypes, ImmC:="Other"]
+
+
+hcc_dt[grepl("T_cell:CD4\\+_Naive",SingleR), SingleR:="naive CD4+ T cells"]                    
+hcc_dt[grepl("T_cell:CD8\\+_effector_memory",SingleR), SingleR:="effector memory CD8+T cells"]    
+
+
+hcc_dt[grepl("entral_memory",SingleR), SingleR:="central memory T"]             
+
+hcc_dt[grepl("effector_memory",SingleR), SingleR:="intermediate of EM and Exhausted T"]  
+hcc_dt[grepl("T_cell:CD8\\+_Naive",SingleR), SingleR:="naive CD8+ T cells"]  
+hcc_dt[grepl("Treg",SingleR), SingleR:="Tregs "]  
+hcc_dt[SingleR == "T_cell:CD4+", SingleR:="CD4+T"]  
+hcc_dt[SingleR == "T_cell:CD8+", SingleR:="CD8+T"]  
+hcc_dt[!SingleR %in% hcc_celltypes, SingleR:="Other"]
+
+# no cd4 or cd8 predicted by garnett
+#hcc_dt[grepl("CD4 T cells",garnett), garnett:="CD4+T"]     
+#hcc_dt[grepl("CD8 T cells",garnett), garnett:="CD8+T"]     
+hcc_dt[grepl("T cells",garnett), garnett:="T"]
+hcc_dt[grepl("Unknown",garnett), garnett:="Unassigned"]
+hcc_dt[!garnett %in% hcc_celltypes, garnett:="Other"]
+
+```
+
+```{r}
+set.seed(55)
+
+hcc_subset_dt <- hcc_dt[hcc_dt[,sample(Cell, 200, replace = T) ,by=original_annotation][, V1],]
+hcc_subset_dt[, random:=hcc_subset_dt$original_annotation[sample(1:nrow(hcc_subset_dt), nrow(hcc_subset_dt))]]
+
+order_methods <- c('original_annotation', 'random', 'ImmC', 'SingleR', 'garnett')
+
+
+f5e <- hcc_subset_dt %>% 
+  melt(id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=hcc_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = value), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "bottom", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
+    coord_equal () + 
+      #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(15), 'lightgrey', 'black'),
+                       guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
+    facet_wrap(~variable, ncol = 5)
+f5e
+
+
+
+```
+
+```{r}
+
+
+hcc_order_celltypes <- c(c( 'naive CD4+ T cells', 'Tregs ','T helper','cytotoxic CD4 cells','exhausted CD4+ T cells ', 'CD4+T', 'naive CD8+ T cells','effector memory CD8+T cells','exhausted CD8+ T cells ','CD8+T', 'MAIT cells','intermediate of EM and Exhausted T',  
+'T', 'central memory T', 'unknown',#'unconvT',
+'Other', 'Unassigned'))
+
+
+
+f5f <- hcc_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')] %>%
+  mutate(ImmC = factor(ImmC, levels = hcc_order_celltypes),
+         SingleR = factor(SingleR, levels = hcc_order_celltypes),
+         Original = factor(original_annotation, levels = hcc_order_celltypes)
+         ) %>%
+ggplot(aes(axis1 = ImmC, axis2 = Original, axis3 = SingleR,y = N)) +
+  scale_x_discrete(limits = c('ImmC', 'Original', 'SingleR'), expand = c(.1, 0)) +
+  xlab("Method") +
+  
+  scale_fill_manual(values =sample(colorRampPalette(brewer.pal(10, "Spectral"))(13)))+
+  geom_alluvium(aes(fill = Original)) +
+  geom_stratum() + 
+  geom_text(stat = "stratum", infer.label = T)+
+  #ggfittext::geom_fit_text(stat = "stratum", infer.label = T) +
+  theme_minimal() + #coord_flip()+
+  theme(legend.pos = "none") 
+
+f5f
+```
+
+```{r}
+load('data_for_figure_plots/singleR/singler_brca5p.RData')
+brca5p.singler <- singler
+brca5p.singler.df <- data.frame(singler=brca5p.singler$singler[[1]]$SingleR.single$labels, stringsAsFactors = F)
+rownames(brca5p.singler.df ) <- brca5p.singler$singler[[1]]$SingleR.single$cell.names
+
+
+brca5p.garnett.extend  <- readRDS('data_for_figure_plots/garnett/brca.5p.garnett.extend.rds')
+
+brca5p.umap <- read.table('data_for_figure_plots/umap/out-brca5p_umap/models//umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt',
+                            header = T, sep = "\t", stringsAsFactors = F)
+
+rownames(brca5p.umap) <- brca5p.umap$Cell
+
+
+```
+
+```{r}
+brca5p.ontotree <- fread('data_for_figure_plots/immc/brca5p.output.txt')
+brca5p.common.cells <- intersect(brca5p.ontotree$Cell, rownames(brca5p.singler.df))
+```
+
+```{r}
+
+brca.5p.clusternames <- list(as.character(c(7,16,22,33)),
+                                 as.character(c(5,6,9,26,30)),
+                                 as.character(c(3,4)),
+                                 as.character(c(2,14,20,29,34)),
+                                 as.character(c(12,17,32,21)),
+                                 as.character(c(10,19)),
+                                 as.character(c(1,8,11,13,15,18,24,25,28,31,27)),
+                                as.character(c(23)))
+        
+names(brca.5p.clusternames) <- c( "T:CD4+Naive", "T:CD4+CM", "T:CD4+EM", "Treg",
+                                     "T:CD8+Naive", "T:CD8+CM", "T:CD8+EM",
+                                    "NKT")
+
+brca.5p.clusternames <- data.frame(clusterID = brca.5p.clusternames %>% unlist)
+brca.5p.clusternames[, 'clusterName'] <- rownames(brca.5p.clusternames)
+rownames(brca.5p.clusternames) <- brca.5p.clusternames$clusterID
+
+brca3p.meta <- readRDS('data_for_figure_plots/metadata/BRCA-DP-meta.rds')
+brca5p.umap.df <- brca5p.umap[brca5p.common.cells, c('Cell', 'UMAP1', 'UMAP2', 'Cluster')] %>% 
+                    mutate( UMAP=as.character(Cluster),
+                        Original =brca.5p.clusternames[brca3p.meta[Cell, 'cluster'], 'clusterName'],
+                        ImmClassifier=brca5p.ontotree$ImmClassifier[brca5p.ontotree$Cell %in% brca5p.common.cells],
+                        SingleR = brca5p.singler.df[Cell,'singler'],
+                        Garnett= brca5p.garnett.extend[Cell, 'cluster_ext_type']) 
+
+
+
+# match clusters between original and unsupervised umap
+
+original.centroids <- brca5p.umap.df %>% group_by(Original) %>% 
+                    summarize(C1=mean(UMAP1),
+                              C2=mean(UMAP2)) 
+
+
+unsupervised.centroids <- brca5p.umap.df %>% group_by(UMAP) %>% 
+                    summarize(C1=mean(UMAP1),
+                              C2=mean(UMAP2)) 
+
+matched.centroids <-  unsupervised.centroids %>%
+    apply(1, function(x) original.centroids[order((original.centroids[, 'C1']-as.numeric(x[2]))^2 
+                         + (original.centroids[, 'C2']-as.numeric(x[3]))^2)[1], 1] %>% unlist) 
+
+names(matched.centroids) <- unsupervised.centroids$UMAP
+```
+
+```{r}
+brca5p.umap.df2 <- brca5p.umap.df %>%
+                    mutate(Original = gsub("[0-9]+$", "", Original)) %>%              
+                   
+                    mutate(ImmClassifier = ifelse(grepl("L:T:CD4:CM",ImmClassifier),   "T:CD4+CM", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("L:T:CD4:EM",ImmClassifier),   "T:CD4+EM", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("L:T:CD4:Naïve",ImmClassifier),   "T:CD4+Naive", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("L:T:CD8:CM",ImmClassifier),   "T:CD8+CM", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("L:T:CD8:EM",ImmClassifier),   "T:CD8+EM", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("Ex",ImmClassifier),   "Exhausted T", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("TRM",ImmClassifier),   "Tissue-resident memory", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("L:T:CD8:Naïve",ImmClassifier),   "T:CD8+Naive", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(grepl("Treg",ImmClassifier),  "Treg", ImmClassifier)) %>%
+                    mutate(ImmClassifier = ifelse(!grepl("\\+CM|\\+EM|Exhausted T|Tissue-resident memory|\\+Naive|Treg|NKT", ImmClassifier),  "Other", ImmClassifier)) %>%
+                    
+
+                    mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_central_memory",SingleR),"T:CD4+CM", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_effector_memory",SingleR),   "T:CD4+EM", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_Naive|T_cell:CD4\\+_naive",SingleR),   "T:CD4+Naive", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_Central_memory",SingleR),   "T:CD8+CM", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_effector_memory",SingleR),   "T:CD8+EM", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_naive",SingleR),   "T:CD8+Naive", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:Treg",SingleR),   "Treg", SingleR)) %>%
+                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+",SingleR),   "CD8+T", SingleR)) %>%
+                    mutate(SingleR = ifelse(!grepl("\\+CM|\\+EM|\\+Naive|Treg|NKT|CD8\\+T", SingleR),  "Other", SingleR))  %>%
+                    
+                    
+                    mutate(Garnett = ifelse(grepl("CD4 T cells",Garnett),   "CD4+T", Garnett)) %>%
+                    mutate(Garnett = ifelse(grepl("CD8 T cells",Garnett),   "CD8+T", Garnett)) %>%
+                    mutate(Garnett = ifelse(grepl("T cells",Garnett),   "T", Garnett)) %>%
+                    mutate(Garnett = ifelse(grepl("Unknown",Garnett),   "Unassigned", Garnett)) %>%
+                    mutate(Garnett = ifelse(!grepl("T|Unassigned", Garnett),  "Other", Garnett))  %>%
+                    
+                    mutate(UMAP = matched.centroids[UMAP]) %>%
+                    mutate(UMAP = gsub("[0-9]+$", "", UMAP)) 
+```
+
+```{r}
+library(RColorBrewer)
+
+set.seed(100)
+subsample.df <- brca5p.umap.df2 %>% 
+    group_by(Original) %>% 
+    sample_n(200, replace = T) %>% data.frame(stringsAsFactors = F)
+subsample.df$Random <- subsample.df$Original[sample(1:nrow(subsample.df), nrow(subsample.df))]
+subsample.df[,c(1,2,3,6,5,10,7,8,9)] %>% melt(id.vars = c('Cell', 'UMAP1', 'UMAP2')) %>% 
+    mutate(value = factor(value, c('NKT', 'T:CD4+Naive', 'T:CD4+CM',
+                                   'T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
+                                   'T:CD8+EM','Treg',  'CD4+T', 
+                                   'CD8+T', 'T', 'Exhausted T',
+                                   'Tissue-resident memory','Other', 'Unassigned'))) %>%
+    ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = value), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "bottom", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
+    coord_equal () + 
+      #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'lightgrey', 'black'),
+                       guide = guide_legend(nrow=3,override.aes = list(size=4))) +
+    facet_wrap(~variable, ncol = 3)
+
+
+```
+
