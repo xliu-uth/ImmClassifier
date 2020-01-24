@@ -85,3 +85,52 @@ plot_heatmap <- function(data, title="",  ncol = 2, ord1 = NULL, ord2=NULL,
 getNearestCentroid <- function(query, original.centroids){
   return(original.centroids[order(apply(original.centroids[, -1], 1, function(x) (x[1]-query[1])^2 + (x[2]-query[2])^2))[1], original_annotation])
 }
+
+
+
+
+dist_plot <- function(dt, palette, n1, n2){
+  original_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = original_annotation]
+  setkey(original_centroids, original_annotation)
+
+  immc_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = ImmC]
+  setkey(immc_centroids, ImmC)
+
+  singler_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = SingleR]
+  setkey(singler_centroids, SingleR)
+
+  garnett_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = garnett]
+  setkey(garnett_centroids, garnett)
+
+  random_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = random]
+  setkey(random_centroids, random)
+
+  immc_dist <-  data.table(celltype=immc_centroids$ImmC, dist = (immc_centroids[, -1] - original_centroids[immc_centroids$ImmC, -1])[, sqrt(V1^2+V2^2)], method = "ImmC")
+
+  singler_dist <-  data.table(celltype=singler_centroids$SingleR,  dist=(singler_centroids[, -1] - original_centroids[singler_centroids$SingleR, -1])[, sqrt(V1^2+V2^2)], method = "SingleR")
+
+  garnett_dist <-  data.table(celltype=garnett_centroids$garnett, dist = (garnett_centroids[, -1] - original_centroids[garnett_centroids$garnett, -1])[, sqrt(V1^2+V2^2)], method = "garnett")
+
+  random_dist <-  data.table(celltype=random_centroids$random, dist = (random_centroids[, -1] - original_centroids[random_centroids$random, -1])[, sqrt(V1^2+V2^2)], method = "random")
+  comb_dt <- rbind(immc_dist, singler_dist, garnett_dist, random_dist)
+  #print (comb_dt[1:3, ])
+  ftmp <- comb_dt %>%
+    mutate(!is.na(dist)) %>%
+    mutate(!celltype %in% c('Other', 'Unassigned')) %>%
+    mutate(method = factor(method, c('ImmC', 'SingleR', 'garnett','random'))) %>%
+
+    ggplot(aes(x=method, y=dist)) +
+    geom_boxplot(alpha = 0.2, color = "black", lwd = .3, outlier.shape = NA, width = .5) +
+    geom_jitter(aes(fill = celltype), width = 0.2, size = 10, pch = 21, alpha = .8)+
+    theme_bw() +
+    theme(legend.pos = "none",
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          axis.text.x = element_text(angle = 45, size = 32,hjust = 1, color= "black"),
+          axis.text.y = element_text(size = 32, color = "black"),
+          axis.title.x = element_text(angle = 0, size =0, color= "black"),
+          axis.title.y = element_text(angle = 90, size = 0,color= "black")
+    ) +scale_fill_manual(values = c(colorRampPalette(brewer.pal(n1, palette))(n2), 'lightgrey', 'black'),guide = guide_legend(nrow=4,override.aes = list(size=4)))
+
+  return (ftmp)
+}
