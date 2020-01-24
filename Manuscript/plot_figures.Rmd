@@ -15,6 +15,7 @@ library(dplyr)
 library(ggalluvial)
 library(ggrepel)
 library(ggfittext)
+library(ggpubr)
 source('plot_figure.R')
 ```
 
@@ -228,7 +229,7 @@ brca3p_subset_dt[, random:=brca3p_subset_dt$original_annotation[sample(1:nrow(br
 
 order_methods <- c('original_annotation', 'random', 'ImmC', 'SingleR', 'garnett')
 
-f5a <- melt(brca3p_subset_dt,
+f5c <- melt(brca3p_subset_dt,
      id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
   mutate(value = factor(value, levels=brca3p_celltypes)) %>%
   mutate(variable = factor(variable, levels=order_methods)) %>%
@@ -248,8 +249,49 @@ f5a <- melt(brca3p_subset_dt,
     scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'lightgrey', 'black'),guide = guide_legend(nrow=3,override.aes = list(size=4))) +
     facet_wrap(~variable, ncol = 5)
 
-f5a
+f5c
 ```
+
+
+## distance plot
+
+```{r}
+f5c_2 <- dist_plot(brca3p_subset_dt, palette='Paired', n1=12, n2=13)
+f5c_2
+
+```
+
+
+
+## breakdown by cell type
+
+```{r}
+ fs3_a <- melt(brca3p_subset_dt,
+     id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=brca3p_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = variable), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "right", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 8, colour = "black", angle = 0),
+          ) +
+    coord_equal () + 
+     guides(colour = guide_legend( override.aes = list(size=6)))+
+    facet_wrap(~value, labeller = label_wrap_gen(width=8))
+
+
+fs3_a
+```
+
+
 
 
 
@@ -260,7 +302,7 @@ brca3p_celltypes_alluvium <- c('mDC', 'pDC', 'MONOCYTE',  'MACROPHAGE' ,'NEUTROP
                                   'B', 'CD4+T' ,'Treg',  'CD8+T' ,'NK','NKT', 
                                      'T', 'Other', 'Unassigned')
 
-f5b <- brca3p_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')] %>%
+f5d <- brca3p_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')] %>%
   mutate(ImmC = factor(ImmC, levels = brca3p_celltypes_alluvium),
          SingleR = factor(SingleR, levels = brca3p_celltypes_alluvium),
          original_annotation = factor(original_annotation, levels = brca3p_celltypes_alluvium)
@@ -277,7 +319,7 @@ ggplot(aes(axis1 = ImmC, axis2 = original_annotation, axis3 = SingleR,y = N)) +
   theme(legend.pos = "none") 
 
 
-f5b
+f5d
 
 ```
 
@@ -387,7 +429,7 @@ order_methods <- c('original_annotation', 'random', 'ImmC', 'SingleR', 'garnett'
 
 
 
-f5c <- pbmc68k_subset_dt %>% 
+f5a <- pbmc68k_subset_dt %>% 
   melt(id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
   mutate(value = factor(value, levels=pbmc68k_celltypes)) %>%
   mutate(variable = factor(variable, levels=order_methods)) %>%
@@ -408,14 +450,51 @@ f5c <- pbmc68k_subset_dt %>%
     scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(15), 'lightgrey', 'black'),
                        guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
     facet_wrap(~variable, ncol = 5)
-f5c
+f5a
 ```
+
+```{r}
+ fs2_a <- melt(pbmc68k_subset_dt,
+     id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=pbmc68k_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = variable), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "right", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 8, colour = "black", angle = 0),
+          ) +
+    coord_equal () + 
+     guides(colour = guide_legend( override.aes = list(size=6)))+
+    facet_wrap(~value, labeller = label_wrap_gen(width=8))
+
+
+fs2_a
+```
+
+## distance plot
+
+```{r}
+f5a_2 <- dist_plot(pbmc68k_subset_dt, palette='Paired', n1=12, n2=15)
+f5a_2
+
+```
+
+
+
 
 ```{r}
 pbmc68k_order_celltypes <- c('CD34+', 'CD19+ B', 'CD4+ T Helper2', 'CD4+/CD25 T Reg', 'CD4+/CD45RA+/CD25- Naive T', 'CD4+/CD45RO+ Memory','CD4+T', 'CD8+/CD45RA+ Naive Cytotoxic', 'CD8+ Cytotoxic T',   'CD8+ memory','CD8+T', 'T','CD56+ NK','CD14+ Monocyte', 'Dendritic',   'Other', 'Unassigned')
 
 
-f5d <- pbmc68k_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')]  %>%
+f5b <- pbmc68k_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')]  %>%
   mutate(ImmC = factor(ImmC, levels = pbmc68k_order_celltypes),
          SingleR = factor(SingleR, levels = pbmc68k_order_celltypes),
          original_annotation = factor(original_annotation, levels = pbmc68k_order_celltypes)
@@ -433,7 +512,7 @@ ggplot(aes(axis1 = ImmC, axis2 = original_annotation, axis3 = SingleR,y = N)) +
   theme(legend.pos = "none") 
 
 
-f5d
+f5b
 ```
 
 ## HCC
@@ -524,6 +603,7 @@ hcc_dt[grepl("T_cell:CD8\\+_Naive",SingleR), SingleR:="naive CD8+ T cells"]
 hcc_dt[grepl("Treg",SingleR), SingleR:="Tregs "]  
 hcc_dt[SingleR == "T_cell:CD4+", SingleR:="CD4+T"]  
 hcc_dt[SingleR == "T_cell:CD8+", SingleR:="CD8+T"]  
+hcc_dt[is.na(SingleR), SingleR:="Unassigned"]
 hcc_dt[!SingleR %in% hcc_celltypes, SingleR:="Other"]
 
 # no cd4 or cd8 predicted by garnett
@@ -562,7 +642,7 @@ f5e <- hcc_subset_dt %>%
           strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
     coord_equal () + 
       #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
-    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(15), 'lightgrey', 'black'),
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(14), 'lightgrey', 'black'),
                        guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
     facet_wrap(~variable, ncol = 5)
 f5e
@@ -570,6 +650,41 @@ f5e
 
 
 ```
+```{r}
+fs4_a <- melt(hcc_subset_dt,
+     id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=hcc_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = variable), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "right", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 8, colour = "black", angle = 0),
+          ) +
+    coord_equal () + 
+     guides(colour = guide_legend( override.aes = list(size=6)))+
+    facet_wrap(~value, labeller = label_wrap_gen(width=8))
+
+
+fs4_a
+```
+
+
+## distance plot
+
+```{r}
+f5e_2 <- dist_plot(hcc_subset_dt, palette='Paired', n1=12, n2=14)
+f5e_2
+
+```
+
 
 ```{r}
 
@@ -600,31 +715,12 @@ ggplot(aes(axis1 = ImmC, axis2 = Original, axis3 = SingleR,y = N)) +
 f5f
 ```
 
-```{r}
-load('data_for_figure_plots/singleR/singler_brca5p.RData')
-brca5p.singler <- singler
-brca5p.singler.df <- data.frame(singler=brca5p.singler$singler[[1]]$SingleR.single$labels, stringsAsFactors = F)
-rownames(brca5p.singler.df ) <- brca5p.singler$singler[[1]]$SingleR.single$cell.names
 
-
-brca5p.garnett.extend  <- readRDS('data_for_figure_plots/garnett/brca.5p.garnett.extend.rds')
-
-brca5p.umap <- read.table('data_for_figure_plots/umap/out-brca5p_umap/models//umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt',
-                            header = T, sep = "\t", stringsAsFactors = F)
-
-rownames(brca5p.umap) <- brca5p.umap$Cell
-
-
-```
-
-```{r}
-brca5p.ontotree <- fread('data_for_figure_plots/immc/brca5p.output.txt')
-brca5p.common.cells <- intersect(brca5p.ontotree$Cell, rownames(brca5p.singler.df))
-```
+## 
 
 ```{r}
 
-brca.5p.clusternames <- list(as.character(c(7,16,22,33)),
+brca5p_clusternames <- list(as.character(c(7,16,22,33)),
                                  as.character(c(5,6,9,26,30)),
                                  as.character(c(3,4)),
                                  as.character(c(2,14,20,29,34)),
@@ -633,94 +729,109 @@ brca.5p.clusternames <- list(as.character(c(7,16,22,33)),
                                  as.character(c(1,8,11,13,15,18,24,25,28,31,27)),
                                 as.character(c(23)))
         
-names(brca.5p.clusternames) <- c( "T:CD4+Naive", "T:CD4+CM", "T:CD4+EM", "Treg",
+names(brca5p_clusternames) <- c( "T:CD4+Naive", "T:CD4+CM", "T:CD4+EM", "Treg",
                                      "T:CD8+Naive", "T:CD8+CM", "T:CD8+EM",
                                     "NKT")
 
-brca.5p.clusternames <- data.frame(clusterID = brca.5p.clusternames %>% unlist)
-brca.5p.clusternames[, 'clusterName'] <- rownames(brca.5p.clusternames)
-rownames(brca.5p.clusternames) <- brca.5p.clusternames$clusterID
-
-brca3p.meta <- readRDS('data_for_figure_plots/metadata/BRCA-DP-meta.rds')
-brca5p.umap.df <- brca5p.umap[brca5p.common.cells, c('Cell', 'UMAP1', 'UMAP2', 'Cluster')] %>% 
-                    mutate( UMAP=as.character(Cluster),
-                        Original =brca.5p.clusternames[brca3p.meta[Cell, 'cluster'], 'clusterName'],
-                        ImmClassifier=brca5p.ontotree$ImmClassifier[brca5p.ontotree$Cell %in% brca5p.common.cells],
-                        SingleR = brca5p.singler.df[Cell,'singler'],
-                        Garnett= brca5p.garnett.extend[Cell, 'cluster_ext_type']) 
 
 
 
-# match clusters between original and unsupervised umap
-
-original.centroids <- brca5p.umap.df %>% group_by(Original) %>% 
-                    summarize(C1=mean(UMAP1),
-                              C2=mean(UMAP2)) 
 
 
-unsupervised.centroids <- brca5p.umap.df %>% group_by(UMAP) %>% 
-                    summarize(C1=mean(UMAP1),
-                              C2=mean(UMAP2)) 
 
-matched.centroids <-  unsupervised.centroids %>%
-    apply(1, function(x) original.centroids[order((original.centroids[, 'C1']-as.numeric(x[2]))^2 
-                         + (original.centroids[, 'C2']-as.numeric(x[3]))^2)[1], 1] %>% unlist) 
+brca5p_clusternames_dt <- data.table(clusterID=unlist(brca5p_clusternames), clusterName=gsub("[0-9]+$", "", names(unlist(brca5p_clusternames))))
 
-names(matched.centroids) <- unsupervised.centroids$UMAP
+setkey(brca5p_clusternames_dt, clusterID)
+
+
+brca5p_immc <- fread('data_for_figure_plots/immc/brca5p.output.txt')
+
+
+load('data_for_figure_plots/singleR/singler_brca5p.RData')
+brca5p_singler_dt <- data.table(Cell=singler$singler[[1]]$SingleR.single$cell.names,
+                                 SingleR=singler$singler[[1]]$SingleR.single$labels)
+setkey(brca5p_singler_dt, Cell)
+
+brca5p_garnett_extend  <- readRDS('data_for_figure_plots/garnett/brca.5p.garnett.extend.rds')
+brca5p_garnett_extend_dt <- data.table(Cell = rownames(brca5p_garnett_extend), 
+                                        garnett=brca5p_garnett_extend$cluster_ext_type)
+
+setkey(brca5p_garnett_extend_dt, Cell)
+
+brca5p_umap <- fread('data_for_figure_plots/umap/out-brca5p_umap/models//umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt')
+setkey(brca5p_umap, Cell)
+
+
+```
+
+
+
+```{r}
+brca5p_dt <- data.table(merge(
+              merge(
+                merge(brca5p_umap[, .(Cell, UMAP1, UMAP2, Cluster)], 
+                      brca5p_immc, by.x='Cell', by.y='Cell', all.x = T),
+                brca5p_singler_dt, by.x='Cell', by.y='Cell', all.x = T),
+                  brca5p_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T)
+              )[, original_annotation:=brca5p_clusternames_dt[brca3p_meta[Cell, 'cluster'], 'clusterName']]
+                  
+brca5p_dt[, Cluster:=as.character(Cluster)]
+colnames(brca5p_dt)[grepl("ImmC", colnames(brca5p_dt))] <- "ImmC"
+colnames(brca5p_dt)[grepl("SingleR", colnames(brca5p_dt))] <- "SingleR"
+setkey(brca5p_dt, Cell)
+
 ```
 
 ```{r}
-brca5p.umap.df2 <- brca5p.umap.df %>%
-                    mutate(Original = gsub("[0-9]+$", "", Original)) %>%              
-                   
-                    mutate(ImmClassifier = ifelse(grepl("L:T:CD4:CM",ImmClassifier),   "T:CD4+CM", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("L:T:CD4:EM",ImmClassifier),   "T:CD4+EM", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("L:T:CD4:Naïve",ImmClassifier),   "T:CD4+Naive", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("L:T:CD8:CM",ImmClassifier),   "T:CD8+CM", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("L:T:CD8:EM",ImmClassifier),   "T:CD8+EM", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("Ex",ImmClassifier),   "Exhausted T", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("TRM",ImmClassifier),   "Tissue-resident memory", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("L:T:CD8:Naïve",ImmClassifier),   "T:CD8+Naive", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(grepl("Treg",ImmClassifier),  "Treg", ImmClassifier)) %>%
-                    mutate(ImmClassifier = ifelse(!grepl("\\+CM|\\+EM|Exhausted T|Tissue-resident memory|\\+Naive|Treg|NKT", ImmClassifier),  "Other", ImmClassifier)) %>%
-                    
+brca5p_celltypes <- c('NKT', 'T:CD4+Naive', 'T:CD4+CM','T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
+                      'T:CD8+EM','Treg',  'CD4+T', 'CD8+T', 'T', 'Exhausted T',
+                      'Tissue-resident memory','Other', 'Unassigned')
 
-                    mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_central_memory",SingleR),"T:CD4+CM", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_effector_memory",SingleR),   "T:CD4+EM", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_Naive|T_cell:CD4\\+_naive",SingleR),   "T:CD4+Naive", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_Central_memory",SingleR),   "T:CD8+CM", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_effector_memory",SingleR),   "T:CD8+EM", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_naive",SingleR),   "T:CD8+Naive", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:Treg",SingleR),   "Treg", SingleR)) %>%
-                    mutate(SingleR = ifelse(grepl("T_cell:CD8\\+",SingleR),   "CD8+T", SingleR)) %>%
-                    mutate(SingleR = ifelse(!grepl("\\+CM|\\+EM|\\+Naive|Treg|NKT|CD8\\+T", SingleR),  "Other", SingleR))  %>%
-                    
-                    
-                    mutate(Garnett = ifelse(grepl("CD4 T cells",Garnett),   "CD4+T", Garnett)) %>%
-                    mutate(Garnett = ifelse(grepl("CD8 T cells",Garnett),   "CD8+T", Garnett)) %>%
-                    mutate(Garnett = ifelse(grepl("T cells",Garnett),   "T", Garnett)) %>%
-                    mutate(Garnett = ifelse(grepl("Unknown",Garnett),   "Unassigned", Garnett)) %>%
-                    mutate(Garnett = ifelse(!grepl("T|Unassigned", Garnett),  "Other", Garnett))  %>%
-                    
-                    mutate(UMAP = matched.centroids[UMAP]) %>%
-                    mutate(UMAP = gsub("[0-9]+$", "", UMAP)) 
+brca5p_dt[grepl("L:T:CD4:CM",ImmC), ImmC:= "T:CD4+CM"]
+brca5p_dt[grepl("L:T:CD4:EM",ImmC), ImmC:= "T:CD4+EM"]
+brca5p_dt[grepl("L:T:CD4:Naïve",ImmC), ImmC:= "T:CD4+Naive"]
+brca5p_dt[grepl("L:T:CD8:CM",ImmC), ImmC:= "T:CD8+CM"]
+brca5p_dt[grepl("L:T:CD8:EM",ImmC), ImmC:= "T:CD8+EM"]
+brca5p_dt[grepl("Ex",ImmC), ImmC:=  "Exhausted T"]
+brca5p_dt[grepl("TRM",ImmC), ImmC:=  "Tissue-resident memory"]
+brca5p_dt[grepl("L:T:CD8:Naïve",ImmC), ImmC:=  "T:CD8+Naive"]
+brca5p_dt[grepl("Treg",ImmC), ImmC:=  "Treg"]
+brca5p_dt[!ImmC %in% brca5p_celltypes, ImmC:=  "Other"]
+
+
+brca5p_dt[grepl("T_cell:CD4\\+_central_memory",SingleR), SingleR:=  "T:CD4+CM"]
+brca5p_dt[grepl("T_cell:CD4\\+_effector_memory",SingleR), SingleR:=  "T:CD4+EM"]
+brca5p_dt[grepl("T_cell:CD4\\+_Naive|T_cell:CD4\\+_naive",SingleR), SingleR:=  "T:CD4+Naive"]
+brca5p_dt[grepl("T_cell:CD8\\+_Central_memory",SingleR), SingleR:=  "T:CD8+CM"]
+brca5p_dt[grepl("T_cell:CD8\\+_effector_memory",SingleR), SingleR:=  "T:CD8+EM"]
+brca5p_dt[grepl("T_cell:CD8\\+_naive",SingleR), SingleR:=  "T:CD8+Naive"]
+brca5p_dt[grepl("T_cell:Treg",SingleR), SingleR:=  "Treg"]
+brca5p_dt[grepl("T_cell:CD8\\+",SingleR), SingleR:=  "CD8+T"]
+brca5p_dt[is.na(SingleR), SingleR:=  "Unassigned"]
+brca5p_dt[!SingleR %in% brca5p_celltypes, SingleR:=  "Other"]
+
+brca5p_dt[grepl("CD4 T cells",garnett), garnett:=  "CD4+T"]
+brca5p_dt[grepl("CD8 T cells",garnett), garnett:=  "CD8+T"]
+brca5p_dt[grepl("T cells",garnett), garnett:=  "T"]
+brca5p_dt[grepl("Unknown",garnett), garnett:=  "Unassigned"]
+brca5p_dt[!garnett %in% brca5p_celltypes, garnett:=  "Other"]
+
 ```
 
 ```{r}
-library(RColorBrewer)
 
 set.seed(100)
-subsample.df <- brca5p.umap.df2 %>% 
-    group_by(Original) %>% 
-    sample_n(200, replace = T) %>% data.frame(stringsAsFactors = F)
-subsample.df$Random <- subsample.df$Original[sample(1:nrow(subsample.df), nrow(subsample.df))]
-subsample.df[,c(1,2,3,6,5,10,7,8,9)] %>% melt(id.vars = c('Cell', 'UMAP1', 'UMAP2')) %>% 
-    mutate(value = factor(value, c('NKT', 'T:CD4+Naive', 'T:CD4+CM',
-                                   'T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
-                                   'T:CD8+EM','Treg',  'CD4+T', 
-                                   'CD8+T', 'T', 'Exhausted T',
-                                   'Tissue-resident memory','Other', 'Unassigned'))) %>%
-    ggplot(aes(UMAP1, UMAP2)) + 
+brca5p_subset_dt <- brca5p_dt[brca5p_dt[,sample(Cell, 200, replace = T) ,by=original_annotation][, V1],]
+brca5p_subset_dt[, random:=brca5p_subset_dt$original_annotation[sample(1:nrow(brca5p_subset_dt), nrow(brca5p_subset_dt))]]
+
+order_methods <- c('original_annotation', 'random', 'ImmC', 'SingleR', 'garnett')
+
+
+f5g <- brca5p_subset_dt %>% 
+  melt(id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=brca5p_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
          geom_point(aes(color = value), size = .5, pch = 18) +
           theme_minimal() + 
      theme(legend.pos = "bottom", 
@@ -735,9 +846,357 @@ subsample.df[,c(1,2,3,6,5,10,7,8,9)] %>% melt(id.vars = c('Cell', 'UMAP1', 'UMAP
     coord_equal () + 
       #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
     scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'lightgrey', 'black'),
-                       guide = guide_legend(nrow=3,override.aes = list(size=4))) +
-    facet_wrap(~variable, ncol = 3)
+                       guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
+    facet_wrap(~variable, ncol = 5)
+f5g
+
+```
+
+
+
+```{r}
+fs5_a <- melt(brca5p_subset_dt,
+     id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels=brca5p_celltypes)) %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = variable), size = .5, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "right", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 8, colour = "black", angle = 0),
+          ) +
+    coord_equal () + 
+     guides(colour = guide_legend( override.aes = list(size=6)))+
+    facet_wrap(~value, labeller = label_wrap_gen(width=8))
+
+
+fs5_a
+```
+
+## distance plot
+
+```{r}
+f5g_2 <- dist_plot(brca5p_subset_dt, palette='Paired', n1=12, n2=13)
+f5g_2
+
+```
+
+
+
+```{r}
+
+
+brca5p_order_celltypes <- c('NKT', 'T:CD4+Naive', 'T:CD4+CM','T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
+                            'T:CD8+EM','Treg',  'CD4+T', 'CD8+T', 'T', 'Exhausted T',
+                            'Tissue-resident memory','Other', 'Unassigned')
+
+
+
+f5h <- brca5p_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')] %>%
+  mutate(ImmC = factor(ImmC, levels = brca5p_order_celltypes),
+         SingleR = factor(SingleR, levels = brca5p_order_celltypes),
+         Original = factor(original_annotation, levels = brca5p_order_celltypes)
+         ) %>%
+ggplot(aes(axis1 = ImmC, axis2 = Original, axis3 = SingleR,y = N)) +
+  scale_x_discrete(limits = c('ImmC', 'Original', 'SingleR'), expand = c(.1, 0)) +
+  xlab("Method") +
+  
+  scale_fill_manual(values =sample(colorRampPalette(brewer.pal(10, "Spectral"))(13)))+
+  geom_alluvium(aes(fill = Original)) +
+  geom_stratum(width = .6) + 
+  geom_text(stat = "stratum", infer.label = T)+
+  #ggfittext::geom_fit_text(stat = "stratum", infer.label = T) +
+  theme_minimal() + #coord_flip()+
+  theme(legend.pos = "none") 
+
+f5h
+```
+
+
+
+
+
+## Figure 6
+
+
+
+
+```{r}
+pbmc68k.L1.celltypes <- c('L', 'M', 'CD34')
+pbmc68k.ImmC.L1.recall <- c(100,94,18)
+pbmc68k.ImmC.L1.ppv <- c(100,94,30)
+
+pbmc68k.SingleR.L1.recall <- c(100, 88,20)
+pbmc68k.SingleR.L1.ppv <- c(99,100,78)
+
+pbmc68k.Garnett.L1.recall <- c(100,39,7)
+pbmc68k.Garnett.L1.ppv <- c(98,94,37)
+
+
+
+pbmc68k.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte')
+
+
+
+
+pbmc68k.ImmC.L2.recall <- c(71,94,82,32,67)
+pbmc68k.ImmC.L2.ppv <- c(69,93,90,85,62)
+
+pbmc68k.SingleR.L2.recall <- c(65,99,49,NA,93)
+pbmc68k.SingleR.L2.ppv <- c(88,88,95,NA,60)
+
+pbmc68k.Garnett.L2.recall <- c(65, 99,51,21,38)
+pbmc68k.Garnett.L2.ppv <- c(97, 88,80,81,73)
+
+
+pbmc68k.L3.celltypes <- c('CD4', 'CD8' )
+
+
+
+
+pbmc68k.ImmC.L3.recall <- c(80,52)
+pbmc68k.ImmC.L3.ppv <- c(69,66)
+
+pbmc68k.SingleR.L3.recall <- c(98,23)
+pbmc68k.SingleR.L3.ppv <- c(60,49)
+
+pbmc68k.Garnett.L3.recall <- c(33,18)
+pbmc68k.Garnett.L3.ppv <- c(71,47)
+
+pbmc68k.L4.celltypes <- c("CD4+ TNaive", "CD8+ TNaive", "Treg", "Tfh")
+
+
+
+
+pbmc68k.ImmC.L4.recall <- c(32, 24, 49,NA)
+pbmc68k.ImmC.L4.ppv <- c(8, 65,32,  NA)
+
+pbmc68k.SingleR.L4.recall <- c(64,NA,NA, NA)
+pbmc68k.SingleR.L4.ppv <- c(7,NA, NA, NA)
+
+pbmc68k.Garnett.L4.recall <- rep(NA, 4)
+pbmc68k.Garnett.L4.ppv <- rep(NA, 4)
+
+
+brca3p.L1.celltypes <- c('L', 'M')
+brca3p.ImmC.L1.recall <- c(97, 94)
+brca3p.ImmC.L1.ppv <- c(99, 95)
+
+brca3p.SingleR.L1.recall <- c(99, 92)
+brca3p.SingleR.L1.ppv <- c(99, 97)
+
+brca3p.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte', 'Macrophage', 'Neutrophil', 'Mast')
+
+
+
+
+brca3p.Garnett.L1.recall <- c(87, 55)
+brca3p.Garnett.L1.ppv <- c(97, 92)
+
+brca3p.ImmC.L2.recall <- c(81,97,70,50,33,95,75,73)
+brca3p.ImmC.L2.ppv <- c(89,99,64,53,70,59,52,88)
+
+brca3p.SingleR.L2.recall <- c(91,96,61,3,72,76,79,NA)
+brca3p.SingleR.L2.ppv <- c(95,97,31,22,50, 70,80,NA)
+
+brca3p.Garnett.L2.recall <- c(94, 86,52,19,42,NA,NA,NA)
+brca3p.Garnett.L2.ppv <- c(97,99,35, 50,29,NA,NA,NA)
+
+
+
+
+brca3p.L3.celltypes <- c('CD4', 'CD8', 'mDC', 'pDC')
+
+
+
+
+brca3p.ImmC.L3.recall <- c(85,49,24,67)
+brca3p.ImmC.L3.ppv <- c(76,65,60,13)
+
+brca3p.SingleR.L3.recall <- c(96,27,3,NA)
+brca3p.SingleR.L3.ppv <- c(71,73,18,NA)
+
+brca3p.Garnett.L3.recall <- c(31,8,NA,NA)
+brca3p.Garnett.L3.ppv <- c(73,94,NA,NA)
+
+
+
+brca3p.L4.celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
+
+
+
+
+brca3p.ImmC.L4.recall <- c(37,14,14,8, 2, 25,65)
+brca3p.ImmC.L4.ppv <- c(90,3, NA, 27,NA, 24,10)
+
+brca3p.SingleR.L4.recall <- c(41,52,44,4,8,2,NA)
+brca3p.SingleR.L4.ppv <- c(98,8,1,67,1,16,33)
+
+brca3p.Garnett.L4.recall <- rep(NA, 7)
+brca3p.Garnett.L4.ppv <- rep(NA, 7)
+
+
+
+brca5p.L3.celltypes <- c('CD4', 'CD8')
+
+
+brca5p.ImmC.L3.recall <- c(83,71)
+brca5p.ImmC.L3.ppv <- c(88,94)
+
+brca5p.SingleR.L3.recall <- c(99, 29)
+brca5p.SingleR.L3.ppv <- c(59,98)
+
+brca5p.Garnett.L3.recall <- c(97,14)
+brca5p.Garnett.L3.ppv <- c(74,97)
+
+brca5p.L4.celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
+
+
+
+
+brca5p.ImmC.L4.recall <- c(4,45,9,3,1, 17, 69)
+brca5p.ImmC.L4.ppv <- c(17, 46,33,6,19, 63, 48)
+
+brca5p.SingleR.L4.recall <- c(6, 75,28,2,NA, 1,NA)
+brca5p.SingleR.L4.ppv <- c(14,27,8,28,1,77,100 )
+
+brca5p.Garnett.L4.recall <- rep(NA, 7)
+brca5p.Garnett.L4.ppv <- rep(NA, 7)
+
+
+
+hcc.L4.celltypes <- c( "CD4+ TNaive", "CD4+ TEx", "Tfh", "Treg", "CD8+ TEx","CD8+ TNaive", "CD8+ TEM","MAIT")
+
+
+hcc.L3.celltypes <- c('CD4', 'CD8')
+hcc.ImmC.L3.recall <- c(87,82)
+hcc.ImmC.L3.ppv <- c(61,44 )
+
+hcc.SingleR.L3.recall <- c(93,42)
+hcc.SingleR.L3.ppv <- c(43,50)
+
+hcc.Garnett.L3.recall <- c(NA, NA)
+hcc.Garnett.L3.ppv <- c(NA, NA)
+hcc.ImmC.L4.recall <- c(24, 19,NA,90,3,55,44,57)
+hcc.ImmC.L4.ppv <- c(49,62,33,52,12,42,23,51)
+
+hcc.SingleR.L4.recall <- c(20,NA, NA, NA,NA,NA,1,NA)
+hcc.SingleR.L4.ppv <- c( 49,NA, NA,NA, NA,NA, 5,NA)
+
+hcc.Garnett.L4.recall <- rep(NA, 8)
+hcc.Garnett.L4.ppv <- rep(NA, 8)
+
+
+perf <- rbind(data.frame(celltype = rep(brca3p.L1.celltypes, 3), dataset = "brca3p", 
+                 recall=c(brca3p.ImmC.L1.recall,brca3p.SingleR.L1.recall,brca3p.Garnett.L1.recall),
+                 precision=c(brca3p.ImmC.L1.ppv,brca3p.SingleR.L1.ppv,brca3p.Garnett.L1.ppv), 
+                 method=c(rep("ImmClassifier",  length(brca3p.L1.celltypes)), rep("SingleR", length(brca3p.L1.celltypes)), rep("Garnett", length(brca3p.L1.celltypes))), 
+                 level = 1, stringsAsFactors = F),
+      data.frame(celltype = rep(brca3p.L2.celltypes,3),  dataset = "brca3p", 
+                 recall=c(brca3p.ImmC.L2.recall,brca3p.SingleR.L2.recall,brca3p.Garnett.L2.recall),
+                 precision=c(brca3p.ImmC.L2.ppv,brca3p.SingleR.L2.ppv,brca3p.Garnett.L2.ppv), 
+                 method=c(rep("ImmClassifier",  length(brca3p.L2.celltypes)), rep("SingleR", length(brca3p.L2.celltypes)), rep("Garnett", length(brca3p.L2.celltypes))), 
+                 level = 2, stringsAsFactors = F),
+      data.frame(celltype = rep(brca3p.L3.celltypes,3),  dataset = "brca3p", 
+                 recall=c(brca3p.ImmC.L3.recall,brca3p.SingleR.L3.recall,brca3p.Garnett.L3.recall),
+                 precision=c(brca3p.ImmC.L3.ppv,brca3p.SingleR.L3.ppv,brca3p.Garnett.L3.ppv), 
+                 method=c(rep("ImmClassifier",  length(brca3p.L3.celltypes)), rep("SingleR", length(brca3p.L3.celltypes)), rep("Garnett", length(brca3p.L3.celltypes))), 
+                 level = 3, stringsAsFactors = F),
+      data.frame(celltype = rep(brca3p.L4.celltypes,3),  dataset = "brca3p", 
+                 recall=c(brca3p.ImmC.L4.recall,brca3p.SingleR.L4.recall,brca3p.Garnett.L4.recall),
+                 precision=c(brca3p.ImmC.L4.ppv,brca3p.SingleR.L4.ppv,brca3p.Garnett.L4.ppv), 
+                 method=c(rep("ImmClassifier",  length(brca3p.L4.celltypes)), rep("SingleR", length(brca3p.L4.celltypes)), rep("Garnett", length(brca3p.L4.celltypes))), 
+                 level = 4, stringsAsFactors = F),
+     
+      data.frame(celltype = rep(brca5p.L3.celltypes, 3),  dataset = "brca5p", 
+                 recall=c(brca5p.ImmC.L3.recall,brca5p.SingleR.L3.recall,brca5p.Garnett.L3.recall),
+                 precision=c(brca5p.ImmC.L3.ppv,brca5p.SingleR.L3.ppv, brca5p.Garnett.L3.ppv), 
+                 method=c(rep("ImmClassifier",  length(brca5p.L3.celltypes)), rep("SingleR",length(brca5p.L3.celltypes)), rep("Garnett", length(brca5p.L3.celltypes))), 
+                 level = 3, stringsAsFactors = F),
+      data.frame(celltype = rep(brca5p.L4.celltypes, 3), dataset = "brca5p", 
+                 recall=c(brca5p.ImmC.L4.recall,brca5p.SingleR.L4.recall,brca5p.Garnett.L4.recall),
+                 precision=c(brca5p.ImmC.L4.ppv,brca5p.SingleR.L4.ppv,brca5p.Garnett.L4.ppv), 
+                 method=c(rep("ImmClassifier",  length(brca5p.L4.celltypes)), rep("SingleR",length(brca5p.L4.celltypes)), rep("Garnett", length(brca5p.L4.celltypes))), 
+                 level = 4, stringsAsFactors = F),
+     
+      data.frame(celltype = rep(hcc.L3.celltypes, 3), dataset = "hcc", 
+                 recall=c(hcc.ImmC.L3.recall,hcc.SingleR.L3.recall,hcc.Garnett.L3.recall),
+                 precision=c(hcc.ImmC.L3.ppv,hcc.SingleR.L3.ppv, hcc.Garnett.L3.ppv), 
+                 method=c(rep("ImmClassifier",  length(hcc.L3.celltypes)), rep("SingleR",length(hcc.L3.celltypes)), rep("Garnett", length(hcc.L3.celltypes))), 
+                 level = 3, stringsAsFactors = F),
+      data.frame(celltype = rep(hcc.L4.celltypes, 3),  dataset = "hcc", 
+                 recall=c(hcc.ImmC.L4.recall,hcc.SingleR.L4.recall,hcc.Garnett.L4.recall),
+                 precision=c(hcc.ImmC.L4.ppv,hcc.SingleR.L4.ppv,hcc.Garnett.L4.ppv), 
+                 method=c(rep("ImmClassifier",  length(hcc.L4.celltypes)), rep("SingleR",length(hcc.L4.celltypes)), rep("Garnett", length(hcc.L4.celltypes))), 
+                level = 4, stringsAsFactors = F),
+        # exclude cd34
+       data.frame(celltype = rep(pbmc68k.L1.celltypes, 2),  dataset = "pbmc68k", 
+                 recall=c(pbmc68k.ImmC.L1.recall[1:2],pbmc68k.SingleR.L1.recall[1:2],pbmc68k.Garnett.L1.recall[1:2]),
+                 precision=c(pbmc68k.ImmC.L1.ppv[1:2],pbmc68k.SingleR.L1.ppv[1:2],pbmc68k.Garnett.L1.ppv[1:2]), 
+                  method=c(rep("ImmClassifier",  length(pbmc68k.L1.celltypes[1:2])), rep("SingleR",length(pbmc68k.L1.celltypes[1:2])), rep("Garnett", length(pbmc68k.L1.celltypes[1:2]))), 
+                level = 1, stringsAsFactors = F),
+      data.frame(celltype = rep(pbmc68k.L2.celltypes,3),   dataset = "pbmc68k", 
+                 recall=c(pbmc68k.ImmC.L2.recall,pbmc68k.SingleR.L2.recall,pbmc68k.Garnett.L2.recall),
+                 precision=c(pbmc68k.ImmC.L2.ppv,pbmc68k.SingleR.L2.ppv,pbmc68k.Garnett.L2.ppv), 
+                  method=c(rep("ImmClassifier",  length(pbmc68k.L2.celltypes)), rep("SingleR",length(pbmc68k.L2.celltypes)), rep("Garnett", length(pbmc68k.L2.celltypes))), 
+                level = 2, stringsAsFactors = F),
+      data.frame(celltype = rep(pbmc68k.L3.celltypes,3),   dataset = "pbmc68k", 
+                 recall=c(pbmc68k.ImmC.L3.recall,pbmc68k.SingleR.L3.recall,pbmc68k.Garnett.L3.recall),
+                 precision=c(pbmc68k.ImmC.L3.ppv,pbmc68k.SingleR.L3.ppv,pbmc68k.Garnett.L3.ppv), 
+                 method=c(rep("ImmClassifier",  length(pbmc68k.L3.celltypes)), rep("SingleR",length(pbmc68k.L3.celltypes)), rep("Garnett", length(pbmc68k.L3.celltypes))), 
+                level = 3, stringsAsFactors = F),
+      data.frame(celltype = rep(pbmc68k.L4.celltypes,3),   dataset = "pbmc68k", 
+                 recall=c(pbmc68k.ImmC.L4.recall,pbmc68k.SingleR.L4.recall,pbmc68k.Garnett.L4.recall),
+                 precision=c(pbmc68k.ImmC.L4.ppv,pbmc68k.SingleR.L4.ppv,pbmc68k.Garnett.L4.ppv), 
+                  method=c(rep("ImmClassifier",  length(pbmc68k.L4.celltypes)), rep("SingleR",length(pbmc68k.L4.celltypes)), rep("Garnett", length(pbmc68k.L4.celltypes))), 
+                level = 4, stringsAsFactors = F)
+     
+     ) %>% mutate(recall = ifelse(is.na(recall), 0, recall),
+                precision = ifelse(is.na(precision), 0, precision)) 
 
 
 ```
+
+```{r}
+f6 <- perf %>%  mutate(
+            level = factor(level, levels = c(1,2,3,4)),
+           method = factor(method, levels = c('ImmClassifier', 'SingleR', 'Garnett')),
+           dataset = factor(dataset, levels = c('brca3p', 'pbmc68k', 'brca5p', 'hcc'))) %>%
+    melt (id.vars = c('celltype', 'method', 'level', 'dataset')) %>%
+     ggplot(aes(x=level, y=value, fill = method)) + 
+    geom_boxplot(aes(fill = method), alpha = 0.2, color = "black", lwd = .2, outlier.shape = NA, width = .5)+
+  #geom_jitter(width = 0.2, size = 1, pch = 21, alpha = .8)+
+     theme_classic() + 
+     theme(axis.text.x = element_text(angle =0, size =12, hjust = 1,color= "black"), 
+                  axis.text.y = element_text(size = 12, hjust = 1,color = "black"),
+                  axis.title.x = element_text(size = 12, hjust = 1), 
+                  axis.title.y = element_text(size = 12, hjust = 1),
+             panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+        legend.pos = "right")+ #coord_flip() +
+    stat_summary(fun.y=median, geom="smooth", aes(group=method, color = method), lwd=.8) + 
+    facet_grid(dataset~variable)
+ 
+
+f6
+```
+
+
+## Figure S7
+```{r}
+
+
+
+
+
+
+```
+
 
