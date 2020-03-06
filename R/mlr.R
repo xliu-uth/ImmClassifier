@@ -91,12 +91,15 @@ dat_partition <- function(refdat.path, ext.dat){
 
     require(dplyr)
     require(sva)
-  print (paste("load train/test parition from training set", refdat.path))
+  print (paste("load train/test partition from training set", refdat.path))
   train.test.mat <- readRDS(refdat.path)
 
   # due to high drop-out rate, only feature genes that are expressed in query dataset will be used
   common.genes <- intersect(colnames(train.test.mat$train), colnames(ext.dat))
   print(paste("Feature reduced from #", ncol(train.test.mat$train), "to", length(common.genes)))
+  if(length(common.genes) == 0) 
+    stop("No genes match the training data set.")
+
   ext.feat.mat <- ext.dat[, common.genes]
 
   # For reference dataset, only immune cells are used.

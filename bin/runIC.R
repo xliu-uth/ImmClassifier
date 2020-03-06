@@ -28,6 +28,15 @@ main<-function(){
     out.prefix <- args$output
 #    num.cores <- args$cores
 
+    # Allow the user to specify --input files relative to the current
+    # working directory.
+    orig.input.path <- input.path
+    if(!file.exists(input.path))
+      input.path <- sprintf("/tmp/%s", input.path)
+    if(!file.exists(input.path))
+      stop(sprintf("Cannot find file: %s", orig.input.path))
+  
+
     mode=ifelse(args$testmode,'mode','prod')
 
     require(ImmClassifier)
