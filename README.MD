@@ -22,7 +22,8 @@ docker pull sgosline/imm-classifier
 
 
 Alternatively, you can also build locally and install from the GitHub source.
-To do this, you must have both git and Docker installed and run commands:
+To do this, you must have both git and Docker installed and then
+run the commands:
 
 ```
 git clone https://github.com/sgosline/ImmClassifier.git
@@ -73,11 +74,11 @@ directory for docker to find it.  If you are a docker expert, you may specify fi
 
 The output files will be written to your local directory with the prefix specified by the `output_prefix` argument.   ImmClassifier will generate three
 files:
-`output_prefix`.dnn.input.txt
-`output_prefix`.deeplearning.ontotree.stats.txt
-`output_prefix`.output.txt
+* `output_prefix`.dnn.input.txt
+* `output_prefix`.deeplearning.ontotree.stats.txt
+* `output_prefix`.output.txt
 
-The output.txt file contains the final predictions.  The other files contain
-intermediate results.
+The `output_prefix`.output.txt file contains the final predictions.
+The other files contain intermediate results.
 
 
