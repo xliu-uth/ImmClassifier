@@ -1,6 +1,6 @@
 # ImmClassifier
 
-**Update: January 2, 2020**
+**Update: March 10, 2020**
 
 Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
 
@@ -9,27 +9,34 @@ Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
 
 # Description
 
-ImmClassifier (Immune cell classifier), a knowledge-based and lineage-driven immune cell  classification algorithm with fine annotation granularity yet high prediction accuracy. ImmClassifer seamlessly integrates the biology of immune cell differentiation, the strength of heterogeneous reference datasets and the state-of-art machine learning models. ImmClassifier cascades a machine learning module and a deep learning module.
+ImmClassifier (Immune cell classifier), a knowledge-based and lineage-driven immune cell classification algorithm with fine annotation granularity yet high prediction accuracy. ImmClassifer seamlessly integrates the biology of immune cell differentiation, the strength of heterogeneous reference datasets and the state-of-art machine learning models. ImmClassifier cascades a machine learning module and a deep learning module.
 
 # Install
 
-
-THIS IS GOOD, BUT YOU WILL ALSO NEED TO PROVIDE STEP-BY-STEP INSTRUCTIONS ON HOW TO CLONE THIS REPOSITORY, AND WHICH DIRECTORY TO RUN THIS COMMAND FROM.
-The docker image can be built locally from this repository using the following command:
-```
-docker build . -t imm-classifier
-```
-
-
-MAKE THIS THE MAIN INSTALLATION PROCEDURE.
-Alternatively you can pull a fully working docker image using this command:
+We have provided a Docker container that includes ImmClassifier and 
+all its dependencies.  To get the container, you must have Docker installed
+and use this command:
 ```
 docker pull sgosline/imm-classifier
 ```
 
+
+Alternatively, you can also build locally and install from the GitHub source.
+To do this, you must have both git and Docker installed and run commands:
+
+```
+git clone https://github.com/sgosline/ImmClassifier.git
+
+cd ImmClassifier
+
+docker build . -t imm-classifier
+```
+
+
 # Prerequisites
 
 All pre-requisites are in the Docker image. We recommend using this image instead of installing locally.
+
 
 # Usage Examples
 
@@ -37,29 +44,40 @@ ImmClassifier runs a series of three individual commands using both R and Python
 - the input file
 - the output prefix
 
+
 ### Input File
 
 This file is a matrix of gene counts where the rows represent gene names with the HUGO identifiers and the columns represent individual cells.
 
-PROVIDE LINK TO THE SAMPLE MATRIX.
+An example file is at:
+https://github.com/sgosline/ImmClassifier/blob/master/test/bulk.logrma.txt
+
 
 ### Output File
 
-This file is a matrix of cell type predictions for each cell. 
+This file is a matrix of cell type predictions for each cell.
 
-PROVIDE LINK TO SOME PRE-COMPUTED OUTPUT FROM THE SAMPLE MATRIX, SO PEOPLE CAN CHECK TO MAKE SURE THEIR DOCKER IS RUNNING CORRECTLY.
+The output for the exmple above is at:
+https://github.com/sgosline/ImmClassifier/blob/master/output/bulk.output.txt
+
 
 ### To run
+
 To run the command you must provide the path to your input file, the output prefix and mount the `/tmp` directory to get the output files.
 ```
-docker run --volume $PWD:/tmp -ti sgosline/imm-classifier Rscript /ImmClassifier/bin/runIC.R --input test/bulk.logrma.txt --output testOut
+docker run --volume $PWD:/tmp -ti sgosline/imm-classifier --input `input_file` --output `output_prefix`
 ```
 
-I HAVE MADE SOME CHANGES TO SIMPLIFY THIS A BIT.  TO RUN TEST FILE:
-docker run --volume $PWD:/tmp -ti sgosline/imm-classifier --input test/bulk.logrma.txt --output testOut
+`input_file` is the name of input file.  It needs to be in the local 
+directory for docker to find it.  If you are a docker expert, you may specify files in other directories, but you will need to bind the directory using the docker --volume command.  
 
-docker run --volume $PWD:/tmp -ti sgosline/imm-classifier --input <your_file> --output testOut
+The output files will be written to your local directory with the prefix specified by the `output_prefix` argument.   ImmClassifier will generate three
+files:
+`output_prefix`.dnn.input.txt
+`output_prefix`.deeplearning.ontotree.stats.txt
+`output_prefix`.output.txt
 
-where <your_file> is a file in your local directory.
+The output.txt file contains the final predictions.  The other files contain
+intermediate results.
 
-The output files will be written to your local directory with the prefix specified by the `output` argument.
+
