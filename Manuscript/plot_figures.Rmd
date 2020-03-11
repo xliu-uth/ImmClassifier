@@ -269,6 +269,7 @@ f5c_2
  fs3_a <- melt(brca3p_subset_dt,
      id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
   mutate(value = factor(value, levels=brca3p_celltypes)) %>%
+  filter(variable!="random") %>%
   mutate(variable = factor(variable, levels=order_methods)) %>%
   ggplot(aes(UMAP1, UMAP2)) + 
          geom_point(aes(color = variable), size = .5, pch = 18) +
@@ -457,6 +458,7 @@ f5a
  fs2_a <- melt(pbmc68k_subset_dt,
      id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
   mutate(value = factor(value, levels=pbmc68k_celltypes)) %>%
+  filter(variable!="random") %>%
   mutate(variable = factor(variable, levels=order_methods)) %>%
   ggplot(aes(UMAP1, UMAP2)) + 
          geom_point(aes(color = variable), size = .5, pch = 18) +
@@ -654,6 +656,7 @@ f5e
 fs4_a <- melt(hcc_subset_dt,
      id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
   mutate(value = factor(value, levels=hcc_celltypes)) %>%
+  filter(variable!="random") %>%
   mutate(variable = factor(variable, levels=order_methods)) %>%
   ggplot(aes(UMAP1, UMAP2)) + 
          geom_point(aes(color = variable), size = .5, pch = 18) +
@@ -782,10 +785,41 @@ setkey(brca5p_dt, Cell)
 
 ```
 
+
+
+
+```{r}
+
+fs7a <- brca5p_dt[original_annotation!='NKT', ][, annot:=ImmC][, Known:= original_annotation][!grepl("^L:T", annot), annot:="Other"][, c('Known', 'annot')] %>% table %>%
+           
+            plot_heatmap(title = "", palette= "Greens", 
+              minshow = 1, size =14, size2=5, minpct=0, measures = c('Recall', 'Precision'),
+                        legend.pos = "none",
+            ord1 = c('L:T:CD4:CM', 'L:T:CD4:EM', 'L:T:CD4:TRM', 'L:T:CD4:Ex','L:T:CD4:Naïve',                    
+                    'L:T:CD8:CM', 'L:T:CD8:EM', 'L:T:CD8:TRM', 'L:T:CD8:Ex','L:T:CD8:Naïve',
+                      'L:T:CD8:Mait', 'L:unconvT','L:T:CD4:Treg','L:T:CD4:Tfh'
+                    ))                                                      
+ 
+fs7b <- brca5p_dt[original_annotation!='NKT', ][, annot:=SingleR][, Known:= original_annotation][!grepl("T_cell", annot), annot:="Other"][, c('Known', 'annot')] %>% table %>%
+           
+            plot_heatmap(title = "", palette= "Blues", 
+              minshow = 1, size =14, size2=5, minpct=0, measures = c('Recall', 'Precision'),
+                        legend.pos = "none",
+           ord1 = c(
+                'T_cell:CD4+','T_cell:CD4+_central_memory','T_cell:CD4+_effector_memory','T_cell:CD4+_Naive',
+               'T_cell:CD8+', 'T_cell:CD8+_Central_memory', 'T_cell:CD8+_effector_memory', 'T_cell:CD8+_effector_memory_RA', 'T_cell:CD8+_naive',
+                'T_cell:gamma-delta','T_cell:Treg:Naive'
+                    )) 
+
+```
+
+
+
+
 ```{r}
 brca5p_celltypes <- c('NKT', 'T:CD4+Naive', 'T:CD4+CM','T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
                       'T:CD8+EM','Treg',  'CD4+T', 'CD8+T', 'T', 'Exhausted T',
-                      'Tissue-resident memory','Other', 'Unassigned')
+                      'L:T:CD4:TRM', 'L:T:CD8:TRM', 'Other', 'Unassigned')
 
 brca5p_dt[grepl("L:T:CD4:CM",ImmC), ImmC:= "T:CD4+CM"]
 brca5p_dt[grepl("L:T:CD4:EM",ImmC), ImmC:= "T:CD4+EM"]
@@ -793,10 +827,10 @@ brca5p_dt[grepl("L:T:CD4:Naïve",ImmC), ImmC:= "T:CD4+Naive"]
 brca5p_dt[grepl("L:T:CD8:CM",ImmC), ImmC:= "T:CD8+CM"]
 brca5p_dt[grepl("L:T:CD8:EM",ImmC), ImmC:= "T:CD8+EM"]
 brca5p_dt[grepl("Ex",ImmC), ImmC:=  "Exhausted T"]
-brca5p_dt[grepl("TRM",ImmC), ImmC:=  "Tissue-resident memory"]
+#brca5p_dt[grepl("TRM",ImmC), ImmC:=  "Tissue-resident memory"]
 brca5p_dt[grepl("L:T:CD8:Naïve",ImmC), ImmC:=  "T:CD8+Naive"]
 brca5p_dt[grepl("Treg",ImmC), ImmC:=  "Treg"]
-brca5p_dt[!ImmC %in% brca5p_celltypes, ImmC:=  "Other"]
+brca5p_dt[!ImmC %in% c('L:T:CD4:TRM', 'L:T:CD8:TRM', brca5p_celltypes), ImmC:=  "Other"]
 
 
 brca5p_dt[grepl("T_cell:CD4\\+_central_memory",SingleR), SingleR:=  "T:CD4+CM"]
@@ -845,7 +879,7 @@ f5g <- brca5p_subset_dt %>%
           strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
     coord_equal () + 
       #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
-    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'lightgrey', 'black'),
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'magenta', 'lightgrey', 'black'),
                        guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
     facet_wrap(~variable, ncol = 5)
 f5g
@@ -858,6 +892,7 @@ f5g
 fs5_a <- melt(brca5p_subset_dt,
      id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
   mutate(value = factor(value, levels=brca5p_celltypes)) %>%
+  filter(variable!="random") %>%
   mutate(variable = factor(variable, levels=order_methods)) %>%
   ggplot(aes(UMAP1, UMAP2)) + 
          geom_point(aes(color = variable), size = .5, pch = 18) +
@@ -893,10 +928,12 @@ f5g_2
 ```{r}
 
 
+#brca5p_order_celltypes <- c('NKT', 'T:CD4+Naive', 'T:CD4+CM','T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
+#                            'T:CD8+EM','Treg',  'CD4+T', 'CD8+T', 'T', 'Exhausted T',
+#                            'Tissue-resident memory','Other', 'Unassigned')
 brca5p_order_celltypes <- c('NKT', 'T:CD4+Naive', 'T:CD4+CM','T:CD4+EM', 'T:CD8+Naive', 'T:CD8+CM',
                             'T:CD8+EM','Treg',  'CD4+T', 'CD8+T', 'T', 'Exhausted T',
-                            'Tissue-resident memory','Other', 'Unassigned')
-
+                            'L:T:CD4:TRM','L:T:CD8:TRM','Other', 'Unassigned')
 
 
 f5h <- brca5p_subset_dt[, .N, by = c('ImmC', 'SingleR', 'original_annotation')] %>%
@@ -921,6 +958,38 @@ f5h
 
 
 
+
+
+# Zoom in trm , separate cd4 and cd8 trm
+```{r}
+
+brca5p_subset_dt %>% 
+  melt(id.vars = c('Cell', 'UMAP1', 'UMAP2', 'Cluster')) %>%
+  mutate(value = factor(value, levels= brca5p_order_celltypes)) %>%
+filter(variable == 'SingleR') %>%
+  mutate(variable = factor(variable, levels=order_methods)) %>%
+  
+  ggplot(aes(UMAP1, UMAP2)) + 
+         geom_point(aes(color = value), size = 1, pch = 18) +
+          theme_minimal() + 
+     theme(legend.pos = "bottom", 
+          panel.grid.minor = element_blank(), 
+          panel.grid.major = element_blank(),
+          panel.border = element_rect(color = "black", fill = NA, size = .1),
+          axis.text.x = element_text(angle = 0, size = 8, hjust = 1,color= "black"), 
+          axis.text.y = element_text(size = 8, hjust = 1,color = "black"),
+          axis.title.x = element_text(angle = 0, size = 8, hjust = .5,color= "black"), 
+          axis.title.y = element_text(angle = 90, size = 8, hjust = .5,color= "black"), 
+          strip.text.x = element_text(size = 10, colour = "black", angle = 0)) +
+    coord_equal () + 
+      #  scale_color_manual(values=wes_palette(n=13, name="Rushmore1"))  + 
+    scale_color_manual(values = c(colorRampPalette(brewer.pal(12, "Paired"))(13), 'magenta', 'lightgrey', 'black'),
+                       guide = guide_legend(ncol = 3, override.aes = list(size=4))) +
+    facet_wrap(value~variable, ncol = 5) + xlim(-10, -3) + ylim(0, 6)
+
+
+
+```
 
 
 ## Figure 6
@@ -1165,10 +1234,10 @@ perf <- rbind(data.frame(celltype = rep(brca3p.L1.celltypes, 3), dataset = "brca
 ```
 
 ```{r}
-f6 <- perf %>%  mutate(
+f6a <- perf %>%  mutate(
             level = factor(level, levels = c(1,2,3,4)),
            method = factor(method, levels = c('ImmClassifier', 'SingleR', 'Garnett')),
-           dataset = factor(dataset, levels = c('brca3p', 'pbmc68k', 'brca5p', 'hcc'))) %>%
+           dataset = factor(dataset, levels = c( 'pbmc68k', 'brca3p', 'brca5p','hcc'))) %>%
     melt (id.vars = c('celltype', 'method', 'level', 'dataset')) %>%
      ggplot(aes(x=level, y=value, fill = method)) + 
     geom_boxplot(aes(fill = method), alpha = 0.2, color = "black", lwd = .2, outlier.shape = NA, width = .5)+
@@ -1181,22 +1250,77 @@ f6 <- perf %>%  mutate(
              panel.grid.major = element_blank(),
          panel.grid.minor = element_blank(),
         legend.pos = "right")+ #coord_flip() +
-    stat_summary(fun.y=median, geom="smooth", aes(group=method, color = method), lwd=.8) + 
+    #stat_summary(fun.y=median, geom="smooth", aes(group=method, color = method), lwd=.8) + 
     facet_grid(dataset~variable)
  
+dcast(data.table(perf)[, median(precision), by = c( 'dataset', 'level', 'method')], dataset~method+level)
 
-f6
+dcast(data.table(perf)[, median(recall), by = c( 'dataset', 'level', 'method')], dataset~method+level)
+```
+
+
+
+```{r}
+dcast(data.table(perf)[, median(precision), by = c( 'dataset', 'level', 'method')], dataset+level~method)[, .(dataset, level, ImmClassifier-Garnett, ImmClassifier-SingleR)][, .(mean(V3), mean(V4)), by = level]
+
+
+dcast(data.table(perf)[, median(precision), by = c( 'dataset', 'level', 'method')], dataset+level~method)[, mean(ImmClassifier), by = level]
+
+
 ```
 
 
 ## Figure S7
 ```{r}
+brca5p_lcpm <- readRDS('data_for_figure_plots/testdata/brca.5p.lcpm.rds')
+
+```
 
 
+```{r}
+mem_cells <- brca5p_dt[grepl("CM|EM", original_annotation) &  grepl("CM|EM", ImmC), Cell]
+trm_cells <- brca5p_dt[grepl("Tissue-resident memory", ImmC), Cell]
+naive_cells <- brca5p_dt[grepl("Naive", original_annotation) &  grepl("Naive", ImmC), Cell]
 
+f7 <- data.table (brca5p_lcpm[c(mem_cells, trm_cells, naive_cells), c('ITGAE', 'SELL')],
+            
+            group = c(rep("CM/EM", length(mem_cells)),
+                      rep("TRM", length(trm_cells)),
+                      rep("Naive", length(naive_cells))
+                      ))[, value:=ITGAE/SELL] %>%
+  ggplot(aes(group, value)) + 
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter(aes(group, value, color = group),  size = .1, pch = 21, alpha = .8) +
+  theme_classic()
+  
 
 
 
 ```
+
+
+
+# calcualte brca3p overall recall and prec
+```{r}
+
+brca3p_immc_recall <- perf %>% filter(dataset == 'brca3p', method == 'ImmClassifier', !celltype %in% c('Dendritic', 'T', 'CD4', 'CD8', 'L', 'M') ) %>% select(recall)  %>% unlist %>% mean()
+
+brca3p_immc_prec <- perf %>% filter(dataset == 'brca3p', method == 'ImmClassifier', !celltype %in% c('Dendritic', 'T', 'CD4', 'CD8', 'L', 'M') ) %>% select(precision)  %>% unlist %>% mean()
+
+
+
+brca3p_sr_recall <- perf %>% filter(dataset == 'brca3p', method == 'SingleR', !celltype %in% c('Dendritic', 'T', 'CD4', 'CD8', 'L', 'M') ) %>% select(recall)  %>% unlist %>% mean()
+
+brca3p_sr_prec <- perf %>% filter(dataset == 'brca3p', method == 'SingleR', !celltype %in% c('Dendritic', 'T', 'CD4', 'CD8', 'L', 'M') ) %>% select(precision)  %>% unlist %>% mean()
+
+
+brca3p_gn_recall <-  perf %>% filter(dataset == 'brca3p', method == 'Garnett', !celltype %in% c('Dendritic', 'T', 'CD4', 'CD8', 'L', 'M') ) %>% select(recall)  %>% unlist %>% mean()
+
+
+brca3p_gn_prec <- perf %>% filter(dataset == 'brca3p', method == 'Garnett', !celltype %in% c('Dendritic', 'T', 'CD4', 'CD8', 'L', 'M') ) %>% select(precision)  %>% unlist %>% mean()
+```
+
+
+``
 
 
