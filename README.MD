@@ -48,7 +48,8 @@ ImmClassifier runs a series of three individual commands using both R and Python
 
 ### Input File
 
-This file is a matrix of gene counts where the rows represent gene names with the HUGO identifiers and the columns represent individual cells.
+This file is a matrix of gene expression values where the rows represent gene names with the HUGO identifiers and the columns represent individual cells.  
+For the gene expression values, we have tested log_2 CPM (counts per million), log_2 TPM (transcripts per million), and microarray RMA values with good results.
 
 An example file is at:
 https://github.com/sgosline/ImmClassifier/blob/master/test/bulk.logrma.txt
