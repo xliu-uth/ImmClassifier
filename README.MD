@@ -52,7 +52,7 @@ This file is a matrix of gene expression values where the rows represent gene na
 For the gene expression values, we have tested log_2 CPM (counts per million), log_2 TPM (transcripts per million), and microarray RMA values with good results.
 
 An example file is at:
-https://github.com/sgosline/ImmClassifier/blob/master/test/bulk.logrma.txt
+https://github.com/xliu-uth/ImmClassifier/blob/master/test/bulk.logrma.txt
 
 
 ### Output File
@@ -60,7 +60,7 @@ https://github.com/sgosline/ImmClassifier/blob/master/test/bulk.logrma.txt
 This file is a matrix of cell type predictions for each cell.
 
 The output for the exmple above is at:
-https://github.com/xliu-uth/ImmClassifier/blob/master/test/bulk.logrma.txt
+https://github.com/xliu-uth/ImmClassifier/blob/master/output/bulk.output.txt
 
 
 ### To run
