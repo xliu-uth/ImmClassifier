@@ -60,7 +60,7 @@ https://github.com/sgosline/ImmClassifier/blob/master/test/bulk.logrma.txt
 This file is a matrix of cell type predictions for each cell.
 
 The output for the exmple above is at:
-https://github.com/sgosline/ImmClassifier/blob/master/output/bulk.output.txt
+https://github.com/xliu-uth/ImmClassifier/blob/master/test/bulk.logrma.txt
 
 
 ### To run
