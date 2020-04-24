@@ -105,6 +105,12 @@ dist_plot <- function(dt, palette, n1, n2){
   random_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = random]
   setkey(random_centroids, random)
 
+
+
+  ctrl_centroids <- dt[, {C1=mean(UMAP1);C2=mean(UMAP2); list(C1, C2)},by = ctrl]
+  setkey(ctrl_centroids, ctrl)
+
+
   immc_dist <-  data.table(celltype=immc_centroids$ImmC, dist = (immc_centroids[, -1] - original_centroids[immc_centroids$ImmC, -1])[, sqrt(C1^2+C2^2)], method = "ImmC")
 
   singler_dist <-  data.table(celltype=singler_centroids$SingleR,  dist=(singler_centroids[, -1] - original_centroids[singler_centroids$SingleR, -1])[, sqrt(C1^2+C2^2)], method = "SingleR")
@@ -112,12 +118,16 @@ dist_plot <- function(dt, palette, n1, n2){
   garnett_dist <-  data.table(celltype=garnett_centroids$garnett, dist = (garnett_centroids[, -1] - original_centroids[garnett_centroids$garnett, -1])[, sqrt(C1^2+C2^2)], method = "garnett")
 
   random_dist <-  data.table(celltype=random_centroids$random, dist = (random_centroids[, -1] - original_centroids[random_centroids$random, -1])[, sqrt(C1^2+C2^2)], method = "random")
-  comb_dt <- rbind(immc_dist, singler_dist, garnett_dist, random_dist)
+
+  ctrl_dist <-  data.table(celltype=ctrl_centroids$ctrl, dist = (ctrl_centroids[, -1] - original_centroids[ctrl_centroids$ctrl, -1])[, sqrt(C1^2+C2^2)], method = "ctrl")
+
+
+  comb_dt <- rbind(immc_dist, singler_dist, garnett_dist, random_dist, ctrl_dist)
   #print (comb_dt[1:3, ])
   ftmp <- comb_dt %>%
     mutate(!is.na(dist)) %>%
     mutate(!celltype %in% c('Other', 'Unassigned')) %>%
-    mutate(method = factor(method, c('ImmC', 'SingleR', 'garnett','random')))
+    mutate(method = factor(method, c('ImmC', 'ctrl', 'SingleR', 'garnett','random')))
 
   plt <- ggplot(ftmp, aes(x=method, y=dist)) +
     geom_boxplot(alpha = 0.2, color = "black", lwd = .3, outlier.shape = NA, width = .5) +
@@ -141,3 +151,4 @@ dist_plot <- function(dt, palette, n1, n2){
 
   return (plt)
 }
+
