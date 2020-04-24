@@ -155,10 +155,6 @@ pbmc68k.Garnett.L2.ppv <- c(97, 88,80,81,73)
 
 
 pbmc68k.L3.celltypes <- c('CD4', 'CD8' )
-
-
-
-
 pbmc68k.ImmC.L3.recall <- c(80,52)
 pbmc68k.ImmC.L3.ppv <- c(69,66)
 
@@ -169,10 +165,6 @@ pbmc68k.Garnett.L3.recall <- c(33,18)
 pbmc68k.Garnett.L3.ppv <- c(71,47)
 
 pbmc68k.L4.celltypes <- c("CD4+ TNaive", "CD8+ TNaive", "Treg", "Tfh")
-
-
-
-
 pbmc68k.ImmC.L4.recall <- c(32, 24, 49,NA)
 pbmc68k.ImmC.L4.ppv <- c(8, 65,32,  NA)
 
@@ -191,9 +183,6 @@ brca3p.SingleR.L1.recall <- c(99, 92)
 brca3p.SingleR.L1.ppv <- c(99, 97)
 
 brca3p.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte', 'Macrophage', 'Neutrophil', 'Mast')
-
-
-
 
 brca3p.Garnett.L1.recall <- c(87, 55)
 brca3p.Garnett.L1.ppv <- c(97, 92)
@@ -868,7 +857,7 @@ setkey(hcc_garnett_extend_dt, Cell)
 
 
 hcc_immc_ctrl <- fread(paste(data_folder, 'immc_ctrl/hcc.output.txt', sep = "/"))
-
+colnames(hcc_immc_ctrl)[2] <- 'ctrl'
 hcc_umap <- fread(paste(data_folder,'umap/out-hcc_all_umap/models/umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt', sep = "/"))
 setkey(hcc_umap, Cell)
 
@@ -1067,6 +1056,9 @@ brca5p_garnett_extend_dt <- data.table(Cell = rownames(brca5p_garnett_extend),
                                         garnett=brca5p_garnett_extend$cluster_ext_type)
 
 setkey(brca5p_garnett_extend_dt, Cell)
+
+brca5p_immc_ctrl <- fread(paste(data_folder, 'immc_ctrl/brca5p.output.txt', sep = "/"))
+colnames(brca5p_immc_ctrl)[2] <- 'ctrl'
 
 brca5p_umap <- fread(paste(data_folder,'umap/out-brca5p_umap/models//umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt', sep = "/"))
 setkey(brca5p_umap, Cell)
