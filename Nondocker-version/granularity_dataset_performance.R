@@ -270,5 +270,58 @@ brca3p.Garnett.L3.ppv <- c(72,94,NA,NA)
 
 
 
+brca3p_L4_celltypes <-  c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
+brca3p_L4 <- brca3p_dt[!grepl("NKT", original_annotation), ]
+
+
+
+brca3p_L4[, original_annotation:=ifelse(grepl("CD4\\+CM", original_annotation), 'CD4+ TCM', original_annotation)]
+brca3p_L4[, original_annotation:=ifelse(grepl("CD4\\+NAIVE", original_annotation), 'CD4+ TNaive', original_annotation)]
+brca3p_L4[, original_annotation:=ifelse(grepl("CD4\\+EM", original_annotation), 'CD4+ TEM', original_annotation)]
+brca3p_L4[, original_annotation:=ifelse(grepl("CD8\\+CM", original_annotation), 'CD8\\+CM', original_annotation)]
+brca3p_L4[, original_annotation:=ifelse(grepl("CD8\\+NAIVE", original_annotation), 'CD8+ TNaive', original_annotation)]
+brca3p_L4[, original_annotation:=ifelse(grepl("CD8\\+EM", original_annotation), 'CD8+ TEM', original_annotation)]
+brca3p_L4[, original_annotation:=ifelse(grepl("T:reg", original_annotation), 'Treg', original_annotation)]
+
+
+
+brca3p_L3[, original_annotation:=ifelse(original_annotation %in%c( "CD4+ TCM","CD4+ TNaive", "CD4+ TEM",
+                                                                   "Treg", "CD8+ TCM","CD8+ TNaive", "CD8+ TEM"), original_annotation, 'Other')]
+
+brca3p_L4[, ImmC:=ifelse(grepl("L:T:CD4:CM", ImmC), 'CD4+ TCM', ImmC)]
+brca3p_L4[, ImmC:=ifelse(grepl("L:T:CD4:Naïve", ImmC), 'CD4+ TNaive', ImmC)]1
+brca3p_L4[, ImmC:=ifelse(grepl("L:T:CD4:EM", ImmC), 'CD4+ TEM', ImmC)]
+brca3p_L4[, ImmC:=ifelse(grepl("L:T:CD4:CM", ImmC), 'CD4+ TCM', ImmC)]
+
+
+
+  mutate(ImmClassifier = ifelse(grepl("L:T:CD4:Treg",ImmClassifier),   "Treg", ImmClassifier)) %>%
+  mutate(ImmClassifier = ifelse(grepl("L:T:CD8:CM",ImmClassifier),   "CD8+ TCM", ImmClassifier)) %>%
+  mutate(ImmClassifier = ifelse(grepl("L:T:CD8:Naïve",ImmClassifier),   "CD8+ TNaive", ImmClassifier)) %>%
+  mutate(ImmClassifier = ifelse(grepl("L:T:CD8:EM",ImmClassifier),   "CD8+ TEM", ImmClassifier)) %>%
+
+
+  mutate(ImmClassifier = ifelse(ImmClassifier %in% c( "CD4+ TCM","CD4+ TNaive", "CD4+ TEM",
+                                                      "Treg", "CD8+ TCM","CD8+ TNaive", "CD8+ TEM"), ImmClassifier, 'Other')) %>%
+
+
+  mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_central_memory",SingleR),   "CD4+ TCM", SingleR)) %>%
+  mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_effector_memory",SingleR),   "CD4+ TEM", SingleR)) %>%
+  mutate(SingleR = ifelse(grepl("T_cell:CD4\\+_Naive",SingleR),   "CD4+ TNaive", SingleR)) %>%
+  mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_naive",SingleR),   "CD8+ TNaive", SingleR)) %>%
+  mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_Central_memory",SingleR),   "CD8+ TCM", SingleR)) %>%
+  mutate(SingleR = ifelse(grepl("T_cell:CD8\\+_effector_memory",SingleR),   "CD8+ TEM", SingleR)) %>%
+  mutate(SingleR = ifelse(grepl("Treg",SingleR),   "Treg", SingleR)) %>%
+
+
+  mutate(SingleR = ifelse(SingleR %in% c("CD4+ TCM","CD4+ TNaive", "CD4+ TEM",
+                                         "Treg", "CD8+ TCM","CD8+ TNaive", "CD8+ TEM"), SingleR, 'Other')) %>%
+
+  mutate(Garnett = ifelse(grepl("CD4",Garnett),   "CD4+ T", Garnett)) %>%
+  mutate(Garnett = ifelse(grepl("CD8",Garnett),   "CD8+ T", Garnett)) %>%
+
+  mutate(Garnett = ifelse(Garnett %in% c("CD4+ TCM","CD4+ TNaive", "CD4+ TEM",
+                                         "Treg", "CD8+ TCM","CD8+ TNaive", "CD8+ TEM"), Garnett, 'Other'))
+
 
 
