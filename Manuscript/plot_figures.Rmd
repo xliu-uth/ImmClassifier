@@ -279,85 +279,250 @@ f3c
 # hcc.Garnett.L4.ppv <- rep(NA, 8)
 
 
-perf <- rbind(data.frame(celltype = rep(brca3p_L1_celltypes, 3), dataset = "brca3p", 
-                 recall=c(brca3p.ImmC.L1.recall,brca3p.SingleR.L1.recall,brca3p.Garnett.L1.recall),
-                 precision=c(brca3p.ImmC.L1.ppv,brca3p.SingleR.L1.ppv,brca3p.Garnett.L1.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p_L1_celltypes)), rep("SingleR", length(brca3p_L1_celltypes)), rep("Garnett", length(brca3p_L1_celltypes))), 
-                 level = 1, stringsAsFactors = F),
-      data.frame(celltype = rep(brca3p_L2_celltypes,3),  dataset = "brca3p", 
-                 recall=c(brca3p.ImmC.L2.recall,brca3p.SingleR.L2.recall,brca3p.Garnett.L2.recall),
-                 precision=c(brca3p.ImmC.L2.ppv,brca3p.SingleR.L2.ppv,brca3p.Garnett.L2.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p_L2_celltypes)), rep("SingleR", length(brca3p_L2_celltypes)), rep("Garnett", length(brca3p_L2_celltypes))), 
-                 level = 2, stringsAsFactors = F),
-      data.frame(celltype = rep(brca3p_L3_celltypes,3),  dataset = "brca3p", 
-                 recall=c(brca3p.ImmC.L3.recall,brca3p.SingleR.L3.recall,brca3p.Garnett.L3.recall),
-                 precision=c(brca3p.ImmC.L3.ppv,brca3p.SingleR.L3.ppv,brca3p.Garnett.L3.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p_L3_celltypes)), rep("SingleR", length(brca3p_L3_celltypes)), rep("Garnett", length(brca3p_L3_celltypes))), 
-                 level = 3, stringsAsFactors = F),
-      data.frame(celltype = rep(brca3p_L4_celltypes,3),  dataset = "brca3p", 
-                 recall=c(brca3p.ImmC.L4.recall,brca3p.SingleR.L4.recall,brca3p.Garnett.L4.recall),
-                 precision=c(brca3p.ImmC.L4.ppv,brca3p.SingleR.L4.ppv,brca3p.Garnett.L4.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p_L4_celltypes)), rep("SingleR", length(brca3p_L4_celltypes)), rep("Garnett", length(brca3p_L4_celltypes))), 
-                 level = 4, stringsAsFactors = F),
+nmethod <- 4
+
+brca3p_perf <- rbind(data.table(celltype = rep(brca3p_L1_celltypes, nmethod), 
+                         dataset = "brca3p", 
+                         recall=c(brca3p.ImmC.L1.recall,
+                                  brca3p.SingleR.L1.recall,
+                                  brca3p.Garnett.L1.recall,
+                                  brca3p.ctrl.L1.recall),
+                         precision=c(brca3p.ImmC.L1.ppv,
+                                     brca3p.SingleR.L1.ppv,
+                                     brca3p.Garnett.L1.ppv,
+                                     brca3p.ctrl.L1.ppv), 
+                         method=c(rep("ImmClassifier",length(brca3p_L1_celltypes)), 
+                                  rep("SingleR", length(brca3p_L1_celltypes)), 
+                                  rep("Garnett", length(brca3p_L1_celltypes)),
+                                  rep("Ctrl",length(brca3p_L1_celltypes))), 
+                        level = 1),
+              
+             
+              data.table(celltype = rep(brca3p_L2_celltypes,nmethod),  
+                         dataset = "brca3p", 
+                         recall=c(brca3p.ImmC.L2.recall,
+                                  brca3p.SingleR.L2.recall,
+                                  brca3p.Garnett.L2.recall,
+                                  brca3p.ctrl.L2.recall
+                                  ),
+                         precision=c(brca3p.ImmC.L2.ppv,
+                                     brca3p.SingleR.L2.ppv,
+                                     brca3p.Garnett.L2.ppv,
+                                     brca3p.ctrl.L2.ppv), 
+                         method=c(rep("ImmClassifier",  length(brca3p_L2_celltypes)), 
+                                  rep("SingleR", length(brca3p_L2_celltypes)), 
+                                  rep("Garnett", length(brca3p_L2_celltypes)),
+                                  rep("Ctrl", length(brca3p_L2_celltypes))
+                                  ), 
+                        level = 2),
+              
+              
+              
+              
+              
+            data.table(celltype = rep(brca3p_L3_celltypes,nmethod),  
+                       dataset = "brca3p", 
+                       recall=c(brca3p.ImmC.L3.recall,
+                                brca3p.SingleR.L3.recall,
+                                brca3p.Garnett.L3.recall,
+                                brca3p.ctrl.L3.recall),
+                       precision=c(brca3p.ImmC.L3.ppv,
+                                   brca3p.SingleR.L3.ppv,
+                                   brca3p.Garnett.L3.ppv,
+                                   brca3p.ctrl.L3.ppv), 
+                       method=c(rep("ImmClassifier",  length(brca3p_L3_celltypes)), 
+                                rep("SingleR", length(brca3p_L3_celltypes)), 
+                                rep("Garnett", length(brca3p_L3_celltypes)),
+                                rep("Ctrl", length(brca3p_L3_celltypes))), 
+                       level = 3),
+            
+            
+            data.table(celltype = rep(brca3p_L4_celltypes,nmethod),  
+                       dataset = "brca3p", 
+                       recall=c(brca3p.ImmC.L4.recall,
+                                brca3p.SingleR.L4.recall,
+                                brca3p.Garnett.L4.recall,
+                                brca3p.ctrl.L4.recall),
+                       precision=c(brca3p.ImmC.L4.ppv,
+                                   brca3p.SingleR.L4.ppv,
+                                   brca3p.Garnett.L4.ppv,
+                                   brca3p.ctrl.L4.ppv), 
+                       method=c(rep("ImmClassifier",  length(brca3p_L4_celltypes)), 
+                                rep("SingleR", length(brca3p_L4_celltypes)), 
+                                rep("Garnett", length(brca3p_L4_celltypes)),
+                                rep("Ctrl", length(brca3p_L4_celltypes))
+                                ), 
+                       level = 4
+                       ))
+
+
+brca5p_perf <- rbind( data.table(celltype = rep(brca5p_L3_celltypes, nmethod),  
+                     dataset = "brca5p", 
+                     recall=c(brca5p.ImmC.L3.recall,
+                              brca5p.SingleR.L3.recall,
+                              brca5p.Garnett.L3.recall,
+                              brca5p.ctrl.L3.recall),
+                     precision=c(brca5p.ImmC.L3.ppv,
+                                 brca5p.SingleR.L3.ppv, 
+                                 brca5p.Garnett.L3.ppv,
+                                 brca5p.ctrl.L3.ppv), 
+                     method=c(rep("ImmClassifier",  length(brca5p_L3_celltypes)), 
+                              rep("SingleR",length(brca5p_L3_celltypes)), 
+                              rep("Garnett", length(brca5p_L3_celltypes)),
+                              rep("Ctrl", length(brca5p_L3_celltypes))), 
+                     level = 3),
+          
+          
+            data.table(celltype = rep(brca5p_L4_celltypes, nmethod), 
+                       dataset = "brca5p", 
+                       recall=c(brca5p.ImmC.L4.recall,
+                                brca5p.SingleR.L4.recall,
+                                brca5p.Garnett.L4.recall,
+                                brca5p.ctrl.L4.recall),
+                       precision=c(brca5p.ImmC.L4.ppv,
+                                   brca5p.SingleR.L4.ppv,
+                                   brca5p.Garnett.L4.ppv,
+                                   brca5p.ctrl.L4.ppv), 
+                       method=c(rep("ImmClassifier",  length(brca5p_L4_celltypes)), 
+                                rep("SingleR",length(brca5p_L4_celltypes)), 
+                                rep("Garnett", length(brca5p_L4_celltypes)),
+                                rep("Ctrl", length(brca5p_L4_celltypes))), 
+                       level = 4))
      
-      data.frame(celltype = rep(brca5p.L3.celltypes, 3),  dataset = "brca5p", 
-                 recall=c(brca5p.ImmC.L3.recall,brca5p.SingleR.L3.recall,brca5p.Garnett.L3.recall),
-                 precision=c(brca5p.ImmC.L3.ppv,brca5p.SingleR.L3.ppv, brca5p.Garnett.L3.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca5p.L3.celltypes)), rep("SingleR",length(brca5p.L3.celltypes)), rep("Garnett", length(brca5p.L3.celltypes))), 
-                 level = 3, stringsAsFactors = F),
-      data.frame(celltype = rep(brca5p.L4.celltypes, 3), dataset = "brca5p", 
-                 recall=c(brca5p.ImmC.L4.recall,brca5p.SingleR.L4.recall,brca5p.Garnett.L4.recall),
-                 precision=c(brca5p.ImmC.L4.ppv,brca5p.SingleR.L4.ppv,brca5p.Garnett.L4.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca5p.L4.celltypes)), rep("SingleR",length(brca5p.L4.celltypes)), rep("Garnett", length(brca5p.L4.celltypes))), 
-                 level = 4, stringsAsFactors = F),
-     
-      data.frame(celltype = rep(hcc.L3.celltypes, 3), dataset = "hcc", 
-                 recall=c(hcc.ImmC.L3.recall,hcc.SingleR.L3.recall,hcc.Garnett.L3.recall),
-                 precision=c(hcc.ImmC.L3.ppv,hcc.SingleR.L3.ppv, hcc.Garnett.L3.ppv), 
-                 method=c(rep("ImmClassifier",  length(hcc.L3.celltypes)), rep("SingleR",length(hcc.L3.celltypes)), rep("Garnett", length(hcc.L3.celltypes))), 
-                 level = 3, stringsAsFactors = F),
-      data.frame(celltype = rep(hcc.L4.celltypes, 3),  dataset = "hcc", 
-                 recall=c(hcc.ImmC.L4.recall,hcc.SingleR.L4.recall,hcc.Garnett.L4.recall),
-                 precision=c(hcc.ImmC.L4.ppv,hcc.SingleR.L4.ppv,hcc.Garnett.L4.ppv), 
-                 method=c(rep("ImmClassifier",  length(hcc.L4.celltypes)), rep("SingleR",length(hcc.L4.celltypes)), rep("Garnett", length(hcc.L4.celltypes))), 
-                level = 4, stringsAsFactors = F),
+hcc_perf <- rbind(data.table(celltype = rep(hcc_L3_celltypes, nmethod), 
+                       dataset = "hcc", 
+                       recall=c(hcc.ImmC.L3.recall,
+                                hcc.SingleR.L3.recall,
+                                hcc.Garnett.L3.recall,
+                                hcc.ctrl.L3.recall),
+                       precision=c(hcc.ImmC.L3.ppv,
+                                   hcc.SingleR.L3.ppv, 
+                                   hcc.Garnett.L3.ppv,
+                                   hcc.ctrl.L3.ppv), 
+                       method=c(rep("ImmClassifier",  length(hcc_L3_celltypes)), 
+                                rep("SingleR",length(hcc_L3_celltypes)), 
+                                rep("Garnett", length(hcc_L3_celltypes)),
+                                rep("Ctrl", length(hcc_L3_celltypes))), 
+                       level = 3),
+          
+          
+      data.table(celltype = rep(hcc_L4_celltypes, nmethod),  
+                 dataset = "hcc", 
+                 recall=c(hcc.ImmC.L4.recall,
+                          hcc.SingleR.L4.recall,
+                          hcc.Garnett.L4.recall,
+                          hcc.ctrl.L4.recall),
+                 precision=c(hcc.ImmC.L4.ppv,
+                             hcc.SingleR.L4.ppv,
+                             hcc.Garnett.L4.ppv,
+                             hcc.ctrl.L4.ppv), 
+                 method=c(rep("ImmClassifier",  length(hcc_L4_celltypes)), 
+                          rep("SingleR",length(hcc_L4_celltypes)), 
+                          rep("Garnett", length(hcc_L4_celltypes)),
+                          rep("Ctrl", length(hcc_L4_celltypes))), 
+                level = 4))
+      
+      
+ pbmc68k_perf <- rbind(     
+      
         # exclude cd34
-       data.frame(celltype = rep(pbmc68k.L1.celltypes, 2),  dataset = "pbmc68k", 
-                 recall=c(pbmc68k.ImmC.L1.recall[1:2],pbmc68k.SingleR.L1.recall[1:2],pbmc68k.Garnett.L1.recall[1:2]),
-                 precision=c(pbmc68k.ImmC.L1.ppv[1:2],pbmc68k.SingleR.L1.ppv[1:2],pbmc68k.Garnett.L1.ppv[1:2]), 
-                  method=c(rep("ImmClassifier",  length(pbmc68k.L1.celltypes[1:2])), rep("SingleR",length(pbmc68k.L1.celltypes[1:2])), rep("Garnett", length(pbmc68k.L1.celltypes[1:2]))), 
-                level = 1, stringsAsFactors = F),
-      data.frame(celltype = rep(pbmc68k.L2.celltypes,3),   dataset = "pbmc68k", 
-                 recall=c(pbmc68k.ImmC.L2.recall,pbmc68k.SingleR.L2.recall,pbmc68k.Garnett.L2.recall),
-                 precision=c(pbmc68k.ImmC.L2.ppv,pbmc68k.SingleR.L2.ppv,pbmc68k.Garnett.L2.ppv), 
-                  method=c(rep("ImmClassifier",  length(pbmc68k.L2.celltypes)), rep("SingleR",length(pbmc68k.L2.celltypes)), rep("Garnett", length(pbmc68k.L2.celltypes))), 
-                level = 2, stringsAsFactors = F),
-      data.frame(celltype = rep(pbmc68k.L3.celltypes,3),   dataset = "pbmc68k", 
-                 recall=c(pbmc68k.ImmC.L3.recall,pbmc68k.SingleR.L3.recall,pbmc68k.Garnett.L3.recall),
-                 precision=c(pbmc68k.ImmC.L3.ppv,pbmc68k.SingleR.L3.ppv,pbmc68k.Garnett.L3.ppv), 
-                 method=c(rep("ImmClassifier",  length(pbmc68k.L3.celltypes)), rep("SingleR",length(pbmc68k.L3.celltypes)), rep("Garnett", length(pbmc68k.L3.celltypes))), 
-                level = 3, stringsAsFactors = F),
-      data.frame(celltype = rep(pbmc68k.L4.celltypes,3),   dataset = "pbmc68k", 
-                 recall=c(pbmc68k.ImmC.L4.recall,pbmc68k.SingleR.L4.recall,pbmc68k.Garnett.L4.recall),
-                 precision=c(pbmc68k.ImmC.L4.ppv,pbmc68k.SingleR.L4.ppv,pbmc68k.Garnett.L4.ppv), 
-                  method=c(rep("ImmClassifier",  length(pbmc68k.L4.celltypes)), rep("SingleR",length(pbmc68k.L4.celltypes)), rep("Garnett", length(pbmc68k.L4.celltypes))), 
-                level = 4, stringsAsFactors = F)
+             data.table(celltype = rep(pbmc68k_L1_celltypes[1:2], nmethod),  
+                        dataset = "pbmc68k", 
+                       recall=c(pbmc68k.ImmC.L1.recall[1:2],
+                                pbmc68k.SingleR.L1.recall[1:2],
+                                pbmc68k.Garnett.L1.recall[1:2], 
+                                pbmc68k.ctrl.L1.recall[1:2]
+                                ),
+                       precision=c(pbmc68k.ImmC.L1.ppv[1:2],
+                                   pbmc68k.SingleR.L1.ppv[1:2],
+                                   pbmc68k.Garnett.L1.ppv[1:2],
+                                   pbmc68k.ctrl.L1.ppv[1:2]
+                                   ), 
+                       
+                       
+                        method=c(rep("ImmClassifier",  length(pbmc68k_L1_celltypes[1:2])),
+                                 rep("SingleR",length(pbmc68k_L1_celltypes[1:2])), 
+                                 rep("Garnett", length(pbmc68k_L1_celltypes[1:2])),
+                                 rep("Ctrl", length(pbmc68k_L1_celltypes[1:2]))), 
+                      level = 1),
+      
+      
+      
+      
+          data.table(celltype = rep(pbmc68k_L2_celltypes,nmethod),   
+                     dataset = "pbmc68k", 
+                     recall=c(pbmc68k.ImmC.L2.recall,
+                              pbmc68k.SingleR.L2.recall,
+                              pbmc68k.Garnett.L2.recall,
+                              pbmc68k.ctrl.L2.recall),
+                     precision=c(pbmc68k.ImmC.L2.ppv,
+                                 pbmc68k.SingleR.L2.ppv,
+                                 pbmc68k.Garnett.L2.ppv,
+                                 pbmc68k.ctrl.L2.ppv
+                                 ), 
+                      method=c(rep("ImmClassifier",  length(pbmc68k_L2_celltypes)), 
+                               rep("SingleR",length(pbmc68k_L2_celltypes)), 
+                               rep("Garnett", length(pbmc68k_L2_celltypes)),
+                               rep("Ctrl", length(pbmc68k_L2_celltypes))), 
+                    level = 2
+                    ),
+      
+      
+      
+            data.table(celltype = rep(pbmc68k_L3_celltypes,nmethod),   
+                       dataset = "pbmc68k", 
+                       recall=c(pbmc68k.ImmC.L3.recall,
+                                pbmc68k.SingleR.L3.recall,
+                                pbmc68k.Garnett.L3.recall,
+                                pbmc68k.ctrl.L3.recall
+                                ),
+                       precision=c(pbmc68k.ImmC.L3.ppv,
+                                   pbmc68k.SingleR.L3.ppv,
+                                   pbmc68k.Garnett.L3.ppv,
+                                   pbmc68k.ctrl.L3.ppv), 
+                       method=c(rep("ImmClassifier",  length(pbmc68k_L3_celltypes)), 
+                                rep("SingleR",length(pbmc68k_L3_celltypes)), 
+                                rep("Garnett", length(pbmc68k_L3_celltypes)),
+                                rep("Ctrl", length(pbmc68k_L3_celltypes))), 
+                      level = 3),
+      
+      
+      data.frame(celltype = rep(pbmc68k_L4_celltypes,nmethod),   
+                 dataset = "pbmc68k", 
+                 recall=c(pbmc68k.ImmC.L4.recall,
+                          pbmc68k.SingleR.L4.recall,
+                          pbmc68k.Garnett.L4.recall,
+                          pbmc68k.ctrl.L4.recall),
+                 precision=c(pbmc68k.ImmC.L4.ppv,
+                             pbmc68k.SingleR.L4.ppv,
+                             pbmc68k.Garnett.L4.ppv,
+                             pbmc68k.ctrl.L4.ppv), 
+                  method=c(rep("ImmClassifier",  length(pbmc68k_L4_celltypes)), 
+                           rep("SingleR",length(pbmc68k_L4_celltypes)), 
+                           rep("Garnett", length(pbmc68k_L4_celltypes)),
+                           rep("Ctrl", length(pbmc68k_L4_celltypes))), 
+                level = 4
+                )
      
-     ) %>% mutate(recall = ifelse(is.na(recall), 0, recall),
-                precision = ifelse(is.na(precision), 0, precision)) 
+     ) #%>% mutate(recall = ifelse(is.na(recall), 0, recall),
+      #          precision = ifelse(is.na(precision), 0, precision)) 
 
-
+perf <- rbind(brca3p_perf, brca5p_perf, hcc_perf, pbmc68k_perf)
+perf[, recall:=ifelse(is.na(recall),0,recall)]
+perf[, precision:=ifelse(is.na(precision),0,precision)]
 ```
 
 ```{r}
-f4a <- perf %>%  mutate(
-            level = factor(level, levels = c(1,2,3,4)),
-           method = factor(method, levels = c('ImmClassifier', 'SingleR', 'Garnett')),
-           dataset = factor(dataset, levels = c( 'pbmc68k', 'brca3p', 'brca5p','hcc'))) %>%
-    melt (id.vars = c('celltype', 'method', 'level', 'dataset')) %>%
-     ggplot(aes(x=level, y=value, fill = method)) + 
-    geom_boxplot(aes(fill = method), alpha = 0.2, color = "black", lwd = .2, outlier.shape = NA, width = .5)+
-  #geom_jitter(width = 0.2, size = 1, pch = 21, alpha = .8)+
+perf[, c('level', 'method', 'dataset'):=list(factor(level, levels = c(1,2,3,4)),
+                                            factor(method, levels = c('ImmClassifier', 'Ctrl', 'SingleR', 'Garnett')),
+                                            factor(dataset, levels = c( 'pbmc68k', 'brca3p', 'brca5p','hcc')))]
+        
+     
+ f4a<-    ggplot(melt (perf, id.vars = c('celltype', 'method', 'level', 'dataset')), 
+            aes(x=level, y=value, fill = method)) + 
+     geom_boxplot(aes(fill = method), alpha = 0.2, color = "black", lwd = .2, outlier.shape = NA, width = .5)+
+     #geom_point(aes(fill = method), alpha = 0.8)+
+     #geom_jitter(aes(colour=method, group = method), width = 0.1, size = 1, pch = 21, alpha = .8) +
      theme_classic() + 
      theme(axis.text.x = element_text(angle =0, size =12, hjust = 1,color= "black"), 
                   axis.text.y = element_text(size = 12, hjust = 1,color = "black"),
@@ -420,8 +585,6 @@ brca3p_umap <- fread(paste(data_folder,'umap/out-brca3p_umap/models//umap.pca_05
 
 ```
 
-
-
 ```{r}
 
 # Combine all prediction results and the original annotation into one data table
@@ -442,8 +605,6 @@ colnames(brca3p_dt)[grepl("singler", colnames(brca3p_dt))] <- "SingleR"
 setkey(brca3p_dt, Cell)
 
 ```
-
-
 
 
 
@@ -633,7 +794,6 @@ pbmc68k_meta <- readRDS(paste(data_folder, 'metadata/pbmc68k.meta.rds', sep = "/
 pbmc68k_immc <- fread(paste(data_folder, 'immc/pbmc68k.output.txt', sep = "/"))
 
 
-
 load(paste(data_folder,'singleR/singler_pbmc68k.RData', sep = "/"))
 pbmc68k_singler <- singler
 pbmc68k_singler_dt <- data.table(Cell=pbmc68k_singler$singler[[1]]$SingleR.single$cell.names,
@@ -671,6 +831,11 @@ colnames(pbmc68k_dt)[grepl("singler", colnames(pbmc68k_dt))] <- "SingleR"
 setkey(pbmc68k_dt, Cell)
 
 
+
+```
+
+
+```{r}
 pbmc68k_celltypes <- c('CD14+ Monocyte', 'CD19+ B', 'CD34+', 'CD4+ T Helper2', 
                         'CD4+/CD25 T Reg', 'CD4+/CD45RA+/CD25- Naive T', 'CD4+/CD45RO+ Memory',
                         'CD56+ NK', 'CD8+ Cytotoxic T', 'CD8+/CD45RA+ Naive Cytotoxic', 
@@ -741,8 +906,6 @@ pbmc68k_dt[!garnett %in% pbmc68k_celltypes, garnett:= "Other"]
 pbmc68k_dt[!ctrl %in% pbmc68k_celltypes, ctrl:= "Other"]
 
 ```
-
-
 
 ## Similar to Figure 5, show pbmc68k test result (not run)
 ```{r}
@@ -859,13 +1022,15 @@ hcc_umap <- fread(paste(data_folder,'umap/out-hcc_all_umap/models/umap.pca_0500.
 setkey(hcc_umap, Cell)
 
 
-hcc_dt <- data.table(merge(
+hcc_dt <- data.table(
+          merge(
+            merge(
               merge(
                 merge(hcc_umap[, .(Cell, UMAP1, UMAP2, Cluster)], 
                       hcc_immc, by.x='Cell', by.y='Cell', all.x = T),
                 hcc_singler_dt, by.x='Cell', by.y='Cell', all.x = T),
-                  hcc_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T)
-              )[, original_annotation:=hcc_clusternames[hcc_meta[Cell, 'majorCluster'], 'clusterName']]
+                  hcc_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T),
+            hcc_immc_ctrl, by.x='Cell', by.y = 'Cell', all.x = T))[, original_annotation:=hcc_clusternames[hcc_meta[Cell, 'majorCluster'], 'clusterName']]
                   
 hcc_dt[, Cluster:=as.character(Cluster)]
 colnames(hcc_dt)[grepl("ImmC", colnames(hcc_dt))] <- "ImmC"
@@ -1061,12 +1226,15 @@ brca5p_umap <- fread(paste(data_folder,'umap/out-brca5p_umap/models//umap.pca_05
 setkey(brca5p_umap, Cell)
 
 
-brca5p_dt <- data.table(merge(
+brca5p_dt <- data.table(
+          merge(
+            merge(
               merge(
                 merge(brca5p_umap[, .(Cell, UMAP1, UMAP2, Cluster)], 
                       brca5p_immc, by.x='Cell', by.y='Cell', all.x = T),
                 brca5p_singler_dt, by.x='Cell', by.y='Cell', all.x = T),
-                  brca5p_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T)
+                  brca5p_garnett_extend_dt, by.x='Cell', by.y='Cell', all.x = T),
+            brca5p_immc_ctrl, by.x='Cell', by.y='Cell', all.x = T)
               )[, original_annotation:=brca5p_clusternames_dt[brca3p_meta[Cell, 'cluster'], 'clusterName']]
                   
 brca5p_dt[, Cluster:=as.character(Cluster)]
