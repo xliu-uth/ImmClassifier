@@ -24,7 +24,7 @@ source('plot_figure.R')
 
 # Set the data folder
 ```{r}
-data_folder <- 'C:\\Users/annaf/Dropbox/AXL/Projects/ImmClassifier/Manuscript/data_for_figure_plots/'
+data_folder <- 'C:\\Users/huang/Dropbox/AXL/Projects/ImmClassifier/Manuscript/data_for_figure_plots/'
 ```
 
 # Figure 3
@@ -127,179 +127,177 @@ f3c
 # Figure 4. Recall and Precision plot for all four test datasets (brca3p, hcc, brca5p and pbmc68k)
 
 ```{r}
-pbmc68k.L1.celltypes <- c('L', 'M', 'CD34')
-pbmc68k.ImmC.L1.recall <- c(100,94,18)
-pbmc68k.ImmC.L1.ppv <- c(100,94,30)
-
-pbmc68k.SingleR.L1.recall <- c(100, 88,20)
-pbmc68k.SingleR.L1.ppv <- c(99,100,78)
-
-pbmc68k.Garnett.L1.recall <- c(100,39,7)
-pbmc68k.Garnett.L1.ppv <- c(98,94,37)
-
-
-
-pbmc68k.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte')
-
-
-
-
-pbmc68k.ImmC.L2.recall <- c(71,94,82,32,67)
-pbmc68k.ImmC.L2.ppv <- c(69,93,90,85,62)
-
-pbmc68k.SingleR.L2.recall <- c(65,99,49,NA,93)
-pbmc68k.SingleR.L2.ppv <- c(88,88,95,NA,60)
-
-pbmc68k.Garnett.L2.recall <- c(65, 99,51,21,38)
-pbmc68k.Garnett.L2.ppv <- c(97, 88,80,81,73)
-
-
-pbmc68k.L3.celltypes <- c('CD4', 'CD8' )
-pbmc68k.ImmC.L3.recall <- c(80,52)
-pbmc68k.ImmC.L3.ppv <- c(69,66)
-
-pbmc68k.SingleR.L3.recall <- c(98,23)
-pbmc68k.SingleR.L3.ppv <- c(60,49)
-
-pbmc68k.Garnett.L3.recall <- c(33,18)
-pbmc68k.Garnett.L3.ppv <- c(71,47)
-
-pbmc68k.L4.celltypes <- c("CD4+ TNaive", "CD8+ TNaive", "Treg", "Tfh")
-pbmc68k.ImmC.L4.recall <- c(32, 24, 49,NA)
-pbmc68k.ImmC.L4.ppv <- c(8, 65,32,  NA)
-
-pbmc68k.SingleR.L4.recall <- c(64,NA,NA, NA)
-pbmc68k.SingleR.L4.ppv <- c(7,NA, NA, NA)
-
-pbmc68k.Garnett.L4.recall <- rep(NA, 4)
-pbmc68k.Garnett.L4.ppv <- rep(NA, 4)
-
-
-brca3p.L1.celltypes <- c('L', 'M')
-brca3p.ImmC.L1.recall <- c(97, 94)
-brca3p.ImmC.L1.ppv <- c(99, 95)
-
-brca3p.SingleR.L1.recall <- c(99, 92)
-brca3p.SingleR.L1.ppv <- c(99, 97)
-
-brca3p.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte', 'Macrophage', 'Neutrophil', 'Mast')
-
-brca3p.Garnett.L1.recall <- c(87, 55)
-brca3p.Garnett.L1.ppv <- c(97, 92)
-
-brca3p.ImmC.L2.recall <- c(81,97,70,50,33,95,75,73)
-brca3p.ImmC.L2.ppv <- c(89,99,64,53,70,59,52,88)
-
-brca3p.SingleR.L2.recall <- c(91,96,61,3,72,76,79,NA)
-brca3p.SingleR.L2.ppv <- c(95,97,31,22,50, 70,80,NA)
-
-brca3p.Garnett.L2.recall <- c(94, 86,52,19,42,NA,NA,NA)
-brca3p.Garnett.L2.ppv <- c(97,99,35, 50,29,NA,NA,NA)
-
-
-
-
-brca3p.L3.celltypes <- c('CD4', 'CD8', 'mDC', 'pDC')
-
-
-
-
-brca3p.ImmC.L3.recall <- c(85,49,24,67)
-brca3p.ImmC.L3.ppv <- c(76,65,60,13)
-
-brca3p.SingleR.L3.recall <- c(96,27,3,NA)
-brca3p.SingleR.L3.ppv <- c(71,73,18,NA)
-
-brca3p.Garnett.L3.recall <- c(31,8,NA,NA)
-brca3p.Garnett.L3.ppv <- c(73,94,NA,NA)
-
-
-
-brca3p.L4.celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
-
-
-
-
-brca3p.ImmC.L4.recall <- c(37,14,14,8, 2, 25,65)
-brca3p.ImmC.L4.ppv <- c(90,3, NA, 27,NA, 24,10)
-
-brca3p.SingleR.L4.recall <- c(41,52,44,4,8,2,NA)
-brca3p.SingleR.L4.ppv <- c(98,8,1,67,1,16,33)
-
-brca3p.Garnett.L4.recall <- rep(NA, 7)
-brca3p.Garnett.L4.ppv <- rep(NA, 7)
-
-
-
-brca5p.L3.celltypes <- c('CD4', 'CD8')
-
-
-brca5p.ImmC.L3.recall <- c(83,71)
-brca5p.ImmC.L3.ppv <- c(88,94)
-
-brca5p.SingleR.L3.recall <- c(99, 29)
-brca5p.SingleR.L3.ppv <- c(59,98)
-
-brca5p.Garnett.L3.recall <- c(97,14)
-brca5p.Garnett.L3.ppv <- c(74,97)
-
-brca5p.L4.celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
-
-
-
-
-brca5p.ImmC.L4.recall <- c(4,45,9,3,1, 17, 69)
-brca5p.ImmC.L4.ppv <- c(17, 46,33,6,19, 63, 48)
-
-brca5p.SingleR.L4.recall <- c(6, 75,28,2,NA, 1,NA)
-brca5p.SingleR.L4.ppv <- c(14,27,8,28,1,77,100 )
-
-brca5p.Garnett.L4.recall <- rep(NA, 7)
-brca5p.Garnett.L4.ppv <- rep(NA, 7)
-
-
-
-hcc.L4.celltypes <- c( "CD4+ TNaive", "CD4+ TEx", "Tfh", "Treg", "CD8+ TEx","CD8+ TNaive", "CD8+ TEM","MAIT")
-
-
-hcc.L3.celltypes <- c('CD4', 'CD8')
-hcc.ImmC.L3.recall <- c(87,82)
-hcc.ImmC.L3.ppv <- c(61,44 )
-
-hcc.SingleR.L3.recall <- c(93,42)
-hcc.SingleR.L3.ppv <- c(43,50)
-
-hcc.Garnett.L3.recall <- c(NA, NA)
-hcc.Garnett.L3.ppv <- c(NA, NA)
-hcc.ImmC.L4.recall <- c(24, 19,NA,90,3,55,44,57)
-hcc.ImmC.L4.ppv <- c(49,62,33,52,12,42,23,51)
-
-hcc.SingleR.L4.recall <- c(20,NA, NA, NA,NA,NA,1,NA)
-hcc.SingleR.L4.ppv <- c( 49,NA, NA,NA, NA,NA, 5,NA)
-
-hcc.Garnett.L4.recall <- rep(NA, 8)
-hcc.Garnett.L4.ppv <- rep(NA, 8)
-
-
-perf <- rbind(data.frame(celltype = rep(brca3p.L1.celltypes, 3), dataset = "brca3p", 
+# pbmc68k.L1.celltypes <- c('L', 'M', 'CD34')
+# pbmc68k.ImmC.L1.recall <- c(100,94,18)
+# pbmc68k.ImmC.L1.ppv <- c(100,94,30)
+# 
+# pbmc68k.SingleR.L1.recall <- c(100, 88,20)
+# pbmc68k.SingleR.L1.ppv <- c(99,100,78)
+# 
+# pbmc68k.Garnett.L1.recall <- c(100,39,7)
+# pbmc68k.Garnett.L1.ppv <- c(98,94,37)
+#
+# pbmc68k.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte')
+# 
+# 
+# 
+# 
+# pbmc68k.ImmC.L2.recall <- c(71,94,82,32,67)
+# pbmc68k.ImmC.L2.ppv <- c(69,93,90,85,62)
+# 
+# pbmc68k.SingleR.L2.recall <- c(65,99,49,NA,93)
+# pbmc68k.SingleR.L2.ppv <- c(88,88,95,NA,60)
+# 
+# pbmc68k.Garnett.L2.recall <- c(65, 99,51,21,38)
+# pbmc68k.Garnett.L2.ppv <- c(97, 88,80,81,73)
+# 
+# 
+# pbmc68k.L3.celltypes <- c('CD4', 'CD8' )
+# pbmc68k.ImmC.L3.recall <- c(80,52)
+# pbmc68k.ImmC.L3.ppv <- c(69,66)
+# 
+# pbmc68k.SingleR.L3.recall <- c(98,23)
+# pbmc68k.SingleR.L3.ppv <- c(60,49)
+# 
+# pbmc68k.Garnett.L3.recall <- c(33,18)
+# pbmc68k.Garnett.L3.ppv <- c(71,47)
+# 
+# pbmc68k.L4.celltypes <- c("CD4+ TNaive", "CD8+ TNaive", "Treg", "Tfh")
+# pbmc68k.ImmC.L4.recall <- c(32, 24, 49,NA)
+# pbmc68k.ImmC.L4.ppv <- c(8, 65,32,  NA)
+# 
+# pbmc68k.SingleR.L4.recall <- c(64,NA,NA, NA)
+# pbmc68k.SingleR.L4.ppv <- c(7,NA, NA, NA)
+# 
+# pbmc68k.Garnett.L4.recall <- rep(NA, 4)
+# pbmc68k.Garnett.L4.ppv <- rep(NA, 4)
+# 
+# 
+# brca3p.L1.celltypes <- c('L', 'M')
+# brca3p.ImmC.L1.recall <- c(97, 94)
+# brca3p.ImmC.L1.ppv <- c(99, 95)
+# 
+# brca3p.SingleR.L1.recall <- c(99, 92)
+# brca3p.SingleR.L1.ppv <- c(99, 97)
+# 
+# brca3p.L2.celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte', 'Macrophage', 'Neutrophil', 'Mast')
+# 
+# brca3p.Garnett.L1.recall <- c(87, 55)
+# brca3p.Garnett.L1.ppv <- c(97, 92)
+# 
+# brca3p.ImmC.L2.recall <- c(81,97,70,50,33,95,75,73)
+# brca3p.ImmC.L2.ppv <- c(89,99,64,53,70,59,52,88)
+# 
+# brca3p.SingleR.L2.recall <- c(91,96,61,3,72,76,79,NA)
+# brca3p.SingleR.L2.ppv <- c(95,97,31,22,50, 70,80,NA)
+# 
+# brca3p.Garnett.L2.recall <- c(94, 86,52,19,42,NA,NA,NA)
+# brca3p.Garnett.L2.ppv <- c(97,99,35, 50,29,NA,NA,NA)
+# 
+# 
+# 
+# 
+# brca3p.L3.celltypes <- c('CD4', 'CD8', 'mDC', 'pDC')
+# 
+# 
+# 
+# 
+# brca3p.ImmC.L3.recall <- c(85,49,24,67)
+# brca3p.ImmC.L3.ppv <- c(76,65,60,13)
+# 
+# brca3p.SingleR.L3.recall <- c(96,27,3,NA)
+# brca3p.SingleR.L3.ppv <- c(71,73,18,NA)
+# 
+# brca3p.Garnett.L3.recall <- c(31,8,NA,NA)
+# brca3p.Garnett.L3.ppv <- c(73,94,NA,NA)
+# 
+# 
+# 
+# brca3p.L4.celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
+# 
+# 
+# 
+# 
+# brca3p.ImmC.L4.recall <- c(37,14,14,8, 2, 25,65)
+# brca3p.ImmC.L4.ppv <- c(90,3, NA, 27,NA, 24,10)
+# 
+# brca3p.SingleR.L4.recall <- c(41,52,44,4,8,2,NA)
+# brca3p.SingleR.L4.ppv <- c(98,8,1,67,1,16,33)
+# 
+# brca3p.Garnett.L4.recall <- rep(NA, 7)
+# brca3p.Garnett.L4.ppv <- rep(NA, 7)
+# 
+# 
+# 
+# brca5p.L3.celltypes <- c('CD4', 'CD8')
+# 
+# 
+# brca5p.ImmC.L3.recall <- c(83,71)
+# brca5p.ImmC.L3.ppv <- c(88,94)
+# 
+# brca5p.SingleR.L3.recall <- c(99, 29)
+# brca5p.SingleR.L3.ppv <- c(59,98)
+# 
+# brca5p.Garnett.L3.recall <- c(97,14)
+# brca5p.Garnett.L3.ppv <- c(74,97)
+# 
+# brca5p.L4.celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD8+ TCM', 'CD8+ TEM', 'Treg' )
+# 
+# 
+# 
+# 
+# brca5p.ImmC.L4.recall <- c(4,45,9,3,1, 17, 69)
+# brca5p.ImmC.L4.ppv <- c(17, 46,33,6,19, 63, 48)
+# 
+# brca5p.SingleR.L4.recall <- c(6, 75,28,2,NA, 1,NA)
+# brca5p.SingleR.L4.ppv <- c(14,27,8,28,1,77,100 )
+# 
+# brca5p.Garnett.L4.recall <- rep(NA, 7)
+# brca5p.Garnett.L4.ppv <- rep(NA, 7)
+# 
+# 
+# 
+# hcc.L4.celltypes <- c( "CD4+ TNaive", "CD4+ TEx", "Tfh", "Treg", "CD8+ TEx","CD8+ TNaive", "CD8+ TEM","MAIT")
+# 
+# 
+# hcc.L3.celltypes <- c('CD4', 'CD8')
+# hcc.ImmC.L3.recall <- c(87,82)
+# hcc.ImmC.L3.ppv <- c(61,44 )
+# 
+# hcc.SingleR.L3.recall <- c(93,42)
+# hcc.SingleR.L3.ppv <- c(43,50)
+# 
+# hcc.Garnett.L3.recall <- c(NA, NA)
+# hcc.Garnett.L3.ppv <- c(NA, NA)
+# hcc.ImmC.L4.recall <- c(24, 19,NA,90,3,55,44,57)
+# hcc.ImmC.L4.ppv <- c(49,62,33,52,12,42,23,51)
+# 
+# hcc.SingleR.L4.recall <- c(20,NA, NA, NA,NA,NA,1,NA)
+# hcc.SingleR.L4.ppv <- c( 49,NA, NA,NA, NA,NA, 5,NA)
+# 
+# hcc.Garnett.L4.recall <- rep(NA, 8)
+# hcc.Garnett.L4.ppv <- rep(NA, 8)
+
+
+perf <- rbind(data.frame(celltype = rep(brca3p_L1_celltypes, 3), dataset = "brca3p", 
                  recall=c(brca3p.ImmC.L1.recall,brca3p.SingleR.L1.recall,brca3p.Garnett.L1.recall),
                  precision=c(brca3p.ImmC.L1.ppv,brca3p.SingleR.L1.ppv,brca3p.Garnett.L1.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p.L1.celltypes)), rep("SingleR", length(brca3p.L1.celltypes)), rep("Garnett", length(brca3p.L1.celltypes))), 
+                 method=c(rep("ImmClassifier",  length(brca3p_L1_celltypes)), rep("SingleR", length(brca3p_L1_celltypes)), rep("Garnett", length(brca3p_L1_celltypes))), 
                  level = 1, stringsAsFactors = F),
-      data.frame(celltype = rep(brca3p.L2.celltypes,3),  dataset = "brca3p", 
+      data.frame(celltype = rep(brca3p_L2_celltypes,3),  dataset = "brca3p", 
                  recall=c(brca3p.ImmC.L2.recall,brca3p.SingleR.L2.recall,brca3p.Garnett.L2.recall),
                  precision=c(brca3p.ImmC.L2.ppv,brca3p.SingleR.L2.ppv,brca3p.Garnett.L2.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p.L2.celltypes)), rep("SingleR", length(brca3p.L2.celltypes)), rep("Garnett", length(brca3p.L2.celltypes))), 
+                 method=c(rep("ImmClassifier",  length(brca3p_L2_celltypes)), rep("SingleR", length(brca3p_L2_celltypes)), rep("Garnett", length(brca3p_L2_celltypes))), 
                  level = 2, stringsAsFactors = F),
-      data.frame(celltype = rep(brca3p.L3.celltypes,3),  dataset = "brca3p", 
+      data.frame(celltype = rep(brca3p_L3_celltypes,3),  dataset = "brca3p", 
                  recall=c(brca3p.ImmC.L3.recall,brca3p.SingleR.L3.recall,brca3p.Garnett.L3.recall),
                  precision=c(brca3p.ImmC.L3.ppv,brca3p.SingleR.L3.ppv,brca3p.Garnett.L3.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p.L3.celltypes)), rep("SingleR", length(brca3p.L3.celltypes)), rep("Garnett", length(brca3p.L3.celltypes))), 
+                 method=c(rep("ImmClassifier",  length(brca3p_L3_celltypes)), rep("SingleR", length(brca3p_L3_celltypes)), rep("Garnett", length(brca3p_L3_celltypes))), 
                  level = 3, stringsAsFactors = F),
-      data.frame(celltype = rep(brca3p.L4.celltypes,3),  dataset = "brca3p", 
+      data.frame(celltype = rep(brca3p_L4_celltypes,3),  dataset = "brca3p", 
                  recall=c(brca3p.ImmC.L4.recall,brca3p.SingleR.L4.recall,brca3p.Garnett.L4.recall),
                  precision=c(brca3p.ImmC.L4.ppv,brca3p.SingleR.L4.ppv,brca3p.Garnett.L4.ppv), 
-                 method=c(rep("ImmClassifier",  length(brca3p.L4.celltypes)), rep("SingleR", length(brca3p.L4.celltypes)), rep("Garnett", length(brca3p.L4.celltypes))), 
+                 method=c(rep("ImmClassifier",  length(brca3p_L4_celltypes)), rep("SingleR", length(brca3p_L4_celltypes)), rep("Garnett", length(brca3p_L4_celltypes))), 
                  level = 4, stringsAsFactors = F),
      
       data.frame(celltype = rep(brca5p.L3.celltypes, 3),  dataset = "brca5p", 
@@ -389,6 +387,8 @@ dcast(data.table(perf)[, median(recall), by = c( 'dataset', 'level', 'method')],
 
 
 
+
+
 # Figure 5. 3' sequencing data from BRCA paper
 
 ```{r}
@@ -442,6 +442,9 @@ colnames(brca3p_dt)[grepl("singler", colnames(brca3p_dt))] <- "SingleR"
 setkey(brca3p_dt, Cell)
 
 ```
+
+
+
 
 
 ## Due to the annotation differences, I have to rename the annotation from prediction tools to match original annotation
@@ -620,12 +623,6 @@ ggplot(aes( axis1 = ImmC, axis2 = original_annotation, axis3 = SingleR,y = N)) +
 f5c
 
 ```
-
-
-
-
-
-
 
 
 
