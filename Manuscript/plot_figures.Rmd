@@ -510,15 +510,18 @@ hcc_perf <- rbind(data.table(celltype = rep(hcc_L3_celltypes, nmethod),
 perf <- rbind(brca3p_perf, brca5p_perf, hcc_perf, pbmc68k_perf)
 perf[, recall:=ifelse(is.na(recall),0,recall)]
 perf[, precision:=ifelse(is.na(precision),0,precision)]
+
 ```
 
 ```{r}
+
+
 perf[, c('level', 'method', 'dataset'):=list(factor(level, levels = c(1,2,3,4)),
                                             factor(method, levels = c('ImmClassifier', 'Ctrl', 'SingleR', 'Garnett')),
                                             factor(dataset, levels = c( 'pbmc68k', 'brca3p', 'brca5p','hcc')))]
         
      
- f4a<-    ggplot(melt (perf, id.vars = c('celltype', 'method', 'level', 'dataset')), 
+ f4a <-    ggplot(melt (perf, id.vars = c('celltype', 'method', 'level', 'dataset')), 
             aes(x=level, y=value, fill = method)) + 
      geom_boxplot(aes(fill = method), alpha = 0.2, color = "black", lwd = .2, outlier.shape = NA, width = .5)+
      #geom_point(aes(fill = method), alpha = 0.8)+
@@ -543,10 +546,10 @@ f4a
 ## Figure 4b. table of improvement of ImmC over others
 
 ```{r}
-dcast(data.table(perf)[, median(precision), by = c( 'dataset', 'level', 'method')], dataset~method+level)
+dcast(perf[, median(precision), by = c( 'dataset', 'level', 'method')], dataset~method+level)
 
-dcast(data.table(perf)[, median(recall), by = c( 'dataset', 'level', 'method')], dataset~method+level)
-
+dcast(perf[, median(recall), by = c( 'dataset', 'level', 'method')], dataset~method+level)
+#dcast(perf[, median(recall), by = c( 'dataset', 'level', 'method')], dataset+level~method)[, ImmClassifier-SingleR]
 
 ```
 
