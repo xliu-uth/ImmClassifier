@@ -213,11 +213,10 @@ brca3p.ImmC.L2.error['Mast',] <- c(5+1+3+1, 9+1+1+5+2, 0, 9, 5, 0)
 
 
 # for dendritic cells, not sure if they are monocyte derived or lymphocyte derived, not included
-brca3p_L2_errorplt <- ggplot(data.table(melt(brca3p.ctrl.L2.error - brca3p.ImmC.L2.error))[Var1!='Dendritic',], aes(Var2, value)) +
-  geom_violin()+
-  #geom_jitter(aes(color = Var1), size = 4, alpha = .6, height = 1, width = .25) +
-  scale_fill_gradient2(low="blue", high="red", guide="colorbar") +
-  theme_classic() + ylim (-20, 20)
+
+brca3p_L2_errorplt <- plot_error(brca3p.ctrl.L2.error, brca3p.ImmC.L2.error)
+brca3p_L2_errorplt
+
 
 
 table(data.table(Known=brca3p_L2$original_annotation, annot=brca3p_L2$SingleR)) %>%
@@ -371,11 +370,9 @@ brca3p.ctrl.L3.error['mDC',] <-c(1, 52, 13, 2, 42, 0)
 #brca3p.ctrl.L3.error['pDC', ] <- c(14, 6, 0, 7, 77, 0)
 
 
-brca3p_L3_errorplt <- ggplot(melt(brca3p.ctrl.L3.error - brca3p.ImmC.L3.error), aes(Var2, value)) +
-  geom_violin()+
-  #geom_jitter(aes(color = Var1), size = 4, alpha = .6, height = 1, width = .25) +
-  scale_fill_gradient2(low="blue", high="red", guide="colorbar") +
-  theme_classic() + ylim (-25, 25)
+
+brca3p_L3_errorplt <- plot_error(brca3p.ctrl.L3.error, brca3p.ImmC.L3.error)
+brca3p_L3_errorplt
 
 ##############################################################################
 #                                brca3p_level 4                              #
@@ -529,13 +526,10 @@ brca3p.ctrl.L4.error['CD8+ TEM',] <-c(40, 36, 0, 3+1+15+6+1, 53+1, 0)
 brca3p.ctrl.L4.error['Treg',] <-c(2+1+9+3+2+3, 10+3, 0, 15+1+22+1+1, 23+23+2, 0)
 
 
-brca3p_L4_errorplt <- ggplot(melt(brca3p.ctrl.L4.error - brca3p.ImmC.L4.error), aes(Var2, value)) +
-  geom_violin()+
-  #geom_jitter(aes(color = Var1), size = 4, alpha = .6, height = 1, width = .25) +
-  scale_fill_gradient2(low="blue", high="red", guide="colorbar") +
-  theme_classic() + ylim (-20, 20)
 
 
+brca3p_L4_errorplt <- plot_error(brca3p.ctrl.L4.error, brca3p.ImmC.L4.error)
+brca3p_L4_errorplt
 
 ##############################################################################
 #                                pbmc68k_level 1                             #
@@ -640,6 +634,7 @@ pbmc68k_L2[, ImmC:=ifelse(grepl("L:NK", ImmC), 'NK', ImmC)]
 pbmc68k_L2[, ImmC:=ifelse(grepl("L:B", ImmC), 'B', ImmC)]
 pbmc68k_L2[, ImmC:=ifelse(grepl("M:Mono", ImmC), 'Monocyte', ImmC)]
 pbmc68k_L2[, ImmC:=ifelse(grepl("DC", ImmC), 'Dendritic', ImmC)]
+pbmc68k_L2[, ImmC:=ifelse(grepl("CD34", ImmC), 'CD34', ImmC)]
 pbmc68k_L2[, ImmC:=ifelse(ImmC %in% c('B','T','NK', 'Dendritic', 'Monocyte'), ImmC, 'Other')]
 
 
@@ -663,6 +658,7 @@ pbmc68k_L2[, ctrl:=ifelse(grepl("L:NK", ctrl), 'NK', ctrl)]
 pbmc68k_L2[, ctrl:=ifelse(grepl("L:B", ctrl), 'B', ctrl)]
 pbmc68k_L2[, ctrl:=ifelse(grepl("M:Mono", ctrl), 'Monocyte', ctrl)]
 pbmc68k_L2[, ctrl:=ifelse(grepl("DC", ctrl), 'Dendritic', ctrl)]
+pbmc68k_L2[, ctrl:=ifelse(grepl("CD34", ctrl), 'CD34', ctrl)]
 pbmc68k_L2[, ctrl:=ifelse(ctrl %in% c('B','T','NK', 'Dendritic', 'Monocyte'), ctrl, 'Other')]
 
 
@@ -673,14 +669,24 @@ pbmc68k_L2_celltypes <- c('B', 'T', 'NK', 'Dendritic', 'Monocyte')
 table(data.table(Known=pbmc68k_L2$original_annotation, annot=pbmc68k_L2$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = pbmc68k_L2_celltypes,
-               ord2 = pbmc68k_L2_celltypes,
+               ord1 = pbmc68k_L2[, .N, by = ImmC][,ImmC], #pbmc68k_L2_celltypes,
+               ord2 = pbmc68k_L2[, .N, by = original_annotation][,original_annotation],#pbmc68k_L2_celltypes,
                measures = c('Recall', 'Precision')
   )
 
 
 pbmc68k.ImmC.L2.recall <- c(71,94,82,32,67)
 pbmc68k.ImmC.L2.ppv <- c(69,93,90,85,62)
+
+pbmc68k.ImmC.L2.error <- matrix(NA, nrow = length(pbmc68k_L2_celltypes), ncol = 6)
+rownames(pbmc68k.ImmC.L2.error) <- pbmc68k_L2_celltypes
+colnames(pbmc68k.ImmC.L2.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+pbmc68k.ImmC.L2.error['T', ] <- c(0, 6, 0, 0, 6, 0)
+pbmc68k.ImmC.L2.error['Dendritic', ] <- c(3+1, 55+3+5, 0, 5+6+2, 2, 0)
+pbmc68k.ImmC.L2.error['B', ] <- c(2, 27, 0, 0, 30, 0)
+pbmc68k.ImmC.L2.error['NK', ] <- c(0, 17, 0, 0, 10, 0)
+pbmc68k.ImmC.L2.error['CD34+', ] <- c(60+6+17, 0, 0, 71, 0, 0 )
+pbmc68k.ImmC.L2.error['Monocyte', ] <- c(1, 1+22+8+1, 0, 0, 37, 0)
 
 
 table(data.table(Known=pbmc68k_L2$original_annotation, annot=pbmc68k_L2$SingleR)) %>%
@@ -691,6 +697,9 @@ table(data.table(Known=pbmc68k_L2$original_annotation, annot=pbmc68k_L2$SingleR)
                measures = c('Recall', 'Precision')
   )
 
+
+apply(pbmc68k.ImmC.L2.error[, 1:3], 1, sum)
+apply(pbmc68k.ImmC.L2.error[,4:6], 1, sum)
 
 
 pbmc68k.SingleR.L2.recall <- c(65,99,49,NA,93)
@@ -714,8 +723,8 @@ pbmc68k.Garnett.L2.ppv <- c(97, 88,80,81,73)
 table(data.table(Known=pbmc68k_L2$original_annotation, annot=pbmc68k_L2$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = pbmc68k_L2_celltypes,
-               ord2 = pbmc68k_L2_celltypes,
+               ord1 = pbmc68k_L2[, .N, by = ctrl][,ctrl], #pbmc68k_L2_celltypes,
+               ord2 = pbmc68k_L2[, .N, by = original_annotation][,original_annotation],#pbmc68k_L2_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -723,6 +732,27 @@ table(data.table(Known=pbmc68k_L2$original_annotation, annot=pbmc68k_L2$ctrl)) %
 pbmc68k.ctrl.L2.recall <- c(69, 95,93,37,18)
 pbmc68k.ctrl.L2.ppv <- c(83, 95, 83, 85, 62)
 
+
+
+pbmc68k.ctrl.L2.error <- matrix(NA, nrow = length(pbmc68k_L2_celltypes), ncol = 6)
+rownames(pbmc68k.ctrl.L2.error) <- pbmc68k_L2_celltypes
+colnames(pbmc68k.ctrl.L2.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+pbmc68k.ctrl.L2.error['T', ] <- c(0, 5, 0, 5, 0, 0)
+pbmc68k.ctrl.L2.error['Dendritic', ] <- c(4, 4+14+1+3, 37, 13, 2, 0)
+pbmc68k.ctrl.L2.error['B', ] <- c(1, 30, 0, 0, 17, 0)
+pbmc68k.ctrl.L2.error['NK', ] <- c(0, 7, 0, 0, 17, 0)
+pbmc68k.ctrl.L2.error['CD34+', ] <- c(3+4+9+1+4, 0 , 0, 59+4, 0, 0)
+pbmc68k.ctrl.L2.error['Monocyte', ] <- c(1, 26+1+1+4, 49, 0, 37, 0)
+
+
+apply(pbmc68k.ctrl.L2.error[, 1:3], 1, sum)
+apply(pbmc68k.ctrl.L2.error[,4:6], 1, sum)
+
+# Dendritic is not included due to undetermination of lineage (pDC may come from either myeloid and lymphoid)
+
+
+pbmc68k_L2_errorplt <- plot_error(pbmc68k.ctrl.L2.error, pbmc68k.ImmC.L2.error)
+pbmc68k_L2_errorplt
 
 ##############################################################################
 #                                pbmc68k_level 3                             #
@@ -763,8 +793,8 @@ pbmc68k_L3_celltypes <- c('CD4+ T', 'CD8+ T' )
 table(data.table(Known=pbmc68k_L3$original_annotation, annot=pbmc68k_L3$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = pbmc68k_L3_celltypes,
-               ord2 = pbmc68k_L3_celltypes,
+               ord1 = pbmc68k_L3[, .N, by = ImmC][,ImmC],#pbmc68k_L3_celltypes,
+               ord2 = pbmc68k_L3[, .N, by = original_annotation][,original_annotation],#pbmc68k_L3_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -772,6 +802,16 @@ table(data.table(Known=pbmc68k_L3$original_annotation, annot=pbmc68k_L3$ImmC)) %
 
 pbmc68k.ImmC.L3.recall <- c(80,52)
 pbmc68k.ImmC.L3.ppv <- c(69,66)
+
+
+
+pbmc68k.ImmC.L3.error <- matrix(NA, nrow = length(pbmc68k_L3_celltypes), ncol = 6)
+rownames(pbmc68k.ImmC.L3.error) <- pbmc68k_L3_celltypes
+colnames(pbmc68k.ImmC.L3.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+pbmc68k.ImmC.L3.error['CD4+ T', ] <- c(4, 15, 0, 5, 26, 0)
+pbmc68k.ImmC.L3.error['CD8+ T', ] <- c(7, 41, 0, 9, 25, 0)
+
+
 
 
 table(data.table(Known=pbmc68k_L3$original_annotation, annot=pbmc68k_L3$SingleR)) %>%
@@ -802,8 +842,8 @@ pbmc68k.Garnett.L3.ppv <- c(71,47)
 table(data.table(Known=pbmc68k_L3$original_annotation, annot=pbmc68k_L3$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = pbmc68k_L3_celltypes,
-               ord2 = pbmc68k_L3_celltypes,
+               ord1 = pbmc68k_L3[, .N, by = ctrl][,ctrl],#pbmc68k_L3_celltypes,
+               ord2 = pbmc68k_L3[, .N, by = original_annotation][,original_annotation],#pbmc68k_L3_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -812,6 +852,17 @@ pbmc68k.ctrl.L3.ppv <- c(68,70)
 
 
 
+
+pbmc68k.ctrl.L3.error <- matrix(NA, nrow = length(pbmc68k_L3_celltypes), ncol = 6)
+rownames(pbmc68k.ctrl.L3.error) <- pbmc68k_L3_celltypes
+colnames(pbmc68k.ctrl.L3.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+pbmc68k.ctrl.L3.error['CD4+ T', ] <- c(2, 12, 0, 5, 27, 0)
+pbmc68k.ctrl.L3.error['CD8+ T', ] <- c(9, 45, 0, 4, 26, 0)
+
+
+
+pbmc68k_L3_errorplt <- plot_error(pbmc68k.ctrl.L3.error, pbmc68k.ImmC.L3.error)
+pbmc68k_L3_errorplt
 
 
 ##############################################################################
@@ -862,8 +913,8 @@ pbmc68k_L4_celltypes <- c("CD4+ TNaive", "CD8+ TNaive", "Treg", "Tfh")
 table(data.table(Known=pbmc68k_L4$original_annotation, annot=pbmc68k_L4$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = pbmc68k_L4_celltypes,
-               ord2 = pbmc68k_L4_celltypes,
+               ord1 =pbmc68k_L4[, .N, by = ImmC][, ImmC], #pbmc68k_L4_celltypes,
+               ord2 = pbmc68k_L4[, .N, by = original_annotation][, original_annotation], #pbmc68k_L4_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -871,6 +922,17 @@ table(data.table(Known=pbmc68k_L4$original_annotation, annot=pbmc68k_L4$ImmC)) %
 
 pbmc68k.ImmC.L4.recall <- c(32, 24, 49,NA)
 pbmc68k.ImmC.L4.ppv <- c(8, 65,32,  NA)
+
+
+
+pbmc68k.ImmC.L4.error <- matrix(NA, nrow = length(pbmc68k_L4_celltypes), ncol = 6)
+rownames(pbmc68k.ImmC.L4.error) <- pbmc68k_L4_celltypes
+colnames(pbmc68k.ImmC.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+pbmc68k.ImmC.L4.error["CD4+ TNaive", ] <- c(3+7, 25+1+15+16+2, 0, 22+56+8, 5+2, 0)
+pbmc68k.ImmC.L4.error["CD8+ TNaive", ] <- c(18+26+13+6+11+2, 0, 0, 1, 34, 0)
+pbmc68k.ImmC.L4.error["Treg", ] <- c(1, 6+1+26+10+6, 0, 17+5+7, 31+8, 0)
+pbmc68k.ImmC.L4.error["Tfh", ] <- c(1+10+11+6+3+1+2+1+1, 30+4+4+15+9, 0, 31+20+2, 20+3+17, 0)
+
 
 
 table(data.table(Known=pbmc68k_L4$original_annotation, annot=pbmc68k_L4$SingleR)) %>%
@@ -903,8 +965,8 @@ pbmc68k.Garnett.L4.ppv <- rep(NA, 4)
 table(data.table(Known=pbmc68k_L4$original_annotation, annot=pbmc68k_L4$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = pbmc68k_L4_celltypes,
-               ord2 = pbmc68k_L4_celltypes,
+               ord1 =pbmc68k_L4[, .N, by = ctrl][, ctrl], #pbmc68k_L4_celltypes,
+               ord2 = pbmc68k_L4[, .N, by = original_annotation][, original_annotation], #pbmc68k_L4_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -912,9 +974,18 @@ table(data.table(Known=pbmc68k_L4$original_annotation, annot=pbmc68k_L4$ctrl)) %
 pbmc68k.ctrl.L4.recall <- c(58, 20, 37, 5)
 pbmc68k.ctrl.L4.ppv <- c(7,69,37,NA)
 
+pbmc68k.ctrl.L4.error <- matrix(NA, nrow = length(pbmc68k_L4_celltypes), ncol = 6)
+rownames(pbmc68k.ctrl.L4.error) <- pbmc68k_L4_celltypes
+colnames(pbmc68k.ctrl.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+pbmc68k.ctrl.L4.error["CD4+ TNaive", ] <- c(4, 2+6+7+15+8, 0, 23+54+8, 7+2, 0)
+pbmc68k.ctrl.L4.error["CD8+ TNaive", ] <- c(1+52+5+4+10+7+2, 0, 0, 0, 31, 0)
+pbmc68k.ctrl.L4.error["Treg", ] <- c(2, 4+18+18+14+7,0, 16+1+26+6, 5+9,0)
+pbmc68k.ctrl.L4.error["Tfh", ] <- c(2+2+3+1+20+1+2+2+1, 10+15+5+8+25+1,0, 27+22+2, 30+3+16,0)
 
 
 
+pbmc68k_L4_errorplt <- plot_error(pbmc68k.ctrl.L4.error, pbmc68k.ImmC.L4.error)
+pbmc68k_L4_errorplt
 ##############################################################################
 #                                HCC level 3                               #
 ##############################################################################
@@ -922,7 +993,7 @@ pbmc68k.ctrl.L4.ppv <- c(7,69,37,NA)
 
 hcc.L3.celltypes <- c('CD4', 'CD8')
 
-hcc_L3 <- copy(hcc_dt)
+hcc_L3 <- hcc_dt[original_annotation!='unknown',]
 
 hcc_L3[,original_annotation:=ifelse(grepl("CD4|Treg|Helper", original_annotation), 'CD4+ T', original_annotation)]
 hcc_L3[,original_annotation:=ifelse(grepl("CD8|MAIT", original_annotation), 'CD8+ T', original_annotation)]
@@ -956,13 +1027,24 @@ hcc_L3_celltypes <- c('CD4+ T', 'CD8+ T')
 table(data.table(Known=hcc_L3$original_annotation, annot=hcc_L3$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = hcc_L3_celltypes,
-               ord2 = hcc_L3_celltypes,
+               ord1 = hcc_L3_celltypes, #hcc_L3[, .N, by = ImmC][, ImmC], #hcc_L3_celltypes,
+               ord2 = hcc_L3_celltypes, #hcc_L3[, .N, by = original_annotation][, original_annotation],#hcc_L3_celltypes,
                measures = c('Recall', 'Precision')
   )
 
 hcc.ImmC.L3.recall <- c(87,82)
-hcc.ImmC.L3.ppv <- c(61,44 )
+hcc.ImmC.L3.ppv <- c(77, 52 )
+
+
+
+hcc.ImmC.L3.error <- matrix(NA, nrow = length(hcc_L3_celltypes), ncol = 6)
+rownames(hcc.ImmC.L3.error) <- hcc_L3_celltypes
+colnames(hcc.ImmC.L3.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+hcc.ImmC.L3.error["CD4+ T", ] <- c(4, 8, 0, 0, 2, 0)
+# intermediate and exhast excluded
+hcc.ImmC.L3.error["CD8+ T", ] <- c(13+1, 4, 0, 0, 14+9, 0)
+
+
 
 table(data.table(Known=hcc_L3$original_annotation, annot=hcc_L3$SingleR)) %>%
   plot_heatmap(title = "SingleR", palette= "RdPu",
@@ -972,7 +1054,7 @@ table(data.table(Known=hcc_L3$original_annotation, annot=hcc_L3$SingleR)) %>%
                measures = c('Recall', 'Precision')
   )
 hcc.SingleR.L3.recall <- c(93,42)
-hcc.SingleR.L3.ppv <- c(43,50)
+hcc.SingleR.L3.ppv <- c(55, 60)
 
 
 table(data.table(Known=hcc_L3$original_annotation, annot=hcc_L3$garnett)) %>%
@@ -990,26 +1072,34 @@ hcc.Garnett.L3.ppv <- c(NA, NA)
 table(data.table(Known=hcc_L3$original_annotation, annot=hcc_L3$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = hcc_L3_celltypes,
-               ord2 = hcc_L3_celltypes,
+               ord1 = hcc_L3_celltypes,#hcc_L3[, .N, by = ctrl][, ctrl],
+               ord2 = hcc_L3_celltypes,#hcc_L3[, .N, by = original_annotation][, original_annotation],#hcc_L3_celltypes,
                measures = c('Recall', 'Precision')
   )
 
 hcc.ctrl.L3.recall <- c(85,79)
-hcc.ctrl.L3.ppv <- c(60,44)
+hcc.ctrl.L3.ppv <- c(77, 52)
 
 
 
+hcc.ctrl.L3.error <- matrix(NA, nrow = length(hcc_L3_celltypes), ncol = 6)
+rownames(hcc.ctrl.L3.error) <- hcc_L3_celltypes
+colnames(hcc.ctrl.L3.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+hcc.ctrl.L3.error["CD4+ T", ] <- c(4+3, 6, 0, 0, 2, 0)
+# intermediate and exhast excluded
+hcc.ctrl.L3.error["CD8+ T", ] <- c(16+1, 4, 0, 0, 14+7, 0)
 
 
 
-
+hcc_L3_errorplt <- plot_error(hcc.ctrl.L3.error, hcc.ImmC.L3.error)
 
 
 ##############################################################################
 #                                HCC level 4                               #
 ##############################################################################
-hcc_L4 <- copy(hcc_dt)
+
+
+hcc_L4 <- hcc_dt[original_annotation!='unknown',]
 hcc_L4[,original_annotation:=ifelse(grepl("naive CD4\\+ T cells", original_annotation), 'CD4+ TNaive', original_annotation)]
 hcc_L4[,original_annotation:=ifelse(grepl("naive CD8\\+ T cells", original_annotation), 'CD8+ TNaive', original_annotation)]
 hcc_L4[,original_annotation:=ifelse(grepl("Treg", original_annotation), 'Treg', original_annotation)]
@@ -1073,13 +1163,28 @@ hcc_L4_celltypes <- c( "CD4+ TNaive", "CD4+ TEx", "Tfh", "Treg", "CD8+ TEx","CD8
 table(data.table(Known=hcc_L4$original_annotation, annot=hcc_L4$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = hcc_L4_celltypes,
-               ord2 = hcc_L4_celltypes,
+               ord1 =hcc_L4[, .N, by = ImmC][, ImmC], # hcc_L4_celltypes,
+               ord2 = hcc_L4[, .N, by = original_annotation][, original_annotation], #hcc_L4_celltypes,
                measures = c('Recall', 'Precision')
   )
 
 hcc.ImmC.L4.recall <- c(24, 19,NA,90,3,55,41,57)
-hcc.ImmC.L4.ppv <- c(49,62,33,52,12,42,23,51)
+hcc.ImmC.L4.ppv <- c(77,74,50,62,15,54,30, 60)
+
+
+
+hcc.ImmC.L4.error <- matrix(NA, nrow = length(hcc_L4_celltypes), ncol = 6)
+rownames(hcc.ImmC.L4.error) <- hcc_L4_celltypes
+colnames(hcc.ImmC.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+
+hcc.ImmC.L4.error["CD4+ TNaive", ] <- c(5, 70, 0, 0, 22, 0)
+hcc.ImmC.L4.error["CD4+ TEx", ] <- c(1+4+1+1, 7+8+1+58+1, 0, 5, 13+8, 0)
+hcc.ImmC.L4.error["Tfh", ] <- c(8+16+1+2++2+6+1+2, 25+13+4+3+1, 0, 0, 50, 0)
+hcc.ImmC.L4.error["Treg", ] <- c(2+1, 1+1+2+3, 0, 2, 9+21+7, 0)
+hcc.ImmC.L4.error["CD8+ TEx", ] <- c(1+1, 3+88+4, 0, 24+6, 4+4+4, 0)
+hcc.ImmC.L4.error["CD8+ TNaive", ] <- c(7+4+2+12+2, 8+1+6+1, 0, 24+15+1, 4+2+1, 0)
+hcc.ImmC.L4.error["CD8+ TEM", ] <- c(36, 22+1, 0, 3+16, 23+2+3, 0)
+hcc.ImmC.L4.error["MAIT", ] <- c(10+1, 3+25+1+2, 0, 18, 4+3+15, 0)
 
 
 
@@ -1092,8 +1197,9 @@ table(data.table(Known=hcc_L4$original_annotation, annot=hcc_L4$SingleR)) %>%
   )
 
 
+
 hcc.SingleR.L4.recall <- c(20,NA, NA, NA,NA,NA,1,NA)
-hcc.SingleR.L4.ppv <- c( 49,NA, NA,NA, NA,NA, 5,NA)
+hcc.SingleR.L4.ppv <- c( 66,NA, NA,NA, NA,NA, 5,NA)
 
 
 
@@ -1114,16 +1220,33 @@ hcc.Garnett.L4.ppv <- rep(NA, 8)
 table(data.table(Known=hcc_L4$original_annotation, annot=hcc_L4$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = hcc_L4_celltypes,
-               ord2 = hcc_L4_celltypes,
+               ord1 =hcc_L4[, .N, by = ctrl][, ctrl], # hcc_L4_celltypes,
+               ord2 = hcc_L4[, .N, by = original_annotation][, original_annotation], #hcc_L4_celltypes,
                measures = c('Recall', 'Precision')
   )
 
 
 
 hcc.ctrl.L4.recall <-  c(35, 40, NA, 87, NA, 54, 20, 62)
-hcc.ctrl.L4.ppv <- c(48, 43, 8, 59, NA, 55, 12, 61)
+hcc.ctrl.L4.ppv <- c(73, 49, 10, 70, NA,72, 16, 72)
 
+
+hcc.ctrl.L4.error <- matrix(NA, nrow = length(hcc_L4_celltypes), ncol = 6)
+rownames(hcc.ctrl.L4.error) <- hcc_L4_celltypes
+colnames(hcc.ctrl.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+
+hcc.ctrl.L4.error["CD4+ TNaive", ] <- c(2+4+2, 6+31+1+17+2, 0, 2, 14+11, 0)
+hcc.ctrl.L4.error["CD4+ TEx", ] <- c(1+5+1+1+2, 10+36+1+1+2, 0, 1+2, 25+1+22, 0)
+hcc.ctrl.L4.error["Tfh", ] <- c(7+20+4+1+2+3+2+1, 27+12+6+1+4, 0, 5+5, 65+15, 0)
+hcc.ctrl.L4.error["Treg", ] <- c(1+2+1, 1+4+1+3, 0, 1, 5+19+5, 0)
+hcc.ctrl.L4.error["CD8+ TEx", ] <- c(1+1, 2+92+4, 0, 33+33, 0, 0)
+hcc.ctrl.L4.error["CD8+ TNaive", ] <- c(29, 7+2+7+1, 0, 12+11, 2,0)
+hcc.ctrl.L4.error["CD8+ TEM", ] <- c(56, 24, 0, 9+1+11+1, 25+3+3, 0)
+hcc.ctrl.L4.error["MAIT", ] <- c(5+1, 6+25+2+1, 0, 15+1, 5+4+2,0)
+
+
+hcc_L4_errorplt <- plot_error(hcc.ctrl.L4.error, hcc.ImmC.L4.error)
+hcc_L4_errorplt
 
 ##############################################################################
 #                                brca5p level 3                               #
@@ -1159,13 +1282,26 @@ brca5p_L3_celltypes <- c('CD4+ T', 'CD8+ T')
 table(data.table(Known=brca5p_L3$original_annotation, annot=brca5p_L3$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = brca5p_L3_celltypes,
-               ord2 = brca5p_L3_celltypes,
+               ord1 = brca5p_L3[, .N, by = ImmC][, ImmC],#brca5p_L3_celltypes,
+               ord2 = brca5p_L3[, .N, by = original_annotation][, original_annotation],#brca5p_L3_celltypes,
                measures = c('Recall', 'Precision')
   )
 
 brca5p.ImmC.L3.recall <- c(83,71)
 brca5p.ImmC.L3.ppv <- c(88,94)
+
+brca5p.ImmC.L3.error <- matrix(NA, nrow = length(brca5p_L3_celltypes), ncol = 6)
+rownames(brca5p.ImmC.L3.error) <- brca5p_L3_celltypes
+colnames(brca5p.ImmC.L3.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+
+brca5p.ImmC.L3.error["CD4+ T", ] <- c(8+2+2, 4, 0, 0, 12, 0)
+brca5p.ImmC.L3.error["CD8+ T", ] <- c(6+1+8+3, 11, 0, 0, 6, 0)
+
+
+
+
+
+
 
 
 table(data.table(Known=brca5p_L3$original_annotation, annot=brca5p_L3$SingleR)) %>%
@@ -1198,8 +1334,8 @@ brca5p.Garnett.L3.ppv <- c(74,97)
 table(data.table(Known=brca5p_L3$original_annotation, annot=brca5p_L3$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = brca5p_L3_celltypes,
-               ord2 = brca5p_L3_celltypes,
+               ord1 = brca5p_L3[, .N, by = ctrl][, ctrl],#brca5p_L3_celltypes,
+               ord2 = brca5p_L3[, .N, by = original_annotation][, original_annotation],#brca5p_L3_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -1208,7 +1344,15 @@ brca5p.ctrl.L3.recall <- c(87,74)
 brca5p.ctrl.L3.ppv <- c(86,94)
 
 
+brca5p.ctrl.L3.error <- matrix(NA, nrow = length(brca5p_L3_celltypes), ncol = 6)
+rownames(brca5p.ctrl.L3.error) <- brca5p_L3_celltypes
+colnames(brca5p.ctrl.L3.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
 
+brca5p.ctrl.L3.error["CD4+ T", ] <- c(3+2+1+1+1, 5, 0, 0, 14, 0)
+brca5p.ctrl.L3.error["CD8+ T", ] <- c(2+1+7+1, 14, 0, 0, 6, 0)
+
+brca5p_L3_errorplt <- plot_error(brca5p.ctrl.L3.error, brca5p.ImmC.L3.error)
+brca5p_L3_errorplt
 
 ##############################################################################
 #                                brca5p level 4                               #
@@ -1277,8 +1421,8 @@ brca5p_L4_celltypes <- c('CD4+ TNaive', 'CD4+ TCM','CD4+ TEM','CD8+ TNaive', 'CD
 table(data.table(Known=brca5p_L4$original_annotation, annot=brca5p_L4$ImmC)) %>%
   plot_heatmap(title = "ImmC", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = brca5p_L4_celltypes,
-               ord2 = brca5p_L4_celltypes,
+               ord1 = brca5p_L4[, .N, by = ImmC][, ImmC],#brca5p_L4_celltypes,
+               ord2 = brca5p_L4[, .N, by = original_annotation][, original_annotation],#brca5p_L4_celltypes,
                measures = c('Recall', 'Precision')
   )
 
@@ -1286,6 +1430,19 @@ table(data.table(Known=brca5p_L4$original_annotation, annot=brca5p_L4$ImmC)) %>%
 brca5p.ImmC.L4.recall <- c(4,45,9,3,1, 17, 69)
 brca5p.ImmC.L4.ppv <- c(17, 46,33,6,19, 63, 48)
 
+
+brca5p.ImmC.L4.error <- matrix(NA, nrow = length(brca5p_L4_celltypes), ncol = 6)
+rownames(brca5p.ImmC.L4.error) <- brca5p_L4_celltypes
+colnames(brca5p.ImmC.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+
+
+brca5p.ImmC.L4.error["CD4+ TNaive", ] <- c(4+3+1+11+1+1+1+4, 30+12+3+17, 0, 20+14+2+2, 14+35+11, 0)
+brca5p.ImmC.L4.error["CD4+ TCM", ] <- c(1+2+1+9+1+3, 6+3+12+3+17, 0, 4+1+3, 10+20+16, 0)
+brca5p.ImmC.L4.error["CD4+ TEM", ] <- c(1+2+1+3+1+1, 24+9+45+4+6, 0, 6+5+5, 1+17, 0)
+brca5p.ImmC.L4.error["CD8+ TNaive", ] <- c(5+1+1+7+4+2+4+1+9, 27+15+19+1+2, 0, 2+7+9+4, 49+23, 0)
+brca5p.ImmC.L4.error["CD8+ TCM", ] <- c(2+1+2+2+1+5+6+1+4+2, 31+14+12+16+1, 0, 1+4+3+3, 54+15, 0)
+brca5p.ImmC.L4.error["CD8+ TEM", ] <- c(2+2+1+1+7+3+1+10+2, 35+6+12+1+1, 0, 1+1, 13+22, 0)
+brca5p.ImmC.L4.error["Treg", ] <- c(2+8+6, 12+3, 0, 2+3+23, 7+16+23, 0)
 
 
 table(data.table(Known=brca5p_L4$original_annotation, annot=brca5p_L4$SingleR)) %>%

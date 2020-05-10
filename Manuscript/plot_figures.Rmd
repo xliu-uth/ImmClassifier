@@ -586,9 +586,6 @@ colnames(brca3p_immc_ctrl)[2] <- 'ctrl'
 # load UMAP coordinates
 brca3p_umap <- fread(paste(data_folder,'umap/out-brca3p_umap/models//umap.pca_0500.cluster_25.k_25.res_1.0.umap_25/coordinates.txt', sep = "/"))
 
-```
-
-```{r}
 
 # Combine all prediction results and the original annotation into one data table
 brca3p_dt <- data.table(
@@ -607,8 +604,8 @@ colnames(brca3p_dt)[grepl("ImmC", colnames(brca3p_dt))] <- "ImmC"
 colnames(brca3p_dt)[grepl("singler", colnames(brca3p_dt))] <- "SingleR"
 setkey(brca3p_dt, Cell)
 
-```
 
+```
 
 
 ## Due to the annotation differences, I have to rename the annotation from prediction tools to match original annotation

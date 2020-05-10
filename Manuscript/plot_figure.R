@@ -152,3 +152,17 @@ dist_plot <- function(dt, palette, n1, n2){
   return (plt)
 }
 
+
+plot_error <- function(ctrl.err, exp.err){
+  data <- melt(ctrl.err - exp.err)
+
+  max_abs <- max(abs(data$value)) * 1.1
+
+  errorplt <- ggplot(data, aes(Var2, value)) +
+    stat_summary(fun.data = "mean_cl_boot", colour = "black", size = 1) +
+    geom_jitter(aes(color = Var1), size = 2, alpha = .6, height = .1, width = .25)+
+    theme_classic() + ylim (-max_abs, max_abs)
+
+  return(errorplt)
+}
+
