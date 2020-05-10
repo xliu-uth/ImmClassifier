@@ -555,7 +555,73 @@ dcast(perf[, median(recall), by = c( 'dataset', 'level', 'method')], dataset~met
 
 
 
+## Figure 4c. Error categories between ImmC and Ctrl
 
+
+```{r}
+library(grid)
+library(gridExtra)
+library(gridBase)
+
+
+grid.arrange(brca3p_L2_errorplt,  pbmc68k_L2_errorplt)
+
+grid.arrange(brca3p_L3_errorplt, pbmc68k_L3_errorplt,hcc_L3_errorplt, brca5p_L3_errorplt, ncol = 2)
+
+grid.arrange(brca3p_L4_errorplt, pbmc68k_L4_errorplt, hcc_L4_errorplt, brca5p_L4_errorplt, ncol = 2)
+
+brca3p_err_dt <- rbind(data.table(dataset = 'brca3p', level = 2, method = 'ctrl', celltype=rownames(brca3p.ctrl.L2.error), brca3p.ctrl.L2.error),
+                       data.table(dataset = 'brca3p', level = 3, method = 'ctrl', celltype=rownames(brca3p.ctrl.L3.error), brca3p.ctrl.L3.error),
+                       data.table(dataset = 'brca3p', level = 4, method = 'ctrl', celltype=rownames(brca3p.ctrl.L4.error), brca3p.ctrl.L4.error),
+                       data.table(dataset = 'brca3p', level = 2, method = 'ImmC', celltype=rownames(brca3p.ImmC.L2.error), brca3p.ImmC.L2.error),
+                       data.table(dataset = 'brca3p', level = 3, method = 'ImmC', celltype=rownames(brca3p.ImmC.L3.error), brca3p.ImmC.L3.error),
+                       data.table(dataset = 'brca3p', level = 4, method = 'ImmC', celltype=rownames(brca3p.ImmC.L4.error), brca3p.ImmC.L4.error))
+
+
+
+
+brca5p_err_dt <- rbind(data.table(dataset = 'brca5p', level = 3, method = 'ctrl', celltype=rownames(brca5p.ctrl.L3.error), brca5p.ctrl.L3.error),
+                        data.table(dataset = 'brca5p', level = 4, method = 'ctrl', celltype=rownames(brca5p.ctrl.L4.error), brca5p.ctrl.L4.error),
+                       data.table(dataset = 'brca5p', level = 3, method = 'ImmC', celltype=rownames(brca5p.ImmC.L3.error), brca5p.ImmC.L3.error),
+                        data.table(dataset = 'brca5p', level = 4, method = 'ImmC', celltype=rownames(brca5p.ImmC.L4.error), brca5p.ImmC.L4.error))
+
+
+
+
+pbmc68k_err_dt <- rbind(data.table(dataset = 'pbmc68k', level = 2, method = 'ctrl', celltype=rownames(pbmc68k.ctrl.L2.error), pbmc68k.ctrl.L2.error),
+                       data.table(dataset = 'pbmc68k', level = 3, method = 'ctrl', celltype=rownames(pbmc68k.ctrl.L3.error), pbmc68k.ctrl.L3.error),
+                       data.table(dataset = 'pbmc68k', level = 4, method = 'ctrl', celltype=rownames(pbmc68k.ctrl.L4.error), pbmc68k.ctrl.L4.error),
+                       data.table(dataset = 'pbmc68k', level = 2, method = 'ImmC', celltype=rownames(pbmc68k.ImmC.L2.error), pbmc68k.ImmC.L2.error),
+                       data.table(dataset = 'pbmc68k', level = 3, method = 'ImmC', celltype=rownames(pbmc68k.ImmC.L3.error), pbmc68k.ImmC.L3.error),
+                       data.table(dataset = 'pbmc68k', level = 4, method = 'ImmC', celltype=rownames(pbmc68k.ImmC.L4.error), pbmc68k.ImmC.L4.error))
+
+
+
+hcc_err_dt <- rbind(
+                       data.table(dataset = 'hcc', level = 3, method = 'ctrl', celltype=rownames(hcc.ctrl.L3.error), hcc.ctrl.L3.error),
+                       data.table(dataset = 'hcc', level = 4, method = 'ctrl', celltype=rownames(hcc.ctrl.L4.error), hcc.ctrl.L4.error),
+                      
+                       data.table(dataset = 'hcc', level = 3, method = 'ImmC', celltype=rownames(hcc.ImmC.L3.error), hcc.ImmC.L3.error),
+                       data.table(dataset = 'hcc', level = 4, method = 'ImmC', celltype=rownames(hcc.ImmC.L4.error), hcc.ImmC.L4.error))
+
+
+
+
+
+```
+
+```{r}
+ggplot(melt(rbind(brca3p_err_dt, brca5p_err_dt, hcc_err_dt, pbmc68k_err_dt), id.var = c('dataset', 'level','celltype','method')), aes(celltype, value, group = method)) + 
+    stat_summary(fun.data = "mean_cl_boot", colour = "black", size = .5) +
+    geom_jitter(aes(color = method), size = 1, alpha = .6, height = .1, width = .25)+
+    theme_classic() + facet_grid(level~ variable + method)
+
+
+
+
+
+
+```
 
 # Figure 5. 3' sequencing data from BRCA paper
 

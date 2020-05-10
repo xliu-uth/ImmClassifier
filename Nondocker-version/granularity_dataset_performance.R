@@ -119,7 +119,7 @@ brca3p_L2[, ImmC:=ifelse(grepl("M:Mac", ImmC), 'Macrophage', ImmC)]
 brca3p_L2[, ImmC:=ifelse(grepl("M:Neu", ImmC), 'Neutrophil', ImmC)]
 brca3p_L2[, ImmC:=ifelse(grepl("M:Mast", ImmC), 'Mast', ImmC)]
 brca3p_L2[, ImmC:=ifelse(grepl("DC", ImmC), 'Dendritic', ImmC)]
-#brca3p_L2[, ImmC:=ifelse(ImmC %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), ImmC, 'Other')]
+brca3p_L2[, ImmC:=ifelse(ImmC %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), ImmC, 'Other')]
 
 
 brca3p_L2[, SingleR:=ifelse(grepl("B_cell",SingleR),"B", SingleR)]
@@ -131,7 +131,7 @@ brca3p_L2[, SingleR:=ifelse(grepl("Macrophage",SingleR),"Macrophage", SingleR)]
 brca3p_L2[, SingleR:=ifelse(grepl("Mast",SingleR),"ast", SingleR)]
 brca3p_L2[, SingleR:=ifelse(grepl("Monocyte",SingleR),"Monocyte", SingleR)]
 brca3p_L2[, SingleR:=ifelse(grepl("Neutrophil",SingleR),"Neutrophil", SingleR)]
-#brca3p_L2[, SingleR:=ifelse(SingleR %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), SingleR, 'Other')]
+brca3p_L2[, SingleR:=ifelse(SingleR %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), SingleR, 'Other')]
 
 brca3p_L2[, garnett:=ifelse(grepl("Neutrophil",garnett),"Neutrophil", garnett)]
 brca3p_L2[, garnett:=ifelse(grepl("B cells",garnett),"B", garnett)]
@@ -139,7 +139,7 @@ brca3p_L2[, garnett:=ifelse(grepl("T cells",garnett),"T", garnett)]
 brca3p_L2[, garnett:=ifelse(grepl("NK",garnett),"NK", garnett)]
 brca3p_L2[, garnett:=ifelse(grepl("Mono",garnett),"Monocyte", garnett)]
 brca3p_L2[, garnett:=ifelse(grepl("Dend",garnett),"Dendritic", garnett)]
-#brca3p_L2[, garnett:=ifelse(garnett %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), garnett, 'Other')]
+brca3p_L2[, garnett:=ifelse(garnett %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), garnett, 'Other')]
 
 
 brca3p_L2[, ctrl:=ifelse(grepl("L:T|convT", ctrl), 'T', ctrl)]
@@ -150,7 +150,7 @@ brca3p_L2[, ctrl:=ifelse(grepl("M:Mac", ctrl), 'Macrophage', ctrl)]
 brca3p_L2[, ctrl:=ifelse(grepl("M:Neu", ctrl), 'Neutrophil', ctrl)]
 brca3p_L2[, ctrl:=ifelse(grepl("M:Mast", ctrl), 'Mast', ctrl)]
 brca3p_L2[, ctrl:=ifelse(grepl("DC", ctrl), 'Dendritic', ctrl)]
-#brca3p_L2[, ctrl:=ifelse(ctrl %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), ctrl, 'Other')]
+brca3p_L2[, ctrl:=ifelse(ctrl %in% c('B','T','NK', 'Macrophage', 'Mast', 'Dendritic', 'Neutrophil', 'Monocyte'), ctrl, 'Other')]
 
 
 
@@ -231,18 +231,6 @@ table(data.table(Known=brca3p_L2$original_annotation, annot=brca3p_L2$SingleR)) 
 
 brca3p.SingleR.L2.recall <- c(86,92,59,3,70, 76,74,NA)
 brca3p.SingleR.L2.ppv <- c(95,97,31,22,50,70,80, NA)
-#
-# brca3p.SingleR.error <- matrix(NA, nrow = length(brca3p_L2_celltypes), ncol = 6)
-# rownames(brca3p.SingleR.error) <- brca3p_L2_celltypes
-# colnames(brca3p.SingleR.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
-# brca3p.SingleR.error['B',] <- c(2, 7, 0, 4, 1, 0)
-# brca3p.SingleR.error['T',] <- c(0, 4, 0, 0, 2, 0)
-# brca3p.SingleR.error['NK',] <- c(0, 39, 0, 12, 2+55)
-# brca3p.SingleR.error['Dendritic',] <- c(8+1, 74+13, 0, 4, 28+45+1)
-# brca3p.SingleR.error['Monocyte',] <- c()
-# brca3p.SingleR.error['Macrophage',] <- c()
-# brca3p.SingleR.error['Neutrophil',] <- c()
-# brca3p.SingleR.error['Mast',] <- c()
 
 
 
@@ -275,14 +263,14 @@ brca3p_L3[, original_annotation:=ifelse(grepl("mDC", original_annotation), 'mDC'
 brca3p_L3[, original_annotation:=ifelse(grepl("pDC", original_annotation), 'pDC', original_annotation)]
 brca3p_L3[, original_annotation:=ifelse(grepl("CD4|Treg", original_annotation), 'CD4+T', original_annotation)]
 brca3p_L3[, original_annotation:=ifelse(grepl("CD8", original_annotation), 'CD8+T', original_annotation)]
-#brca3p_L3[, original_annotation:=ifelse(original_annotation %in% c('CD4+T', 'CD8+T', 'mDC', 'pDC'), original_annotation, 'Other')]
+brca3p_L3[, original_annotation:=ifelse(original_annotation %in% c('CD4+T', 'CD8+T', 'mDC', 'pDC'), original_annotation, 'Other')]
 
 
 brca3p_L3[, ImmC:=ifelse(grepl("L:T:CD4", ImmC), 'CD4+T', ImmC)]
 brca3p_L3[, ImmC:=ifelse(grepl("L:T:CD8", ImmC), 'CD8+T', ImmC)]
 brca3p_L3[, ImmC:=ifelse(grepl("cDC", ImmC), 'mDC', ImmC)]
 brca3p_L3[, ImmC:=ifelse(grepl("pDC", ImmC), 'pDC', ImmC)]
-#brca3p_L3[, ImmC:=ifelse(ImmC %in% c('CD4+T', 'CD8+T', 'mDC', 'pDC'), ImmC, 'Other')]
+brca3p_L3[, ImmC:=ifelse(ImmC %in% c('CD4+T', 'CD8+T', 'mDC', 'pDC'), ImmC, 'Other')]
 
 brca3p_L3[, SingleR:=ifelse(grepl("T_cell:CD4", SingleR), 'CD4+T', SingleR)]
 brca3p_L3[, SingleR:=ifelse(grepl("T_cell:CD8", SingleR), 'CD8+T', SingleR)]
@@ -299,7 +287,7 @@ brca3p_L3[, ctrl:=ifelse(grepl("L:T:CD4", ctrl), 'CD4+T', ctrl)]
 brca3p_L3[, ctrl:=ifelse(grepl("L:T:CD8", ctrl), 'CD8+T', ctrl)]
 brca3p_L3[, ctrl:=ifelse(grepl("cDC", ctrl), 'mDC', ctrl)]
 brca3p_L3[, ctrl:=ifelse(grepl("pDC", ctrl), 'pDC', ctrl)]
-#brca3p_L3[, ctrl:=ifelse(ctrl %in% c('CD4+T', 'CD8+T', 'mDC', 'pDC'), ctrl, 'Other')]
+brca3p_L3[, ctrl:=ifelse(ctrl %in% c('CD4+T', 'CD8+T', 'mDC', 'pDC'), ctrl, 'Other')]
 
 
 table(data.table(Known=brca3p_L3$original_annotation, annot=brca3p_L3$ImmC)) %>%
@@ -1404,7 +1392,7 @@ brca5p_L4[, garnett:=ifelse(garnett %in%  c("CD4+ TCM","CD4+ TNaive", "CD4+ TEM"
 
 
 brca5p_L4[, ctrl:=ifelse(grepl("L:T:CD4:CM", ctrl), 'CD4+ TCM', ctrl)]
-brca5p_L4[, ctrl:=ifelse(grepl("L:T:CD4:Nave", ctrl), 'CD4+ TNaive', ctrl)]
+brca5p_L4[, ctrl:=ifelse(grepl("L:T:CD4:Na", ctrl), 'CD4+ TNaive', ctrl)]
 brca5p_L4[, ctrl:=ifelse(grepl("L:T:CD4:EM", ctrl), 'CD4+ TEM', ctrl)]
 brca5p_L4[, ctrl:=ifelse(grepl("L:T:CD4:Treg", ctrl), 'Treg', ctrl)]
 brca5p_L4[, ctrl:=ifelse(grepl("L:T:CD8:CM", ctrl), 'CD8+ TCM', ctrl)]
@@ -1427,7 +1415,7 @@ table(data.table(Known=brca5p_L4$original_annotation, annot=brca5p_L4$ImmC)) %>%
   )
 
 
-brca5p.ImmC.L4.recall <- c(4,45,9,3,1, 17, 69)
+brca5p.ImmC.L4.recall <- c(4, 45, 9, 3,1, 17, 69)
 brca5p.ImmC.L4.ppv <- c(17, 46,33,6,19, 63, 48)
 
 
@@ -1436,13 +1424,13 @@ rownames(brca5p.ImmC.L4.error) <- brca5p_L4_celltypes
 colnames(brca5p.ImmC.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
 
 
-brca5p.ImmC.L4.error["CD4+ TNaive", ] <- c(4+3+1+11+1+1+1+4, 30+12+3+17, 0, 20+14+2+2, 14+35+11, 0)
-brca5p.ImmC.L4.error["CD4+ TCM", ] <- c(1+2+1+9+1+3, 6+3+12+3+17, 0, 4+1+3, 10+20+16, 0)
-brca5p.ImmC.L4.error["CD4+ TEM", ] <- c(1+2+1+3+1+1, 24+9+45+4+6, 0, 6+5+5, 1+17, 0)
+brca5p.ImmC.L4.error["CD4+ TNaive", ] <- c(25, 70, 0, 24, 60, 0)
+brca5p.ImmC.L4.error["CD4+ TCM", ] <- c(17, 38, 0, 4+1+3, 10+20+16, 0)
+brca5p.ImmC.L4.error["CD4+ TEM", ] <- c(9, 82, 0, 16, 51, 0)
 brca5p.ImmC.L4.error["CD8+ TNaive", ] <- c(5+1+1+7+4+2+4+1+9, 27+15+19+1+2, 0, 2+7+9+4, 49+23, 0)
 brca5p.ImmC.L4.error["CD8+ TCM", ] <- c(2+1+2+2+1+5+6+1+4+2, 31+14+12+16+1, 0, 1+4+3+3, 54+15, 0)
 brca5p.ImmC.L4.error["CD8+ TEM", ] <- c(2+2+1+1+7+3+1+10+2, 35+6+12+1+1, 0, 1+1, 13+22, 0)
-brca5p.ImmC.L4.error["Treg", ] <- c(2+8+6, 12+3, 0, 2+3+23, 7+16+23, 0)
+brca5p.ImmC.L4.error["Treg", ] <- c(2+8+6, 12+3, 0,6, 46, 0)
 
 
 table(data.table(Known=brca5p_L4$original_annotation, annot=brca5p_L4$SingleR)) %>%
@@ -1476,10 +1464,29 @@ brca5p.Garnett.L4.ppv <- rep(NA, 7)
 table(data.table(Known=brca5p_L4$original_annotation, annot=brca5p_L4$ctrl)) %>%
   plot_heatmap(title = "Ctrl", palette= "RdPu",
                minshow = 0, size =10, size2= 3, minpct=0, legend.pos = "none",
-               ord1 = brca5p_L4_celltypes,
-               ord2 = brca5p_L4_celltypes,
+               ord1 = brca5p_L4[, .N, by = ctrl][, ctrl],#brca5p_L4_celltypes,#
+               ord2 = brca5p_L4[, .N, by = original_annotation][, original_annotation],#brca5p_L4_celltypes,#
                measures = c('Recall', 'Precision')
   )
 
-brca5p.ctrl.L4.recall <- c(NA, 37, 12, 1,2,16,67)
-brca5p.ctrl.L4.ppv <- c(NA, 44, 31, 4, 19, 60, 54)
+brca5p.ctrl.L4.recall <- c(11, 37, 12, 1,2,16,67)
+brca5p.ctrl.L4.ppv <- c(17, 44, 31, 4, 19, 60, 54)
+
+
+brca5p.ctrl.L4.error <- matrix(NA, nrow = length(brca5p_L4_celltypes), ncol = 6)
+rownames(brca5p.ctrl.L4.error) <- brca5p_L4_celltypes
+colnames(brca5p.ctrl.L4.error) <-  c('WL_recall', 'WP_recall', 'LR_recall', 'WL_prec', 'WP_prec', 'LR_prec')
+
+
+brca5p.ctrl.L4.error["CD4+ TNaive", ] <- c(17, 71, 0, 17, 67, 0)
+brca5p.ctrl.L4.error["CD4+ TCM", ] <- c(11, 52, 0, 12, 44, 0)
+brca5p.ctrl.L4.error["CD4+ TEM", ] <- c(10, 78, 0, 16, 53, 0)
+brca5p.ctrl.L4.error["CD8+ TNaive", ] <- c(31, 66, 0, 16, 79, 0)
+brca5p.ctrl.L4.error["CD8+ TCM", ] <- c(22, 76, 0, 13, 68, 0)
+brca5p.ctrl.L4.error["CD8+ TEM", ] <- c(25, 58, 0, 3, 37, 0)
+brca5p.ctrl.L4.error["Treg", ] <- c(11, 21, 0, 40, 5, 0)
+
+
+
+brca5p_L4_errorplt <- plot_error(brca5p.ctrl.L4.error, brca5p.ImmC.L4.error)
+brca5p_L4_errorplt
