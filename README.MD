@@ -1,6 +1,6 @@
 # ImmClassifier
 
-**Update: March 10, 2020**
+**Update: September 9, 2020**
 
 Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
 
@@ -82,4 +82,7 @@ files:
 The `output_prefix`.output.txt file contains the final predictions.
 The other files contain intermediate results.
 
+# Versions
 
+## Version March 10, 2020, the first official release
+## Version September 9, 2020, the cell hierarchy is updated
