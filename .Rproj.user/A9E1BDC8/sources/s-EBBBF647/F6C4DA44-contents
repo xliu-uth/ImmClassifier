@@ -1,5 +1,5 @@
 FROM rocker/tidyverse
-RUN apt-get update -y
+
 RUN apt-get install -y net-tools
 
 # Install the data files.

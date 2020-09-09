@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "1550969049",
+    "hash" : "0",
     "id" : "63771741",
-    "lastKnownWriteTime" : 1599671440,
-    "last_content_update" : 1599671440885,
+    "lastKnownWriteTime" : 1599680415,
+    "last_content_update" : 1599680415,
     "path" : "C:/Users/huang/Desktop/Anna/workspace/ImmClassifier/bin/dnn.py",
     "project_path" : "bin/dnn.py",
     "properties" : {
-        "cursorPosition" : "102,2",
-        "scrollLine" : "93"
+        "cursorPosition" : "111,16",
+        "scrollLine" : "94"
     },
     "read_only" : false,
     "read_only_alternatives" : [
