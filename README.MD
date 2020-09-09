@@ -84,5 +84,5 @@ The other files contain intermediate results.
 
 # Versions
 
-## Version March 10, 2020, the first official release
-## Version September 9, 2020, the cell hierarchy is updated
+* Version March 10, 2020, the first official release
+* Version September 9, 2020, the cell hierarchy is updated
