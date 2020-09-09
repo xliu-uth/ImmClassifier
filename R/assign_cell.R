@@ -22,30 +22,33 @@ find_path <- function(node){
 construct_tree <- function(){
 
   tree <- list()
-  tree[[1]] <- list(c('CD34', 'M', 'L'))
+  tree[[1]] <- list(c('CD34', 'L', 'M'))
   names(tree[[1]]) <- 'Immune_Cell'
 
   tree[[2]] <- list(c('CD34:HSC'),
-                   c('L:B', 'L:T', 'L:NK', 'L:pDC', 'L:unconvT'),
-                   c('M:pDC',  'M:cDC', 'M:Eos', 'M:Ery', 'M:Mac', 'M:Mast', 'M:Mega', 'M:Mono', 'M:Neu'))
+                    c('L:B', 'L:PC', 'L:T', 'L:NK', 'L:unconvT', 'L:cDC'),
+                    c('M:pDC',  'M:cDC', 'M:Eos', 'M:Ery', 'M:Mono',
+                      'M:Mac', 'M:mDC', 'M:Mast', 'M:Mega', 'M:Platelet',
+                      'M:Neu'))
 
   names(tree[[2]]) <- c('CD34', 'L', 'M')
 
-  tree[[3]] <- list(c('L:B:PC'),
-                    c('L:T:CD4', 'L:T:CD8'),
-                    c('M:Mega:Platelet')
-                   )
-  names(tree[[3]]) <- c('L:B', 'L:T', 'M:Mega')
+  tree[[3]] <- list(
+    c('L:T:CD4', 'L:T:CD8'),
+    c('L:unconvT:MAIT', 'L:unconvT:gdT')
+  )
+  names(tree[[3]]) <- c('L:T',  'L:unconvT')
 
 
 
-  tree[[4]] <- list(c('L:T:CD4:CM', 'L:T:CD4:EM', 'L:T:CD4:Ex', 'L:T:CD4:Naïve', 'L:T:CD4:Tfh', 'L:T:CD4:Treg', 'L:T:CD4:TRM'),
-                    c('L:T:CD8:CM', 'L:T:CD8:EM', 'L:T:CD8:Ex', 'L:T:CD8:Mait', 'L:T:CD8:Naïve', 'L:T:CD8:TRM')
-                   )
+  tree[[4]] <- list(c('L:T:CD4:CM', 'L:T:CD4:EM', 'L:T:CD4:Ex', 'L:T:CD4:Naive', 'L:T:CD4:Tfh', 'L:T:CD4:Treg', 'L:T:CD4:TRM'),
+                    c('L:T:CD8:CM', 'L:T:CD8:EM', 'L:T:CD8:Ex', 'L:T:CD8:Naive', 'L:T:CD8:TRM', 'L:T:CD8:EMRA')
+  )
   names(tree[[4]]) <- c('L:T:CD4','L:T:CD8')
 
   return(tree)
 }
+
 
 
 get_entropy <- function(p){
@@ -88,31 +91,51 @@ tie_breaker <- function(candidates){
 assign_cell_label <- function(vstats){
 
 
-    tree <- construct_tree()
-    probs <- vstats[1:35]
-    names(probs) <- gsub(".prob", "", names(probs))
-    ent <- sapply(probs, function(x) get_entropy(x))
-
-    entgain <- ent
-
-    i <- length(tree)
-    while(i >1){
-        for (s in names(tree[[i]])){
-            if(length(tree[[i]][[s]])>1){
-                for (t in tree[[i]][[s]]){
-                      entgain[s] <- entgain[s] - ent[t]#/length(tree[[i]][[s]])
-                  }
-            }
+  tree <- construct_tree()
+  probs <- vstats[1:38]
+  names(probs) <- gsub(".prob", "", names(probs))
+  ent <- sapply(probs, function(x) get_entropy(x))
+  ent_baseline <- get_entropy(mean(probs))
+  entgain <- ent
 
 
+  depth <- sapply(names(probs), function(x) length(strsplit(x, ":")[[1]]))
+  drop_rate <- sapply(probs, function(x) (x-min(probs)))
+  drop_rate <- drop_rate * log(depth)
+
+  winner <- rep(F, length(probs))
+  names(winner) <- names(probs)
+
+
+  i <- length(tree)
+  while(i >1){
+    for (s in names(tree[[i]])){
+
+      if(length(tree[[i]][[s]])>0){
+        drop_rate[s] <- (probs[s]-max(probs[tree[[i]][[s]]])) * log(1+length(tree)-i)
+        for (t in tree[[i]][[s]]){
+          entgain[s] <- entgain[s] - ent[t]
         }
-        i <- i-1
+        peer_probs <- probs[tree[[i]][[s]]]
+        winner[names(peer_probs[peer_probs==max(peer_probs)])] <- T
+
+      }else{
+        entgain[s] <- entgain[s] - ent_baseline
+
+      }
+
     }
+    i <- i-1
+  }
+  peer_probs <- probs[unlist(tree[[1]])]
+  winner[names(peer_probs[peer_probs==max(peer_probs)])] <- T
 
-   # deal with ties, choose the lowest std/mean
-    candidates <- names(entgain[entgain==max(entgain)])
+  candidates <- entgain[winner==T]
+  candidates <- names(candidates[candidates==max(candidates)])
+  # deal with ties, choose the lowest std/mean
+  return_cand <- candidates[order(vstats[paste0(candidates, ".std")]/vstats[paste0(candidates, ".prob")])[1]]
 
-    return (candidates[order(vstats[paste0(candidates, ".std")]/vstats[paste0(candidates, ".prob")])[1]])
+  return (return_cand)
 }
 
 
@@ -137,12 +160,13 @@ assign_dataset <- function(output.prefix,deep.learning.file){
   # 2. write the returned dataframe to disk
     require(dplyr)
     ref.nodes <- c("CD34","CD34:HSC","L","L:NK","L:B",
-                   "M","M:Mega","M:Mega:Platelet","M:Ery","M:Eos",
-                   "M:Neu","M:Mono", "L:pDC","M:pDC","L:B:PC",
-                   "M:cDC","L:T","L:T:CD4","L:T:CD4:EM","L:T:CD8",
-                   "L:T:CD8:Ex","L:T:CD8:EM","L:T:CD8:CM","L:T:CD4:Tfh","L:T:CD4:Naïve",
-                   "L:T:CD4:CM","L:T:CD4:Treg","L:T:CD8:Naïve", "M:Mac","L:unconvT",
-                   "M:Mast","L:T:CD4:TRM", "L:T:CD8:TRM","L:T:CD4:Ex","L:T:CD8:Mait")
+                 "M","M:Platelet", "M:Ery","M:Eos","M:Neu",
+                 "M:Mono","M:pDC","L:PC","M:mDC","L:T","L:T:CD4",
+                 "L:T:CD4:EM","L:T:CD4:Naive","L:T:CD8","L:T:CD8:Ex","L:T:CD8:EM","L:T:CD8:CM",
+                 "L:T:CD4:Tfh","L:T:CD8:EMRA","L:T:CD4:CM","L:T:CD4:Treg","L:T:CD8:Naive",   "M:Mac",
+                 "L:unconvT","L:unconvT:gdT","L:T:CD8:TRM", "M:Mega", "M:cDC", "L:cDC", "M:Mast","L:T:CD4:TRM",
+                 "L:T:CD4:Ex","L:unconvT:MAIT")
+
 
     norm.method <- "ontotree"
     fpath <- deep.learning.file #paste0('tensorflow/output/', output.prefix,  '.deeplearning.', norm.method, '.stats.txt', sep = "")
