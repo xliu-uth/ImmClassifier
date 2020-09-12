@@ -180,7 +180,7 @@ assign_dataset <- function(output.prefix,deep.learning.file){
     assign.labels <- dnn.stats[, -1] %>%
            apply(1, function(x) assign_cell_label(x))
     print (paste0('Finish assigning the final labels'))
-    outfile= paste0("/tmp/output/", output.prefix, ".output.txt")
+    outfile= paste0("/tmp/", output.prefix, ".output.txt")
     write.table(data.frame(Cell=dnn.stats$Cell,
            ImmClassifier_prediction= assign.labels,
            dnn.stats[, paste0(ref.nodes, ".prob")]),
