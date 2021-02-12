@@ -6,7 +6,10 @@ import numpy as np
 import random
 from sklearn import metrics
 from keras.layers import Dropout
-import keras.models
+import tensorflow
+from tensorflow.keras.models import load_model
+
+
 
 def logit(x, norm):
     if norm=='original':
@@ -58,7 +61,9 @@ def dnn_predict(dnn_input,output_prefix="./tensorflow/output/",model_dir="./tens
     num_model = 10
     print ("load pre-trained dnn models")
 
-    stochastic_models = [keras.models.load_model(model_dir+"model_%s_%d_n10.h5" % (norm_method, i)) for i in range(0,num_model)]
+    stochastic_models = [tensorflow.keras.models.load_model(model_dir+"model_%s_%d_n10.h5" % (norm_method, i)) for i in range(0,num_model)]
+    
+    
     print ("predict query dataset using dnn models")
     Y_new_pred_stochastic = np.array([m.predict(X_new) for m in stochastic_models])
     Y_new_pred_stochastic_mean = np.mean(Y_new_pred_stochastic, axis = 0)
