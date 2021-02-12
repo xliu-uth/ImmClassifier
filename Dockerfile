@@ -20,7 +20,7 @@ RUN wget -O data/brcatil-train-test-dat.rds --no-check-certificate https://ndown
 # Install software.
 
 RUN apt-get update -qq && apt-get -y install libffi-dev && apt-get -y install python3-pip && apt-get -y install wget
-RUN Rscript -e "install.packages(c('optparse','BiocManager','mlr','stringr','randomForest','reticulate'))"
+RUN Rscript -e "install.packages(c('optparse','BiocManager','mlr','stringr','randomForest','reticulate', 'data.table'))"
 RUN Rscript -e "BiocManager::install('sva')"
 
 RUN pip3 install pandas keras numpy sklearn tensorflow
