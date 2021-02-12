@@ -24,7 +24,7 @@ RUN Rscript -e "install.packages(c('optparse','BiocManager','mlr','stringr','ran
 RUN Rscript -e "BiocManager::install('sva')"
 
 RUN pip3 install pandas keras numpy sklearn tensorflow
-
+RUN pip3 install tensorflow h5py==2.10.0
 
 COPY bin/runIC.R  /usr/local/bin/
 RUN chmod a+x /usr/local/bin/runIC.R
