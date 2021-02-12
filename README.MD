@@ -1,7 +1,7 @@
 # ImmClassifier
 
 
-**Update: Feburary 12, 2021**
+# Update: Feburary 12, 2021**
 
 Updated the cell hierarchy. Our paper is accepted and will be online soon!
 
@@ -10,7 +10,7 @@ Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
 
 
 
-# Update: September 9, 2020**
+# Update: September 9, 2020
 
 Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
 
