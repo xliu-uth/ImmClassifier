@@ -158,7 +158,7 @@ assign_dataset <- function(output.prefix,deep.learning.file){
   # Returns:
   # 1. return a dataframe with column1 as cell id and column2 as the predicted cell type
   # 2. write the returned dataframe to disk
-    require(dplyr)
+    require(data.table)
     ref.nodes <- c("CD34","CD34:HSC","L","L:NK","L:B",
                  "M","M:Platelet", "M:Ery","M:Eos","M:Neu",
                  "M:Mono","M:pDC","L:PC","M:mDC","L:T","L:T:CD4",
@@ -177,8 +177,7 @@ assign_dataset <- function(output.prefix,deep.learning.file){
     colnames(dnn.stats) <- cnames
     rownames(dnn.stats) <- dnn.stats$Cell
     print (paste0('Assign the final labels'))
-    assign.labels <- dnn.stats[, -1] %>%
-           apply(1, function(x) assign_cell_label(x))
+    assign.labels <-  apply(dnn.stats[, -1], 1, function(x) assign_cell_label(x))
     print (paste0('Finish assigning the final labels'))
     outfile= paste0("/tmp/", output.prefix, ".output.txt")
     write.table(data.frame(Cell=dnn.stats$Cell,
