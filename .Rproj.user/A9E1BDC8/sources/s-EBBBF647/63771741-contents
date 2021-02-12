@@ -6,10 +6,7 @@ import numpy as np
 import random
 from sklearn import metrics
 from keras.layers import Dropout
-import tensorflow
-from tensorflow.keras.models import load_model
-
-
+import keras.models
 
 def logit(x, norm):
     if norm=='original':
@@ -61,15 +58,13 @@ def dnn_predict(dnn_input,output_prefix="./tensorflow/output/",model_dir="./tens
     num_model = 10
     print ("load pre-trained dnn models")
 
-    stochastic_models = [tensorflow.keras.models.load_model(model_dir+"model_%s_%d_n10.h5" % (norm_method, i)) for i in range(0,num_model)]
-    
-    
+    stochastic_models = [keras.models.load_model(model_dir+"model_%s_%d_n10.h5" % (norm_method, i)) for i in range(0,num_model)]
     print ("predict query dataset using dnn models")
     Y_new_pred_stochastic = np.array([m.predict(X_new) for m in stochastic_models])
     Y_new_pred_stochastic_mean = np.mean(Y_new_pred_stochastic, axis = 0)
     Y_new_pred_stochastic_std = np.std(Y_new_pred_stochastic, axis = 0)
     print ("save results to disk")
-    fname='/tmp/%s.deeplearning.%s.stats.txt' % (output_prefix, norm_method)
+    fname='/tmp/tensorflow/output/%s.deeplearning.%s.stats.txt' % (output_prefix, norm_method)
     np.savetxt(fname,\
               np.append(np.append(qdata[:, 0].reshape(qdata.shape[0], 1), \
                                   Y_new_pred_stochastic_mean,  1), \

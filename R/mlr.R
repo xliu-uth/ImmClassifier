@@ -43,11 +43,13 @@ mlr_pred <- function(lrn.name="classif.randomForest", refdat.path, refdat.name, 
 
 
   # train a random forest classifier using the training part of reference dataset
+  print (paste("Training a random forest classifier for", refdat.name))
   task <- mlr::makeClassifTask(id = lrn.name, dat = train.dat, target = "target")
   lrn <- mlr::makeLearner(lrn.name, predict.type = "prob")
   mod <- mlr::train(lrn, task)
 
   # apply the trained model to training, test part of the reference dataset and query dataset
+  print (paste("Predict query dataset using trained classifier for ", refdat.name))
   pred.train <- predict(mod, task = task)
   pred.test <- predict(mod, newdat = test.dat)
   pred.ext <- predict(mod, newdat = ext.dat)
@@ -91,24 +93,28 @@ dat_partition <- function(refdat.path, ext.dat){
 
     require(dplyr)
     require(sva)
+
+
   print (paste("load train/test partition from training set", refdat.path))
   train.test.mat <- readRDS(refdat.path)
 
   # due to high drop-out rate, only feature genes that are expressed in query dataset will be used
   common.genes <- intersect(colnames(train.test.mat$train), colnames(ext.dat))
   print(paste("Feature reduced from #", ncol(train.test.mat$train), "to", length(common.genes)))
-  if(length(common.genes) == 0) 
+  if(length(common.genes) == 0)
     stop("No genes match the training data set.")
 
+  print ("Extract features")
   ext.feat.mat <- ext.dat[, common.genes]
 
   # For reference dataset, only immune cells are used.
   # In case that held-out cells contain non-immune cells,
   # non-immune held-out cells are filtered out.
+
   train.class <- train.test.mat$train %>% count(target) %>% select(target)  %>% unlist
   train.test.mat$test <- train.test.mat$test[train.test.mat$test$target %in% train.class, ]
 
-
+  print ("Run ComBat to remove batch effect between ref and query datasets")
   # use ComBat to correct the batch effect between ref and query dataset
 
   uncorrected.matrix <- rbind(data.frame(train.test.mat$train[, common.genes], dataset="ref", stringsAsFactors = F),

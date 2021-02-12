@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1599681142675.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3678615964",
+    "id" : "49A5DF07",
+    "lastKnownWriteTime" : 1599681183,
+    "last_content_update" : 1599681183757,
+    "path" : "C:/Users/huang/Desktop/Anna/workspace/ImmClassifier/R/assign_cell.R",
+    "project_path" : "R/assign_cell.R",
+    "properties" : {
+        "cursorPosition" : "185,49",
+        "scrollLine" : "170"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

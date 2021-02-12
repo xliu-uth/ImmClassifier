@@ -1,5 +1,5 @@
 FROM rocker/tidyverse
-RUN apt-get update -y
+
 RUN apt-get install -y net-tools
 
 # Install the data files.
@@ -20,11 +20,11 @@ RUN wget -O data/brcatil-train-test-dat.rds --no-check-certificate https://ndown
 # Install software.
 
 RUN apt-get update -qq && apt-get -y install libffi-dev && apt-get -y install python3-pip && apt-get -y install wget
-RUN Rscript -e "install.packages(c('optparse','BiocManager','mlr','stringr','randomForest','reticulate', 'data.table'))"
+RUN Rscript -e "install.packages(c('optparse','BiocManager','mlr','stringr','randomForest','reticulate'))"
 RUN Rscript -e "BiocManager::install('sva')"
 
 RUN pip3 install pandas keras numpy sklearn tensorflow
-RUN pip3 install tensorflow h5py==2.10.0
+
 
 COPY bin/runIC.R  /usr/local/bin/
 RUN chmod a+x /usr/local/bin/runIC.R
