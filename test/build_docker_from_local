@@ -1,0 +1,2 @@
+docker build . -t imm-classifier
+docker run --volume $PWD:/tmp imm-classifier --input test/test_flow.txt --output test_flow
