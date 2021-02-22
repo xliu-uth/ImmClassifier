@@ -1,5 +1,5 @@
 # load required R packages
-
+library(data.table)
 library(dplyr)
 library(mlr)
 library(sva)
@@ -179,19 +179,19 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         #ext.dat <- t(ext.dat)
         # use data.table
 
-        ext.dat <- fread(queryfile.path, sep = "\t")
-        if (colnames(ext.dat)[1]!='Gene'){
+        ext.dt <- data.table::fread(queryfile.path, sep = "\t")
+        if (colnames(ext.dt)[1]!='Gene'){
           print ("Please rename the 1st column as Gene")
           exit()
         }
 
-        ext.dat[, Gene:=gsub("-|_", ".", toupper(Gene))]
         print ("reshape input file")
-        ext.dat <- dcast(melt(ext.dat, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell'), Cell ~ Gene)
+        ext.dat <- data.table::dcast(data.table::melt(ext.dt, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell'), Cell ~ Gene)
         print ("convert to data.frame")
         ext.dat <- data.frame(ext.dat, stringsAsFactors = F, check.names =F)
         rownames(ext.dat) <- ext.dat$Cell
         ext.dat<- ext.dat[, -1]
+        colnames(ext.dat) <- gsub("-|_", ".", toupper(colnames(ext.dat)))
     }
     print ("Query file input is done")
 
