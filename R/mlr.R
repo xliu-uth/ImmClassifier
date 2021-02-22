@@ -169,15 +169,28 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
     if(grepl("rds$", queryfile.path)){
         ext.dat <- readRDS(queryfile.path)
+        print ("Please make sure to input Cell x Gene for .rds format")
     }else{
-        print (paste("Open query file", queryfile.path))
-        ext.dat <- read.table(queryfile.path, header = T, sep = "\t", row.names = 1, stringsAsFactors = F, check.names = F)
-        rownames(ext.dat) <- gsub("-|_", ".", toupper(rownames(ext.dat)))
-        ext.dat <- t(ext.dat)
 
+        print (paste("Open query file", queryfile.path))
+        # read.table is slow and crashed by large input file
+        #ext.dat <- read.table(queryfile.path, header = T, sep = "\t", row.names = 1, stringsAsFactors = F, check.names = F)
+        #rownames(ext.dat) <- gsub("-|_", ".", toupper(rownames(ext.dat)))
+        #ext.dat <- t(ext.dat)
+        # use data.table
+
+        ext.dat <- fread(queryfile.path, sep = "\t")
+        if (colnames(ext.dat)[1]!='Gene'){
+          print ("Please rename the 1st column as Gene")
+          exit()
+        }
+
+        ext.dat[, Gene:=gsub("-|_", ".", toupper(Gene))]
+        print ("reshape input file")
+        ext.dat <- dcast(melt(ext.dat, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell'), Cell ~ Gene)
 
     }
-
+    print ("Query file input is done")
 
     reference.paths <- c('Ref1: The Human Cell Atlas bone marrow single-cell interactive web portal' = 'hca-bm',
                          'Ref2: Circulating immune cell phenotype dynamics reflect the strength of tumor-immune cell interactions in patients during immunotherapy' = 'pbmc',
