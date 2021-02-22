@@ -188,7 +188,10 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         ext.dat[, Gene:=gsub("-|_", ".", toupper(Gene))]
         print ("reshape input file")
         ext.dat <- dcast(melt(ext.dat, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell'), Cell ~ Gene)
-
+        print ("convert to data.frame")
+        ext.dat <- data.frame(ext.dat, stringsAsFactors = F, check.names =F)
+        rownames(ext.dat) <- ext.dat$Cell
+        ext.dat<- ext.dat[, -1]
     }
     print ("Query file input is done")
 
