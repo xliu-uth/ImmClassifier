@@ -1,14 +1,14 @@
 # ImmClassifier
 
+# Update: Feburary 23, 2021**
+
+Use fread to speed up query file input.
+
+Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
 
 # Update: Feburary 12, 2021**
 
 Updated the cell hierarchy. Our paper is accepted and will be online soon!
-
-Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
-
-Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
-
 
 
 # Update: September 9, 2020
