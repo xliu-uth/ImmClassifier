@@ -48,7 +48,6 @@ docker build . -t imm-classifier
 
 All pre-requisites are in the Docker image. We recommend using this image instead of installing locally.
 
-
 # Usage Examples
 
 ImmClassifier runs a series of three individual commands using both R and Python. It requires two parameters:
@@ -83,6 +82,8 @@ docker run --volume $PWD:/tmp -ti xliu18/imm-classifier --input `input_file` --o
 `input_file` is the name of input file.  It needs to be in the local 
 directory for docker to find it.  If you are a docker expert, you may specify files in other directories, but you will need to bind the directory using the docker --volume command.  
 
+For very large input file, it's recommended to use .rds format as input and increase the memory in Docker (eg. >4GB) to avoid memory crash. To generate the .rds input, please import your input file into a data.frame with the Cell IDs as the rownames and the gene symbols as the column names. use saveRDS command to export the data.frame into a .rds file. 
+
 The output files will be written to your local directory with the prefix specified by the `output_prefix` argument.   ImmClassifier will generate three
 files:
 * `output_prefix`.dnn.input.txt
@@ -91,6 +92,7 @@ files:
 
 The `output_prefix`.output.txt file contains the final predictions.
 The other files contain intermediate results.
+
 
 # Versions
 
