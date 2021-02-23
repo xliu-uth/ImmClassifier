@@ -86,11 +86,6 @@ The `output_prefix`.output.txt file contains the final predictions.
 The other files contain intermediate results.
 
 # Previous updates
-#Update: 
-
-Updated the cell hierarchy. Our paper is accepted and will be online soon!
-
-# Versions
 * Version Feburary 12, 2021, the cell hierarchy is updated
 * Version March 10, 2020, the first official release
 * Version September 9, 2020, the cell hierarchy is updated
