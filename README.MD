@@ -6,6 +6,7 @@
 Updated the cell hierarchy. Our paper is accepted and will be online soon!
 
 Knowledge-based and lineage-driven immune cell classification in single-cell RNA-Seq data
+
 Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
 
 
@@ -63,6 +64,10 @@ For the gene expression values, we have tested log_2 CPM (counts per million), l
 An example file is at:
 https://github.com/xliu-uth/ImmClassifier/blob/master/test/bulk.logrma.txt
 
+For very large input file, it's recommended to convert the input file to .rds format and increase the memory in Docker (eg. >4GB) to avoid memory crash. 
+
+To generate the .rds input, please import your input file into a data.frame with the Cell IDs as the rownames and the gene symbols as the column names. Use saveRDS command to export the data.frame into a .rds file. 
+
 
 ### Output File
 
@@ -81,8 +86,6 @@ docker run --volume $PWD:/tmp -ti xliu18/imm-classifier --input `input_file` --o
 
 `input_file` is the name of input file.  It needs to be in the local 
 directory for docker to find it.  If you are a docker expert, you may specify files in other directories, but you will need to bind the directory using the docker --volume command.  
-
-For very large input file, it's recommended to use .rds format as input and increase the memory in Docker (eg. >4GB) to avoid memory crash. To generate the .rds input, please import your input file into a data.frame with the Cell IDs as the rownames and the gene symbols as the column names. use saveRDS command to export the data.frame into a .rds file. 
 
 The output files will be written to your local directory with the prefix specified by the `output_prefix` argument.   ImmClassifier will generate three
 files:
