@@ -77,7 +77,7 @@ https://github.com/xliu-uth/ImmClassifier/blob/master/output/bulk.output.txt
 
 To run the command you must provide the path to your input file, the output prefix and mount the `/tmp` directory to get the output files.
 ```
-docker run --volume $PWD:/tmp -ti sgosline/imm-classifier --input `input_file` --output `output_prefix`
+docker run --volume $PWD:/tmp -ti xliu18/imm-classifier --input `input_file` --output `output_prefix`
 ```
 
 `input_file` is the name of input file.  It needs to be in the local 
