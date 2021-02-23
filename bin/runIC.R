@@ -40,7 +40,7 @@ main<-function(){
     mode=ifelse(args$testmode,'mode','prod')
 
     require(ImmClassifier)
-    res.path=within_reference_pred(input.path, paste0('./tensorflow/input/', out.prefix), mode=mode)
+    res.path=within_reference_pred(input.path, out.prefix, mode=mode)
     model.dir='/ImmClassifier/tensorflow/pre-trained-models' ##not writeable, absolute path won't work outside docker
     pred.file<-predictHierarchy(res.path, out.prefix,model.dir)
     cell.types<-assignCellTypes(out.prefix, pred.file)
