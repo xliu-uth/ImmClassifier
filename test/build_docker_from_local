@@ -1,5 +1,5 @@
 docker build . -t imm-classifier
 docker run --volume $PWD:/tmp imm-classifier --input test/test_flow.txt --output test_flow
 docker images
-docker tag 56154147a3d1 xliu18/immc_docker:local_build
+docker tag 56154147a3d1 xliu18/imm-classifier:local_build
 docker push xliu18/imm-classifier:local_build
