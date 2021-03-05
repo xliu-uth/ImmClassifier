@@ -53,7 +53,7 @@ For the gene expression values, we have tested log_2 CPM (counts per million), l
 An example file is at:
 https://github.com/xliu-uth/ImmClassifier/blob/master/test/bulk.logrma.txt
 
-For very large input file, it's recommended to convert the input file to .rds format and increase the memory in Docker (eg. >4GB) to avoid memory crash. 
+For large input file, it's recommended to convert the input file to .rds format and increase the memory in Docker (eg. >8GB) to avoid memory crash. 
 
 To generate the .rds input, please import your input file into a data.frame with the Cell IDs as the rownames and the gene symbols as the column names. Use saveRDS command to export the data.frame into a .rds file. 
 
