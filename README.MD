@@ -62,8 +62,8 @@ To generate the .rds input, please import your input file into a data.frame with
 
 This file is a matrix of cell type predictions for each cell.
 
-The output for the exmple above is at:
-https://github.com/xliu-uth/ImmClassifier/blob/master/output/bulk.output.txt
+The first column is the Cell ID and the second column is the predicted cell type. The other columns are the scores that a cell belongs to each cell type on the cell type hierarchy.  
+
 
 
 ### To run
