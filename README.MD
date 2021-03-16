@@ -1,6 +1,11 @@
 # ImmClassifier
 
-# Update: Feburary 23, 2021**
+
+# Update: Mar 16, 2021**
+
+Concatenate the scores that a cell belong to each cell type on the cell type hierarchy to the original output file (Cell_ID, ImmClassifier_prediction).
+
+# Update: Feburary 23, 2021
 
 Use fread to speed up query file input.
 
