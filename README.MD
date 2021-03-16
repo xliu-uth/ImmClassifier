@@ -5,9 +5,6 @@
 
 Concatenate the scores that a cell belong to each cell type on the cell type hierarchy to the original output file (Cell_ID, ImmClassifier_prediction).
 
-# Update: Feburary 23, 2021
-
-Use fread to speed up query file input.
 
 Maintainer: Xuan Liu <xuan.liu.1@uth.tmc.edu>
 
@@ -94,3 +91,4 @@ The other files contain intermediate results.
 * Version Feburary 12, 2021, the cell hierarchy is updated
 * Version March 10, 2020, the first official release
 * Version September 9, 2020, the cell hierarchy is updated
+* Update: Feburary 23, 2021 Use fread to speed up query file input.
