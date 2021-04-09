@@ -182,7 +182,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         ext.dt <- data.table::fread(queryfile.path, sep = "\t")
         if (colnames(ext.dt)[1]!='Gene'){
           print ("Please rename the 1st column as Gene")
-          exit()
+          quit(save="no", status=-1)
         }
 
         print ("reshape input file")
