@@ -83,7 +83,6 @@ dat_partition <- function(refdat.path, ext.dat){
   # Args:
   #   train.dat.path: reference dat path in RDS format
   #   ext.dat: query dataset datframe in format of cell by feature
-
   #
   # Returns:
   #   a list containing trained random forest model, prediction of training part
@@ -121,8 +120,40 @@ dat_partition <- function(refdat.path, ext.dat){
                               data.frame(train.test.mat$test[, common.genes], dataset="ref", stringsAsFactors = F),
                               data.frame(ext.feat.mat[, common.genes], dataset = "query", stringsAsFactors = F)
                              )
-  corrected.matrix <- t(ComBat(t(uncorrected.matrix[, -ncol(uncorrected.matrix)]), uncorrected.matrix$dataset))
 
+  M <- t(uncorrected.matrix[, -ncol(uncorrected.matrix)])
+  ds <- uncorrected.matrix$dataset
+  rm(uncorrected.matrix)   # save memory
+
+  # Count the genes with uniform expression across a single batch.
+  # ComBat does not use them for batch correction.
+  I.uniform <- c()
+  for(batch in unique(ds)) {
+    M.b <- M[,ds == batch]
+    vars <- apply(M.b, 1, var)
+    x <- which(vars < 1E-10)
+    I.uniform <- c(I.uniform, x)
+    rm(M.b)   # save memory
+  }
+  I.uniform <- sort(unique(I.uniform))
+  num.genes <- nrow(M) - length(I.uniform)   # non-uniform genes
+
+  #I.not.uniform <- setdiff(1:nrow(M), I.uniform)
+  #print(rownames(M)[I.not.uniform])
+  x1 <- "features have"
+  x2 <- "are"
+  if(num.genes == 1) {
+    x1 <- "feature has"
+    x2 <- "is"
+  }
+  cat(sprintf("%g %s non-uniform expression and %s usable for batch correction.\n", num.genes, x1, x2))
+  if(num.genes < 2) {
+    cat("Not enough common non-uniform genes for batch corrrection.\n")
+    quit(save="no", status=-1)
+  }
+
+  corrected.matrix <- t(ComBat(M, ds))
+  rm(M)  # save memory
 
   trainN <- nrow(train.test.mat$train)
   testN <- nrow(train.test.mat$test)
@@ -181,12 +212,17 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
 
         ext.dt <- data.table::fread(queryfile.path, sep = "\t")
         if (colnames(ext.dt)[1]!='Gene'){
-          print ("Please rename the 1st column as Gene")
+          cat('Please rename the 1st column as "Gene"\n')
+          quit(save="no", status=-1)
+        }
+        if(any(duplicated(ext.dt$Gene))) {
+          cat("Please remove duplicate Genes.\n")
           quit(save="no", status=-1)
         }
 
         print ("reshape input file")
-        ext.dat <- data.table::dcast(data.table::melt(ext.dt, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell'), Cell ~ Gene)
+        x <- data.table::melt(ext.dt, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell')
+        ext.dat <- data.table::dcast(x, Cell ~ Gene, median)
         print ("convert to data.frame")
         ext.dat <- data.frame(ext.dat, stringsAsFactors = F, check.names =F)
         rownames(ext.dat) <- ext.dat$Cell

@@ -1,3 +1,4 @@
+
 library(reticulate)
 library(optparse)
 
@@ -35,7 +36,6 @@ main<-function(){
       input.path <- sprintf("/tmp/%s", input.path)
     if(!file.exists(input.path))
       stop(sprintf("Cannot find file: %s", orig.input.path))
-
 
     mode=ifelse(args$testmode,'mode','prod')
 
