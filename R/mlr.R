@@ -226,7 +226,7 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         ext.dt2 <- data.table::transpose(ext.dat[, -1])
         ext.dt2 <- data.frame(ext.dt2)
         rownames(ext.dt2) <- colnames(ext.dat)[-1]
-        colnames(ext.dt2) <- ext.dat[, Gene]
+        colnames(ext.dt2) <- ext.dat$Gene
       
       
         ext.dat <- ext.dt2
