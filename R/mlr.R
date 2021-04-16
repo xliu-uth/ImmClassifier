@@ -221,12 +221,21 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         }
 
         print ("reshape input file")
-        x <- data.table::melt(ext.dt, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell')
-        ext.dat <- data.table::dcast(x, Cell ~ Gene, median)
-        print ("convert to data.frame")
-        ext.dat <- data.frame(ext.dat, stringsAsFactors = F, check.names =F)
-        rownames(ext.dat) <- ext.dat$Cell
-        ext.dat<- ext.dat[, -1]
+      
+      
+        ext.dt2 <- data.table::transpose(ext.dt[, -1])
+        ext.dt2 <- data.frame(ext.dt2)
+        rownames(ext.dt2) <- colnames(ext.dt)[-1]
+        colnames(ext.dt2) <- ext.dt[, Gene]
+      
+      
+        ext.dt <- ext.dt2
+        #x <- data.table::melt(ext.dt, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell')
+        #ext.dat <- data.table::dcast(x, Cell ~ Gene, median)
+        #print ("convert to data.frame")
+        #ext.dat <- data.frame(ext.dat, stringsAsFactors = F, check.names =F)
+        #rownames(ext.dat) <- ext.dat$Cell
+        #ext.dat<- ext.dat[, -1]
         colnames(ext.dat) <- gsub("-|_", ".", toupper(colnames(ext.dat)))
     }
     print ("Query file input is done")
