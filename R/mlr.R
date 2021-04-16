@@ -163,7 +163,7 @@ dat_partition <- function(refdat.path, ext.dat){
                                 target=train.test.mat$train$target, stringsAsFactors = F)
 
   test.corrected <- data.frame(corrected.matrix[(trainN+1):(trainN+testN),],
-                                     target =train.test.mat$test$target, stringsAsFactors = F)
+                                     target =train.test.mat$test$targert, stringsAsFactors = F)
 
   ext.corrected <- data.frame(corrected.matrix[(trainN+testN+1):nrow(corrected.matrix),])
 
@@ -210,12 +210,12 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         #ext.dat <- t(ext.dat)
         # use data.table
 
-        ext.dt <- data.table::fread(queryfile.path, sep = "\t")
-        if (colnames(ext.dt)[1]!='Gene'){
+        ext.dat <- data.table::fread(queryfile.path, sep = "\t")
+        if (colnames(ext.dat)[1]!='Gene'){
           cat('Please rename the 1st column as "Gene"\n')
           quit(save="no", status=-1)
         }
-        if(any(duplicated(ext.dt$Gene))) {
+        if(any(duplicated(ext.dat$Gene))) {
           cat("Please remove duplicate Genes.\n")
           quit(save="no", status=-1)
         }
@@ -223,13 +223,13 @@ within_reference_pred <- function(queryfile.path, output.prefix = "query", num.c
         print ("reshape input file")
       
       
-        ext.dt2 <- data.table::transpose(ext.dt[, -1])
+        ext.dt2 <- data.table::transpose(ext.dat[, -1])
         ext.dt2 <- data.frame(ext.dt2)
-        rownames(ext.dt2) <- colnames(ext.dt)[-1]
-        colnames(ext.dt2) <- ext.dt[, Gene]
+        rownames(ext.dt2) <- colnames(ext.dat)[-1]
+        colnames(ext.dt2) <- ext.dat[, Gene]
       
       
-        ext.dt <- ext.dt2
+        ext.dat <- ext.dt2
         #x <- data.table::melt(ext.dt, id.var='Gene', variable.factor = F, value.factor = F, variable.name = 'Cell')
         #ext.dat <- data.table::dcast(x, Cell ~ Gene, median)
         #print ("convert to data.frame")
