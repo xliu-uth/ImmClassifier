@@ -163,7 +163,7 @@ dat_partition <- function(refdat.path, ext.dat){
                                 target=train.test.mat$train$target, stringsAsFactors = F)
 
   test.corrected <- data.frame(corrected.matrix[(trainN+1):(trainN+testN),],
-                                     target =train.test.mat$test$targert, stringsAsFactors = F)
+                                     target =train.test.mat$test$target, stringsAsFactors = F)
 
   ext.corrected <- data.frame(corrected.matrix[(trainN+testN+1):nrow(corrected.matrix),])
 
