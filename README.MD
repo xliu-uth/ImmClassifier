@@ -49,7 +49,7 @@ ImmClassifier runs a series of three individual commands using both R and Python
 
 # Non-immune Cells
 
-ImmClassifier works on immune cells only. If the input gene expression profile contains non-immune cells, e.g. fibroblasts, stromal cells, please keep the immune cells from your input by using other cell classifiers that work on both immune and non-immune cells (e.g. SingleR, Garnett). For example, run SingleR for the whole gene expression profile, after obtaining the cell labels, please extract the gene expression profiles for the immune cells as the input for ImmClassifier. 
+ImmClassifier works on immune cells only. If the input gene expression profile contains non-immune cells, e.g. fibroblasts, cancer cells, stromal cells, please keep the immune cells from your input by using other cell classifiers that work on both immune and non-immune cells (e.g. SingleR, Garnett). For example, run SingleR for the whole gene expression profile, after obtaining the cell labels, please extract the gene expression profiles for the immune cells as the input for ImmClassifier. 
 
 ### Input File
 
