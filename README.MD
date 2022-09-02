@@ -99,7 +99,7 @@ The other files contain intermediate results.
 
 The overall approach is detailed in the following publication:
 
-[Liu X, Gosline SJC, Pflieger LT, Wallet P, Iyer A, Guinney J, Bild AH, Chang JT. Knowledge-based classification of fine-grained immune cell types in single-cell RNA-Seq data. Brief Bioinform. 2021 Sep 2;22(5):bbab039. doi: 10.1093/bib/bbab039. PMID: 33681983; PMCID: PMC8536868. https://pubmed.ncbi.nlm.nih.gov/33681983/]
+Liu X, Gosline SJC, Pflieger LT, Wallet P, Iyer A, Guinney J, Bild AH, Chang JT. Knowledge-based classification of fine-grained immune cell types in single-cell RNA-Seq data. Brief Bioinform. 2021 Sep 2;22(5):bbab039. doi: 10.1093/bib/bbab039. PMID: 33681983; PMCID: PMC8536868. https://pubmed.ncbi.nlm.nih.gov/33681983/
 
 
 
