@@ -95,7 +95,7 @@ The other files contain intermediate results.
 
 
 
-### To cite:
+# To Cite Our Work:
 
 The overall approach is detailed in the following publication:
 
