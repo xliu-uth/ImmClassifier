@@ -91,6 +91,18 @@ files:
 The `output_prefix`.output.txt file contains the final predictions.
 The other files contain intermediate results.
 
+
+
+
+
+### To cite:
+
+The overall approach is detailed in the following publication:
+
+[Liu X, Gosline SJC, Pflieger LT, Wallet P, Iyer A, Guinney J, Bild AH, Chang JT. Knowledge-based classification of fine-grained immune cell types in single-cell RNA-Seq data. Brief Bioinform. 2021 Sep 2;22(5):bbab039. doi: 10.1093/bib/bbab039. PMID: 33681983; PMCID: PMC8536868. https://pubmed.ncbi.nlm.nih.gov/33681983/]
+
+
+
 # Previous updates
 * Version Feburary 12, 2021, the cell hierarchy is updated
 * Version March 10, 2020, the first official release
